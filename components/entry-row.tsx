@@ -45,6 +45,22 @@ export function EntryRow({ entry }: { entry: Entry }) {
 				<p className={entry.title ? "mt-1 text-mute" : "text-mute"}>
 					{entry.description}
 				</p>
+
+				{entry.details ? (
+					<ul className="mt-4 flex flex-col gap-y-2">
+						{entry.details.map((detail) => (
+							<li
+								key={detail}
+								className="flex gap-x-2.5 text-[15px] leading-6 text-mute"
+							>
+								<span aria-hidden className="opacity-60">
+									—
+								</span>
+								<span>{detail}</span>
+							</li>
+						))}
+					</ul>
+				) : null}
 			</div>
 		</div>
 	);
