@@ -1,7 +1,7 @@
 import Link from "next/link";
 import type { CSSProperties } from "react";
 import { CONTENT_INDEX, Section } from "@/components/section";
-import { posts } from "@/lib/data";
+import { postList } from "@/lib/writing";
 
 export function Writing() {
 	return (
@@ -10,7 +10,7 @@ export function Writing() {
 			intro="Notes on what I am building and learning."
 		>
 			<ul className="flex flex-col">
-				{posts.map((post, index) => (
+				{postList.map((post, index) => (
 					<li key={post.slug}>
 						<Link
 							href={`/writing/${post.slug}`}
@@ -24,7 +24,7 @@ export function Writing() {
 							}
 						>
 							<span className="w-16 shrink-0 font-mono text-xs tracking-label text-mute">
-								{post.date}
+								{post.display}
 							</span>
 							<span className="flex-1 text-ink">
 								{post.title}

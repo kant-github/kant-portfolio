@@ -170,34 +170,6 @@ export const stack: StackItem[] = [
 	},
 ];
 
-export type Post = {
-	slug: string;
-	date: string;
-	title: string;
-	minutes: number;
-};
-
-export const posts: Post[] = [
-	{
-		slug: "scaling-websockets-with-redis",
-		date: "12/09/25",
-		title: "Scaling WebSockets past one server",
-		minutes: 6,
-	},
-	{
-		slug: "400-million-requests",
-		date: "28/08/25",
-		title: "What 400 million requests a day actually looks like",
-		minutes: 8,
-	},
-	{
-		slug: "project-vs-product",
-		date: "14/07/25",
-		title: "Project mindset vs product mindset",
-		minutes: 4,
-	},
-];
-
 export const personal = {
 	blurb: "Away from the terminal I am usually listening to something loud or reading about distributed systems.",
 	photos: {

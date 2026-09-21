@@ -9,7 +9,7 @@ const CAPTION_CLASS = "font-mono text-xs tracking-label text-mute uppercase";
 const TILT = ["-5deg", "3deg", "-2deg", "4deg", "-3deg"];
 
 const CARD_CLASS =
-	"relative shrink-0 rounded-lg bg-white p-1.5 shadow-card rotate-(--tilt) transition duration-300 hover:z-10 hover:-translate-y-2 hover:rotate-0";
+	"relative shrink-0 rounded-lg bg-white p-1 shadow-card rotate-(--tilt) transition duration-300 hover:z-10 hover:-translate-y-2 hover:rotate-0";
 
 // The cards sit in one row, each overlapping the last by a quarter of its own
 // width. Solving n*w - (n-1)*(w/4) = 100 keeps the row exactly full whatever

@@ -81,7 +81,7 @@ export function Showcase() {
 								alt={shot.alt}
 								width={1200}
 								height={900}
-								className="aspect-4/3 w-full rounded-md object-cover ring-1 ring-black/10"
+								className="aspect-4/3 w-full rounded-[8px] sm:rounded-md object-cover ring-1 ring-black/10"
 							/>
 						</figure>
 					);

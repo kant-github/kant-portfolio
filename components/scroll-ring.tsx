@@ -10,19 +10,8 @@ import {
 import { useEffect } from "react";
 
 const SIZE = 36;
-const RADIUS = 15;
+const RADIUS = 13.5;
 
-/**
- * Fills as the page scrolls and closes exactly at the bottom.
- *
- * Progress is measured directly rather than through useScroll's default
- * container detection, which did not track the document reliably here. One
- * passive listener, and the value is written to a MotionValue so no React
- * render happens while scrolling.
- *
- * The arc uses pathLength={1}, so the dash maths is a plain 0-to-1 value and
- * never depends on the circle's real circumference.
- */
 export function ScrollRing() {
 	const prefersReducedMotion = useReducedMotion();
 	const raw = useMotionValue(0);
@@ -60,7 +49,7 @@ export function ScrollRing() {
 	return (
 		<svg
 			viewBox={`0 0 ${SIZE} ${SIZE}`}
-			className="pointer-events-none absolute inset-0 size-full"
+			className="pointer-events-none absolute inset-0 z-10 size-full"
 			aria-hidden="true"
 		>
 			<circle

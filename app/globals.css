@@ -4,6 +4,9 @@
 	--page: #0d0d0d;
 	--ink: #ffffff;
 	--mute: #8f8f8f;
+	/* Long-form body text. Brighter than --mute, clearly below --ink, so the
+	 * article keeps three levels: emphasis, body, caption. */
+	--prose: #c8c8c8;
 	--line: rgb(255 255 255 / 0.1);
 	--surface: rgb(255 255 255 / 0.04);
 	--surface-dot: rgb(255 255 255 / 0.09);
@@ -20,22 +23,22 @@
 	--color-page: var(--page);
 	--color-ink: var(--ink);
 	--color-mute: var(--mute);
+	--color-prose: var(--prose);
 	--color-line: var(--line);
 	--color-surface: var(--surface);
 	--color-card-top: #1f1f1f;
 	--color-card-bottom: #161616;
 	--color-card-inset: #2a2a2a;
 	/* Dock. Every surface colour is solid — the dock is never see-through. */
-	--color-dock-hover: #2e2e34;
-	--color-dock-ink: #c9c9cf;
-	--color-dock-divider-top: #56565e;
-	--color-dock-divider-bottom: #232327;
-	--color-dock-track: #3a3a41;
-	--color-dock-progress: #3b82f6;
+	--color-dock-hover: #242424;
+	--color-dock-ink: #c4c4c4;
+	--color-dock-divider-top: #4a4a4a;
+	--color-dock-divider-bottom: #1c1c1c;
+	--color-dock-track: #303030;
+	--color-dock-progress: #0ec704;
 	--color-dock-tip: #0a0a0c;
 	--color-dock-tip-edge: #2a2a30;
 	--shadow-dock:
-		inset 0 1px 0 #3a3a41, inset 0 -1px 0 #101012,
 		0 2px 6px rgb(0 0 0 / 0.5), 0 14px 36px -10px rgb(0 0 0 / 0.75),
 		0 30px 60px -20px rgb(0 0 0 / 0.65);
 	--shadow-dock-tip:
@@ -373,9 +376,9 @@ body {
 	 * look like a gradient. */
 	background-image: radial-gradient(
 		130% 150% at 8% -12%,
-		#26262a 0%,
-		#212125 45%,
-		#1b1b1e 100%
+		#1e1e1e 0%,
+		#191919 45%,
+		#131313 100%
 	);
 }
 
@@ -389,12 +392,13 @@ body {
 	padding: 1px;
 	border-radius: inherit;
 	background-image: radial-gradient(
-		110% 130% at 1% -8%,
-		#9c9ca6 0%,
-		#5f5f68 18%,
-		#3a3a41 42%,
-		#2a2a2f 70%,
-		#232327 100%
+		150% 180% at -2% -20%,
+		rgb(255 255 255 / 0.4) 0%,
+		rgb(255 255 255 / 0.26) 14%,
+		rgb(255 255 255 / 0.15) 27%,
+		rgb(255 255 255 / 0.07) 40%,
+		rgb(255 255 255 / 0.025) 52%,
+		transparent 66%
 	);
 	mask:
 		linear-gradient(#fff 0 0) content-box,
@@ -416,6 +420,239 @@ body {
 
 .dock-in {
 	animation: dock-in 620ms cubic-bezier(0.22, 1, 0.36, 1) 1000ms both;
+}
+
+/* --- Long-form article typography ---------------------------------------
+ *
+ * Scoped element selectors rather than utilities on every node: the renderer
+ * emits plain <p>/<h2>/<ul>, and Tailwind v4's preflight has stripped every
+ * heading size and list marker, so something has to put them back.
+ *
+ * Body is 17px/1.7 with no extra tracking. The site's 16px/24px at 0.01em is
+ * right for short UI text and tiring over 2,000 words.
+ */
+
+.article {
+	color: var(--prose);
+	font-size: 17px;
+	line-height: 1.7;
+	letter-spacing: 0;
+}
+
+.article p {
+	margin: 0 0 1.35em;
+	color: var(--prose);
+}
+
+.article strong {
+	font-weight: 500;
+	color: var(--ink);
+}
+
+.article em {
+	font-style: italic;
+	color: var(--ink);
+}
+
+.article h2 {
+	margin: 2.75em 0 0.75em;
+	font-size: 1.5rem;
+	font-weight: 550;
+	line-height: 1.25;
+	color: var(--ink);
+	letter-spacing: -0.01em;
+	scroll-margin-top: 5rem;
+}
+
+.article h3 {
+	margin: 2em 0 0.6em;
+	font-size: 1.0625rem;
+	font-weight: 550;
+	line-height: 1.4;
+	color: var(--ink);
+	scroll-margin-top: 5rem;
+}
+
+.article a {
+	color: var(--ink);
+	text-decoration: underline;
+	text-decoration-color: rgb(255 255 255 / 0.35);
+	text-underline-offset: 0.2em;
+	transition: text-decoration-color 0.2s ease-out;
+}
+
+.article a:hover {
+	text-decoration-color: var(--ink);
+}
+
+.article code {
+	padding: 0.1em 0.35em;
+	border: 1px solid var(--line);
+	border-radius: 4px;
+	background: var(--surface);
+	font-family: var(--font-geist-mono), ui-monospace, monospace;
+	font-size: 0.86em;
+	color: var(--ink);
+}
+
+/* The code block owns its own type; do not double-style the <code> inside. */
+.article pre code {
+	padding: 0;
+	border: 0;
+	border-radius: 0;
+	background: none;
+	font-size: inherit;
+}
+
+.article ul,
+.article ol {
+	margin: 0 0 1.35em;
+	padding-left: 1.3em;
+	color: var(--prose);
+}
+
+.article ul {
+	list-style: disc;
+}
+
+.article ol {
+	list-style: decimal;
+}
+
+.article li {
+	margin-bottom: 0.55em;
+	padding-left: 0.2em;
+}
+
+.article li::marker {
+	color: rgb(255 255 255 / 0.3);
+}
+
+.article hr {
+	margin: 3em 0;
+	border: 0;
+	border-top: 1px solid var(--line);
+}
+
+.article figure {
+	/* margin-block only: the shorthand would reset margin-inline and beat
+	 * the mx-auto on a full-bleed figure, pushing it off centre. */
+	margin-block: 2.25rem;
+}
+
+.article figcaption {
+	margin-top: 0.75rem;
+	font-family: var(--font-geist-mono), ui-monospace, monospace;
+	font-size: 12px;
+	line-height: 1.5;
+	letter-spacing: 0.01em;
+	text-align: center;
+	color: var(--mute);
+}
+
+.article .diagram-scroll {
+	margin-inline: -1rem;
+	padding-inline: 1rem;
+	overflow-x: auto;
+	overscroll-behavior-x: contain;
+}
+
+.article .diagram-scroll > svg {
+	min-width: 470px;
+}
+
+/* Hairlines stay exactly one device pixel whatever the svg scales to. */
+.article .diagram-scroll svg line,
+.article .diagram-scroll svg rect,
+.article .diagram-scroll svg path,
+.article .diagram-scroll svg circle {
+	vector-effect: non-scaling-stroke;
+}
+
+/* --- Code blocks ---------------------------------------------------------
+ * Shiki emits its own <pre class="shiki"> with an inline background. The
+ * block below strips that and rehouses it on the site's own surface so it
+ * reads as part of the page, not as a pasted screenshot of an editor.
+ */
+
+.article .code-figure {
+	margin: 2rem 0;
+	overflow: hidden;
+	border: 1px solid var(--line);
+	border-radius: var(--radius-shot, 10px);
+	background: var(--surface);
+}
+
+.article .code-bar {
+	display: flex;
+	align-items: center;
+	gap: 0.75rem;
+	margin: 0;
+	padding: 0.5rem 0.75rem;
+	border-bottom: 1px solid var(--line);
+	font-family: var(--font-geist-mono), ui-monospace, monospace;
+	font-size: 11px;
+	letter-spacing: 0.04em;
+	text-align: left;
+	text-transform: uppercase;
+	color: var(--mute);
+}
+
+.article .code-lang {
+	margin-left: auto;
+	color: rgb(255 255 255 / 0.28);
+}
+
+.article .code-body pre {
+	margin: 0;
+	/* Horizontal padding lives here, not on each line: shiki separates its
+	 * line spans with a real newline, and <pre> preserves it. Making the
+	 * spans block as well would break every line twice. */
+	padding: 0.875rem 1rem;
+	overflow-x: auto;
+	overscroll-behavior-x: contain;
+	background: transparent !important;
+	tab-size: 2;
+}
+
+.article .code-body code {
+	display: block;
+	font-size: 13.5px;
+	line-height: 1.7;
+}
+
+@media (max-width: 640px) {
+	.article .code-body code {
+		font-size: 12.5px;
+	}
+}
+
+/* Blocks that bring their own styling opt out of the prose rules entirely.
+ * Without this the table of contents gets decimal markers on top of its own
+ * numbers, and its links get the prose underline. */
+.article .not-prose p,
+.article .not-prose ul,
+.article .not-prose ol {
+	margin: 0;
+	padding-left: 0;
+	color: inherit;
+	list-style: none;
+}
+
+.article .not-prose li {
+	margin: 0;
+	padding-left: 0;
+}
+
+.article .not-prose a {
+	text-decoration: none;
+}
+
+/* Large blocks reveal by opacity and movement only. Blurring a full-bleed
+ * band or a photo row is what actually costs frames. */
+.stage-soft {
+	--stage-rise: 18px;
+	filter: none;
 }
 
 @media (prefers-reduced-motion: reduce) {
