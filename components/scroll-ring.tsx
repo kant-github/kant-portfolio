@@ -86,7 +86,7 @@ export function ScrollRing() {
 				// enough that it costs nothing at this size.
 				style={{
 					strokeDashoffset: offset,
-					filter: "drop-shadow(0 0 3px rgb(37 99 235 / 0.75))",
+					filter: "drop-shadow(0 0 4px rgb(59 130 246 / 0.85))",
 				}}
 			/>
 		</svg>
