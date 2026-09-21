@@ -1,4 +1,5 @@
 import { Contact } from "@/components/contact";
+import { Dock } from "@/components/dock";
 import { Experience } from "@/components/experience";
 import { Footer } from "@/components/footer";
 import { Header } from "@/components/header";
@@ -13,7 +14,10 @@ import { Writing } from "@/components/writing";
 export default function Home() {
 	return (
 		<div className="flex min-h-screen w-full justify-center overflow-x-hidden">
-			<main className="flex w-full max-w-160 flex-col gap-10 px-4 py-10">
+			<main
+				id="top"
+				className="flex w-full max-w-160 flex-col gap-10 px-4 pt-10 pb-32"
+			>
 				<div className="stage overture flex flex-col gap-10">
 					<Header />
 					<Intro />
@@ -44,6 +48,8 @@ export default function Home() {
 					<Footer />
 				</ScrollStage>
 			</main>
+
+			<Dock />
 		</div>
 	);
 }

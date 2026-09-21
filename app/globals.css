@@ -25,6 +25,19 @@
 	--color-card-top: #1f1f1f;
 	--color-card-bottom: #161616;
 	--color-card-inset: #2a2a2a;
+	/* Dock. Every surface colour is solid — the dock is never see-through. */
+	--color-dock-hover: #2e2e34;
+	--color-dock-ink: #c9c9cf;
+	--color-dock-divider-top: #56565e;
+	--color-dock-divider-bottom: #232327;
+	--color-dock-tip: #0a0a0c;
+	--color-dock-tip-edge: #2a2a30;
+	--shadow-dock:
+		inset 0 1px 0 #3a3a41, inset 0 -1px 0 #101012,
+		0 2px 6px rgb(0 0 0 / 0.5), 0 14px 36px -10px rgb(0 0 0 / 0.75),
+		0 30px 60px -20px rgb(0 0 0 / 0.65);
+	--shadow-dock-tip:
+		0 6px 18px -6px rgb(0 0 0 / 0.7), 0 2px 5px rgb(0 0 0 / 0.5);
 	--font-sans: var(--font-inter);
 	--font-mono: var(--font-geist-mono);
 	--tracking-label: 0.04em;
@@ -53,6 +66,7 @@
 
 html {
 	color-scheme: dark;
+	scroll-behavior: smooth;
 }
 
 body {
@@ -339,6 +353,69 @@ body {
 	animation: key-tap 220ms ease-out 1650ms both;
 }
 
+/* --- Dock ----------------------------------------------------------------
+ * Lit from the top left, the way a solid object catches a light source above
+ * and to the side of it. Two parts do the work:
+ *
+ *  - the surface is a radial gradient whose bright point sits at the top-left
+ *    corner, so the body itself falls away into shadow towards bottom-right;
+ *  - the border is a 1px ring painted with its own radial gradient, using the
+ *    same mask trick as .lit-edge, so the edge is almost white where the light
+ *    lands and sinks to a deep blue on the far side.
+ *
+ * Every colour here is solid. The dock is never see-through.
+ */
+
+.dock-surface {
+	/* A narrow range on purpose: enough to read as a lit solid, not enough to
+	 * look like a gradient. */
+	background-image: radial-gradient(
+		130% 150% at 8% -12%,
+		#26262a 0%,
+		#212125 45%,
+		#1b1b1e 100%
+	);
+}
+
+/* The 1px ring is where the light actually lands. It is brightest at the
+ * top-left corner and sinks back into the surface colour on the far side,
+ * using the same mask trick as .lit-edge above. */
+.dock-edge::before {
+	content: "";
+	position: absolute;
+	inset: 0;
+	padding: 1px;
+	border-radius: inherit;
+	background-image: radial-gradient(
+		110% 130% at 1% -8%,
+		#9c9ca6 0%,
+		#5f5f68 18%,
+		#3a3a41 42%,
+		#2a2a2f 70%,
+		#232327 100%
+	);
+	mask:
+		linear-gradient(#fff 0 0) content-box,
+		linear-gradient(#fff 0 0);
+	mask-composite: exclude;
+	pointer-events: none;
+}
+
+@keyframes dock-in {
+	from {
+		opacity: 0;
+		transform: translateY(18px) scale(0.96);
+	}
+	to {
+		opacity: 1;
+		transform: none;
+	}
+}
+
+.dock-in {
+	animation: dock-in 700ms cubic-bezier(0.22, 1, 0.36, 1) 1700ms both;
+}
+
 @media (prefers-reduced-motion: reduce) {
 	.lit-edge::after {
 		transition: none;
@@ -352,10 +429,15 @@ body {
 		animation: none !important;
 	}
 
+	html {
+		scroll-behavior: auto;
+	}
+
 	.stage-item,
 	.stage-char,
 	.dot-pop,
-	.key-tap {
+	.key-tap,
+	.dock-in {
 		opacity: 1 !important;
 		transform: none !important;
 		filter: none !important;
