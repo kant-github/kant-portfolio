@@ -1,27 +1,35 @@
-import { EntryRow } from "@/components/entry-row";
-import { Reveal } from "@/components/reveal";
-import type { Section as SectionData } from "@/lib/data";
+import type { CSSProperties, ReactNode } from "react";
+import { SplitLabel } from "@/components/split-label";
 
-export function Section({ section }: { section: SectionData }) {
+export const LABEL_CLASS =
+	"font-mono text-xs tracking-label text-mute uppercase";
+
+/** Section parts take the first indices; content rows continue from here. */
+export const CONTENT_INDEX = 2;
+
+export function Section({
+	label,
+	intro,
+	children,
+}: {
+	label: string;
+	intro?: string;
+	children: ReactNode;
+}) {
 	return (
-		<section id={section.id} className="mt-16 w-full">
-			<Reveal>
-				<h2 className="font-mono text-[13px] leading-4 tracking-[0.04em] text-mute uppercase">
-					{section.label}
-				</h2>
+		<section className="flex flex-col gap-6">
+			<SplitLabel text={label} className={LABEL_CLASS} />
 
-				{section.intro ? (
-					<p className="mt-7 text-mute">{section.intro}</p>
-				) : null}
-			</Reveal>
+			{intro ? (
+				<p
+					className="stage-item stage-blur text-mute"
+					style={{ "--i": 1 } as CSSProperties}
+				>
+					{intro}
+				</p>
+			) : null}
 
-			<div className="mt-12 flex flex-col gap-y-10">
-				{section.entries.map((entry, index) => (
-					<Reveal key={entry.meta} delay={index * 0.05}>
-						<EntryRow entry={entry} />
-					</Reveal>
-				))}
-			</div>
+			{children}
 		</section>
 	);
 }

@@ -9,6 +9,14 @@ import { profile } from "@/lib/data";
 
 const RESET_DELAY = 2000;
 
+type State = "idle" | "copied" | "failed";
+
+const LABEL: Record<State, string> = {
+	idle: "to copy my email",
+	copied: "email copied to clipboard",
+	failed: "the browser blocked the copy",
+};
+
 const swap = {
 	initial: { opacity: 0, scale: 0.5 },
 	animate: { opacity: 1, scale: 1 },
@@ -17,26 +25,31 @@ const swap = {
 } as const;
 
 export function CopyEmail() {
-	const [copied, setCopied] = useState(false);
+	const [state, setState] = useState<State>("idle");
 
 	const copy = useCallback(async () => {
-		setCopied(await copyText(profile.email));
+		setState((await copyText(profile.email)) ? "copied" : "failed");
 	}, []);
 
 	useEffect(() => {
-		if (!copied) return;
+		if (state === "idle") return;
 
-		const timer = window.setTimeout(() => setCopied(false), RESET_DELAY);
+		const timer = window.setTimeout(() => setState("idle"), RESET_DELAY);
 		return () => window.clearTimeout(timer);
-	}, [copied]);
+	}, [state]);
 
 	useEffect(() => {
 		function handleKeyDown(event: KeyboardEvent) {
 			if (event.key.toLowerCase() !== "c") return;
 			if (event.metaKey || event.ctrlKey || event.altKey) return;
 
-			const target = event.target as HTMLElement | null;
-			if (target?.closest("input, textarea, [contenteditable='true']"))
+			// event.target is the document itself until something on the page
+			// has been focused, and the document has no closest().
+			const target = event.target;
+			if (
+				target instanceof Element &&
+				target.closest("input, textarea, [contenteditable='true']")
+			)
 				return;
 
 			event.preventDefault();
@@ -55,16 +68,16 @@ export function CopyEmail() {
 				aria-label={`Copy ${profile.email} to clipboard`}
 				className="inline-flex cursor-pointer items-center gap-1.5 text-left text-mute transition-opacity hover:opacity-70"
 			>
-				Press
-				<KeyCap pressed={copied}>
+				{state === "idle" ? "Press" : null}
+				<KeyCap pressed={state === "copied"}>
 					<AnimatePresence mode="wait" initial={false}>
-						{copied ? (
+						{state === "copied" ? (
 							<motion.span
 								key="done"
 								{...swap}
 								className="inline-flex"
 							>
-								<RiCheckLine className="size-[14px] text-green-500" />
+								<RiCheckLine className="size-3.5 text-green-500" />
 							</motion.span>
 						) : (
 							<motion.span
@@ -77,7 +90,7 @@ export function CopyEmail() {
 						)}
 					</AnimatePresence>
 				</KeyCap>
-				to copy my email
+				<span aria-live="polite">{LABEL[state]}</span>
 			</button>
 		</div>
 	);

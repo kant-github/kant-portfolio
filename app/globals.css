@@ -1,19 +1,19 @@
 @import "tailwindcss";
 
-@custom-variant dark (&:where(.dark, .dark *));
-
 :root {
-	--page: #fdfdfc;
-	--ink: #21201c;
-	--mute: #63635e;
-	--line: rgb(0 0 0 / 0.08);
-}
-
-.dark {
 	--page: #0d0d0d;
-	--ink: #e8e8e8;
-	--mute: #8f8f8a;
+	--ink: #ffffff;
+	--mute: #8f8f8f;
 	--line: rgb(255 255 255 / 0.1);
+	--surface: rgb(255 255 255 / 0.04);
+	--surface-dot: rgb(255 255 255 / 0.09);
+	--surface-fade: rgb(13 13 13 / 1);
+	--thread-rest: #4f4f55;
+	--thread-hot: #cfcac2;
+	--pin-ring: rgb(0 0 0 / 0.45);
+	--note-sheen: rgb(255 255 255 / 0.06);
+	--note-cast-near: rgb(0 0 0 / 0.55);
+	--note-cast-far: rgb(0 0 0 / 0.45);
 }
 
 @theme inline {
@@ -21,15 +21,37 @@
 	--color-ink: var(--ink);
 	--color-mute: var(--mute);
 	--color-line: var(--line);
+	--color-surface: var(--surface);
+	--color-card-top: #1f1f1f;
+	--color-card-bottom: #161616;
+	--color-card-inset: #2a2a2a;
 	--font-sans: var(--font-inter);
 	--font-mono: var(--font-geist-mono);
+	--tracking-label: 0.04em;
+	--radius-shot: 10px;
+	--container-showcase: 1180px;
+	--shadow-card:
+		0 2px 6px rgb(0 0 0 / 0.35), 0 12px 28px rgb(0 0 0 / 0.4),
+		0 34px 70px rgb(0 0 0 / 0.5);
+	--shadow-dot:
+		inset 0 1px 1px rgb(255 255 255 / 0.55),
+		inset 0 -1px 1.5px rgb(0 0 0 / 0.4);
+	--shadow-note:
+		inset 0 1px 0.5px var(--note-sheen),
+		0 10px 18px -6px var(--note-cast-near),
+		0 24px 36px -16px var(--note-cast-far);
+	--shadow-key:
+		inset 0 1px 0 rgb(255 255 255 / 0.13),
+		inset 0 0 0 1px rgb(255 255 255 / 0.06),
+		inset 0 -2px 2px rgb(0 0 0 / 0.35), 0 1px 0 rgb(0 0 0 / 0.75),
+		0 2px 5px rgb(0 0 0 / 0.5);
+	--shadow-key-pressed:
+		inset 0 1px 0 rgb(255 255 255 / 0.06),
+		inset 0 0 0 1px rgb(255 255 255 / 0.07),
+		inset 0 2px 3px rgb(0 0 0 / 0.5);
 }
 
 html {
-	color-scheme: light;
-}
-
-html.dark {
 	color-scheme: dark;
 }
 
@@ -37,12 +59,315 @@ body {
 	background-color: var(--page);
 	color: var(--ink);
 	font-family: var(--font-inter), system-ui, sans-serif;
-	font-size: 15px;
+	font-size: 16px;
 	line-height: 24px;
+	letter-spacing: 0.01em;
 	-webkit-font-smoothing: antialiased;
 }
 
 ::selection {
 	background-color: var(--ink);
 	color: var(--page);
+}
+
+@property --lit-spread {
+	syntax: "<percentage>";
+	inherits: false;
+	initial-value: 0%;
+}
+
+.lit-edge {
+	--lit-core: 255 214 170;
+	--lit-warm: 255 149 0;
+	--lit-rim: 0.06;
+	--lit-spread-end: 120%;
+}
+
+.lit-edge::before,
+.lit-edge::after {
+	content: "";
+	position: absolute;
+	inset: 0;
+	border-radius: inherit;
+	padding: 1px;
+	mask:
+		linear-gradient(#fff 0 0) content-box,
+		linear-gradient(#fff 0 0);
+	mask-composite: exclude;
+	pointer-events: none;
+}
+
+.lit-edge::before {
+	background: radial-gradient(
+		140% 140% at 0% 0%,
+		rgb(255 255 255 / var(--lit-rim)) 0%,
+		rgb(255 255 255 / calc(var(--lit-rim) * 0.45)) 42%,
+		rgb(255 255 255 / calc(var(--lit-rim) * 0.12)) 72%,
+		transparent 100%
+	);
+}
+
+.lit-edge::after {
+	background: radial-gradient(
+		var(--lit-spread) var(--lit-spread) at 0% 0%,
+		rgb(var(--lit-core) / 0.55) 0%,
+		rgb(var(--lit-warm) / 0.3) 30%,
+		transparent 100%
+	);
+	opacity: 0;
+	transition:
+		opacity 800ms ease-out var(--lit-delay, 0ms),
+		--lit-spread 1800ms cubic-bezier(0.22, 1, 0.36, 1) var(--lit-delay, 0ms);
+}
+
+.lit-edge.is-lit::after {
+	opacity: var(--lit-intensity, 1);
+	--lit-spread: var(--lit-spread-end);
+}
+
+/* --- Staged reveal -------------------------------------------------------
+ *
+ * A .stage element owns one number, --p (0 to 1). Every .stage-item beneath it
+ * derives its own local progress from --p and its own index --i, so the whole
+ * cascade is plain CSS and the children can stay Server Components.
+ *
+ * --p is driven two ways: ScrollStage writes it per frame from scroll position,
+ * and .overture animates it once on load with @keyframes. Registering it below
+ * is what makes the second one possible.
+ *
+ * Safety: --p rests at 1. ScrollStage server-renders --p:0 inline, so its
+ * subtree is hidden from the very first paint (no visible-then-hidden flash),
+ * and the <noscript> rule and the failsafe below put it back if JS never lands.
+ */
+
+@property --p {
+	syntax: "<number>";
+	inherits: true;
+	initial-value: 1;
+}
+
+@property --i {
+	syntax: "<number>";
+	inherits: false;
+	initial-value: 0;
+}
+
+.stage {
+	/* progress each --i step waits before starting */
+	--stage-step: 0.07;
+	/* progress one item takes to resolve once it starts */
+	--stage-span: 0.5;
+	--stage-rise: 14px;
+
+	/* layout style only — `paint` would clip the Band's full-width bleed */
+	contain: layout style;
+}
+
+/* Long lists need a tighter step or the last item never finishes. */
+.stage-dense {
+	--stage-step: 0.022;
+	--stage-span: 0.45;
+}
+
+.stage-item {
+	--t: clamp(
+		0,
+		calc((var(--p) - var(--i) * var(--stage-step)) / var(--stage-span)),
+		1
+	);
+	/* cubic ease-out, written out because calc() has no pow() */
+	--e: calc(1 - (1 - var(--t)) * (1 - var(--t)) * (1 - var(--t)));
+
+	/* Opacity runs linear and 1.6x ahead of the movement: text becomes
+	 * readable before it stops moving, which is what keeps a fade-up from
+	 * feeling sluggish. */
+	opacity: clamp(0, calc(var(--t) * 1.6), 1);
+	transform: translate3d(0, calc((1 - var(--e)) * var(--stage-rise)), 0);
+}
+
+/* Blur is opt-in and only ever goes on a text leaf. On a wrapper it would
+ * promote the whole subtree into one filtered surface — that is the fastest
+ * way to wreck the frame budget on this page. */
+.stage-blur {
+	--stage-blur: 6px;
+	--tb: clamp(0, calc(var(--t) / 0.6), 1);
+	--eb: calc(1 - (1 - var(--tb)) * (1 - var(--tb)));
+	filter: blur(calc(round(down, (1 - var(--eb)) * var(--stage-blur), 0.5px)));
+}
+
+/* Without round(), the radius changes every frame and each change forces a
+ * fresh rasterization. Quantising to 0.5px caps that at 12 for a whole reveal. */
+@supports not (width: round(down, 1px, 1px)) {
+	.stage-blur {
+		filter: blur(calc((1 - var(--eb)) * var(--stage-blur)));
+	}
+}
+
+/* Narrow screens are the worst case for GPU cost and the least likely to show
+ * the effect at all. */
+@media (max-width: 639px) {
+	.stage-blur {
+		filter: none;
+	}
+}
+
+/* A hairline that draws in from one end. */
+.stage-rule {
+	position: relative;
+}
+
+.stage-rule::after {
+	content: "";
+	position: absolute;
+	right: 0;
+	bottom: 0;
+	left: 0;
+	height: 1px;
+	background: var(--line);
+	transform: scaleX(var(--e, 1));
+	transform-origin: var(--rule-origin, left);
+}
+
+/* Alternating direction reads as an editorial ledger rather than a sweep. */
+.stage-rule:nth-child(even) {
+	--rule-origin: right;
+}
+
+/* Mono labels set themselves one character at a time, with a caret running
+ * ahead of the text. The characters pre-exist at low opacity and resolve in
+ * colour, so the box never changes width and nothing reflows. */
+.stage-label {
+	position: relative;
+	display: inline-block;
+	opacity: 1;
+	transform: none;
+}
+
+.stage-char {
+	--ct: clamp(0, calc((var(--t) - var(--ci) / var(--cn) * 0.7) / 0.3), 1);
+	display: inline-block;
+	color: color-mix(in oklab, var(--ink) calc(var(--ct) * 100%), var(--mute));
+	opacity: calc(0.14 + 0.86 * var(--ct));
+}
+
+.stage-label::after {
+	content: "";
+	position: absolute;
+	top: 0.1em;
+	left: 0;
+	width: 0.55ch;
+	height: 0.95em;
+	background: var(--ink);
+	/* 1ch is the glyph advance; the extra 0.04em is tracking-label, without
+	 * which the caret drifts left of its character across a long word. */
+	transform: translateX(
+		calc(clamp(0, calc(var(--t) / 0.7), 1) * var(--cn) * (1ch + 0.04em))
+	);
+	/* triangular envelope: appears with the first character, gone with the last */
+	opacity: clamp(
+		0,
+		min(calc(var(--t) * 22), calc((0.76 - var(--t)) * 22)),
+		1
+	);
+}
+
+/* Hint the compositor only while a section is actually mid-reveal. Left on
+ * permanently it costs GPU memory and softens text in Safari. */
+.stage.is-live .stage-item {
+	will-change: opacity, transform;
+}
+
+.stage.is-live .stage-blur {
+	will-change: opacity, transform, filter;
+}
+
+/* The document has nothing left to scroll, so the timeline is over. This is
+ * what saves the last section and the footer, whose top edge can never reach
+ * the finish line. !important beats framer's inline --p by design. */
+.stage.is-settled,
+[data-stage="off"] .stage {
+	--p: 1 !important;
+}
+
+/* --- The load overture ---------------------------------------------------
+ * Drives the same --p from a keyframe instead of from scroll, so the header
+ * and intro stage by exactly the same rules with no client component.
+ */
+
+@keyframes stage-overture {
+	from {
+		--p: 0;
+	}
+	to {
+		--p: 1;
+	}
+}
+
+.overture {
+	--stage-step: 0.13;
+	--stage-span: 0.34;
+	--stage-rise: 18px;
+	animation: stage-overture 1900ms linear both;
+}
+
+@keyframes dot-pop {
+	from {
+		opacity: 0;
+		transform: scale(0);
+	}
+	to {
+		opacity: 1;
+		transform: scale(1);
+	}
+}
+
+.dot-pop {
+	animation: dot-pop 420ms cubic-bezier(0.34, 1.56, 0.64, 1) 1000ms both;
+}
+
+@keyframes key-tap {
+	0%,
+	100% {
+		transform: translateY(0);
+	}
+	45% {
+		transform: translateY(1px);
+	}
+}
+
+.key-tap {
+	animation: key-tap 220ms ease-out 1650ms both;
+}
+
+@media (prefers-reduced-motion: reduce) {
+	.lit-edge::after {
+		transition: none;
+		--lit-spread: var(--lit-spread-end);
+	}
+
+	/* Reduced motion means no movement, not no content. */
+	.stage,
+	.overture {
+		--p: 1 !important;
+		animation: none !important;
+	}
+
+	.stage-item,
+	.stage-char,
+	.dot-pop,
+	.key-tap {
+		opacity: 1 !important;
+		transform: none !important;
+		filter: none !important;
+		animation: none !important;
+		will-change: auto !important;
+	}
+
+	.stage-rule::after {
+		transform: none;
+	}
+
+	.stage-label::after {
+		display: none;
+	}
 }

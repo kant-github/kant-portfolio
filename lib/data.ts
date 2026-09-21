@@ -1,29 +1,14 @@
-export type Entry = {
-	meta: string;
-	metaHref?: string;
-	lead?: string;
-	title?: string;
-	badge?: "yc";
-	href?: string;
-	description: string;
-	details?: string[];
-};
-
-export type Section = {
-	id: string;
-	label: string;
-	intro?: string;
-	entries: Entry[];
-};
-
 export const profile = {
 	name: "Rishi Kant",
 	role: "Full Stack Developer",
 	email: "kantrishi7779@gmail.com",
+	established: "2003",
+	location: "Noida, India",
+	latitude: 28.5355,
+	longitude: 77.391,
 	company: "AppX",
 	companyHref: "https://appx.co.in",
-	location: "Noida, India",
-	flag: "🇮🇳",
+	avatar: "/images/Rishi.JPG",
 };
 
 export const socials = {
@@ -32,113 +17,237 @@ export const socials = {
 	x: "https://x.com/khairrishi",
 };
 
-export const sections: Section[] = [
+export type Shot = {
+	src: string;
+	alt: string;
+};
+
+export const showcase: Shot[] = [
+	{ src: "/images/work/matcha.png", alt: "Matcha" },
+	{ src: "/images/work/highgarden.png", alt: "HighGarden" },
+	{ src: "/images/work/winterfell.png", alt: "Winterfell" },
+	{ src: "/images/work/nocturn.png", alt: "Nocturn" },
+];
+
+export type ExperienceItem = {
+	period: string;
+	role: string;
+	org: string;
+	href: string;
+	badge?: "yc";
+	description: string;
+};
+
+export const experience: ExperienceItem[] = [
 	{
-		id: "experience",
-		label: "Experience",
-		intro: "A short overview of where I've worked so far: mostly backend systems built to stay up under load, and the product interfaces sitting on top of them.",
-		entries: [
+		period: "NOV 2025 – NOW",
+		role: "Full stack developer at",
+		org: "AppX",
+		href: "https://appx.co.in",
+		badge: "yc",
+		description:
+			"Building applications and dashboards from the ground up for educators and creators, and the backend behind them, which serves 400 million requests a day with high availability.",
+	},
+	{
+		period: "2025",
+		role: "Open-source contributor at",
+		org: "Twenty",
+		href: "https://github.com/twentyhq/twenty",
+		description:
+			"Fixed UI bugs across the codebase, improving layout and responsiveness, and worked with the community to keep the design consistent across the platform.",
+	},
+];
+
+export type StackItem = {
+	name: string;
+	note: string;
+	logo: string;
+	href: string;
+};
+
+export const stack: StackItem[] = [
+	{
+		name: "TypeScript",
+		note: "Language",
+		logo: "/images/stack/typescript.svg",
+		href: "https://typescriptlang.org",
+	},
+	{
+		name: "Next.js",
+		note: "Framework",
+		logo: "/images/stack/nextjs.svg",
+		href: "https://nextjs.org",
+	},
+	{
+		name: "React",
+		note: "Interfaces",
+		logo: "/images/stack/react.svg",
+		href: "https://react.dev",
+	},
+	{
+		name: "Tailwind CSS",
+		note: "Styling",
+		logo: "/images/stack/tailwindcss.svg",
+		href: "https://tailwindcss.com",
+	},
+	{
+		name: "Node.js",
+		note: "Runtime",
+		logo: "/images/stack/nodejs.svg",
+		href: "https://nodejs.org",
+	},
+	{
+		name: "Socket.IO",
+		note: "Realtime",
+		logo: "/images/stack/socketio.svg",
+		href: "https://socket.io",
+	},
+	{
+		name: "PostgreSQL",
+		note: "Database",
+		logo: "/images/stack/postgresql.svg",
+		href: "https://postgresql.org",
+	},
+	{
+		name: "Redis",
+		note: "Cache & Pub/Sub",
+		logo: "/images/stack/redis.svg",
+		href: "https://redis.io",
+	},
+	{
+		name: "Kafka",
+		note: "Streaming",
+		logo: "/images/stack/kafka.svg",
+		href: "https://kafka.apache.org",
+	},
+	{
+		name: "Docker",
+		note: "Containers",
+		logo: "/images/stack/docker.svg",
+		href: "https://docker.com",
+	},
+	{
+		name: "Kubernetes",
+		note: "Orchestration",
+		logo: "/images/stack/kubernetes.svg",
+		href: "https://kubernetes.io",
+	},
+	{
+		name: "AWS",
+		note: "Infrastructure",
+		logo: "/images/stack/amazonwebservices.svg",
+		href: "https://aws.amazon.com",
+	},
+	{
+		name: "Solana",
+		note: "On-chain",
+		logo: "/images/stack/solana.svg",
+		href: "https://solana.com",
+	},
+	{
+		name: "Ethereum",
+		note: "On-chain",
+		logo: "/images/stack/ethereum.svg",
+		href: "https://ethereum.org",
+	},
+	{
+		name: "Solidity",
+		note: "Smart contracts",
+		logo: "/images/stack/solidity.svg",
+		href: "https://soliditylang.org",
+	},
+	{
+		name: "Hardhat",
+		note: "Contract tooling",
+		logo: "/images/stack/hardhat.svg",
+		href: "https://hardhat.org",
+	},
+	{
+		name: "GitHub",
+		note: "Code & CI",
+		logo: "/images/stack/github.svg",
+		href: "https://github.com",
+	},
+];
+
+export type Post = {
+	slug: string;
+	date: string;
+	title: string;
+	minutes: number;
+};
+
+export const posts: Post[] = [
+	{
+		slug: "scaling-websockets-with-redis",
+		date: "12/09/25",
+		title: "Scaling WebSockets past one server",
+		minutes: 6,
+	},
+	{
+		slug: "400-million-requests",
+		date: "28/08/25",
+		title: "What 400 million requests a day actually looks like",
+		minutes: 8,
+	},
+	{
+		slug: "project-vs-product",
+		date: "14/07/25",
+		title: "Project mindset vs product mindset",
+		minutes: 4,
+	},
+];
+
+export const personal = {
+	blurb: "Away from the terminal I am usually listening to something loud or reading about distributed systems.",
+	photos: {
+		caption: "Some moments from this year",
+		linkLabel: "See more on X",
+		href: socials.x,
+		items: [
 			{
-				meta: "NOV 2025 – NOW",
-				lead: "Full stack developer at",
-				title: "AppX",
-				href: "https://appx.co.in",
-				badge: "yc",
-				description:
-					"Building applications and dashboards from the ground up for educators and creators, and the backend behind them, which serves 400 million requests a day with high availability.",
+				src: "/images/gallery/01.jpg",
+				alt: "With friends on a night out",
 			},
 			{
-				meta: "2025",
-				lead: "Open-source contributor at",
-				title: "Twenty",
-				href: "https://github.com/twentyhq/twenty",
-				description:
-					"Fixed UI bugs across the codebase, improving layout and responsiveness, and worked with the community to keep the design consistent across the platform.",
+				src: "/images/gallery/04.jpg",
+				alt: "An evening walk with a friend",
+			},
+			{
+				src: "/images/gallery/02.jpg",
+				alt: "A late night build session around the table",
+			},
+			{
+				src: "/images/gallery/03.jpg",
+				alt: "An evening walk with a friend",
 			},
 		],
 	},
+};
+
+export const contactLinks = [
 	{
-		id: "projects",
-		label: "Projects",
-		entries: [
-			{
-				meta: "heydarwin.app",
-				metaHref: "https://heydarwin.app",
-				title: "Darwin",
-				href: "https://heydarwin.app",
-				description:
-					"An autonomous engineering platform: teams file issues on a board, an agent picks one up inside a sandboxed VM, writes the fix and opens a pull request for review.",
-				details: [
-					"Five services split the work — API, an LLM router that picks the agent for each issue, a sandbox runner, the web app, and a reconciler — talking over Redis queues. The reconciler is the safety net: a process can die holding a claim, so it sweeps every thirty seconds for stale claims and runs that never reported back.",
-					"Each issue gets its own machine. The runner boots an E2B sandbox, clones the repo with a short-lived GitHub token, and the agent commits, pushes a branch and opens the pull request from inside it.",
-					"An agent reads the repository once on connect and writes a brief — stack, commands, conventions — that every later run starts from, next to a code graph it queries instead of grepping.",
-					"Keyboard-first board: 36 chord shortcuts, a command palette, a searchable shortcut sheet. Kanban, Gantt and inbox views stay in sync live over WebSockets.",
-					"Reviewing means seeing, not reading — every component the change touches is rebuilt on its own page at both commits with identical data, then checked by a headless browser.",
-					"Claude Code, Codex and OpenCode sit behind one interface, pinned and baked into the sandbox image, so a project picks its agent and model per issue.",
-				],
-			},
-			{
-				meta: "winterfell.dev",
-				metaHref: "https://winterfell.dev",
-				title: "Winterfell",
-				href: "https://winterfell.dev",
-				description:
-					"An AI-powered platform for writing, testing and deploying Anchor smart contracts on Solana, straight from the browser. Won 1st place at the Superteam India Hackathon.",
-			},
-			{
-				meta: "nocturn.app",
-				metaHref: "https://nocturn.app",
-				title: "Nocturn",
-				href: "https://nocturn.app",
-				description:
-					"A real-time quiz platform where players compete for on-chain rewards, with rooms synced over WebSockets and Redis Pub/Sub, and an orchestrator service driving question transitions.",
-			},
-		],
+		label: "Email",
+		value: profile.email,
+		href: `mailto:${profile.email}`,
+		icon: "mail" as const,
 	},
 	{
-		id: "skills",
-		label: "Skills",
-		entries: [
-			{
-				meta: "ETHEREUM",
-				description: "Ethereum basics, Solidity, Ethers.js",
-			},
-			{
-				meta: "FRONTEND",
-				description: "ReactJS, NextJS, Recoil, Tailwind CSS",
-			},
-			{
-				meta: "BACKEND",
-				description:
-					"NodeJS, ExpressJS, WebSockets, Redis, Pub/Sub, Kafka",
-			},
-			{
-				meta: "DEVOPS",
-				description:
-					"Docker, Git, AWS (EC2, S3, IAM, CloudFront), CI/CD, GitHub Actions, NginX",
-			},
-			{
-				meta: "TOOLS",
-				description: "Linux, VSCode, GitHub, Postman",
-			},
-		],
+		label: "X.com",
+		value: "@khairrishi",
+		href: socials.x,
+		icon: "x" as const,
 	},
 	{
-		id: "extras",
-		label: "Extras",
-		entries: [
-			{
-				meta: "SUPERTEAM INDIA",
-				title: "1st place, Superteam India Hackathon",
-				description:
-					"Won first prize for Winterfell. The product picked up real users after launch.",
-			},
-			{
-				meta: "SPEAKER",
-				title: "Project vs Product Mindset",
-				description:
-					"Ran a session on the difference between building a project and building a product: intent, user empathy, and thinking past the demo.",
-			},
-		],
+		label: "GitHub",
+		value: "@kant-github",
+		href: socials.github,
+		icon: "github" as const,
+	},
+	{
+		label: "LinkedIn",
+		value: "/in/kant-linked",
+		href: socials.linkedin,
+		icon: "linkedin" as const,
 	},
 ];

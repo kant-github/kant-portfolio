@@ -1,7 +1,7 @@
 import type { Metadata } from "next";
 import { Geist_Mono, Inter } from "next/font/google";
+import { Providers } from "@/components/providers";
 import { profile } from "@/lib/data";
-import { themeScript } from "@/lib/theme-script";
 import "./globals.css";
 
 const inter = Inter({
@@ -28,13 +28,18 @@ export default function RootLayout({ children }: LayoutProps<"/">) {
 	return (
 		<html
 			lang="en"
-			suppressHydrationWarning
 			className={`${inter.variable} ${geistMono.variable} h-full antialiased`}
 		>
 			<head>
-				<script dangerouslySetInnerHTML={{ __html: themeScript }} />
+				{/* Staged sections render hidden and are revealed by JS. If JS never
+				    arrives, put everything back rather than leaving a blank page. */}
+				<noscript>
+					<style>{".stage{--p:1 !important}"}</style>
+				</noscript>
 			</head>
-			<body className="min-h-full">{children}</body>
+			<body className="min-h-full">
+				<Providers>{children}</Providers>
+			</body>
 		</html>
 	);
 }
