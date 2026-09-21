@@ -27,12 +27,12 @@ const SECTIONS: DockItem[] = [
 ];
 
 const BUTTON_CLASS =
-	"group/item relative flex size-9 items-center justify-center rounded-md text-dock-ink transition duration-200 ease-out hover:-translate-y-0.5 hover:bg-dock-hover hover:text-white focus-visible:bg-dock-hover focus-visible:text-white focus-visible:outline-none active:translate-y-0 sm:size-11";
+	"group/item relative flex size-8 items-center justify-center rounded-md text-dock-ink transition duration-200 ease-out hover:-translate-y-0.5 hover:bg-dock-hover hover:text-white focus-visible:bg-dock-hover focus-visible:text-white focus-visible:outline-none active:translate-y-0 sm:size-9";
 
 // The tooltip is the one thing that fades, because it has to appear and
 // disappear. The dock itself is always fully solid.
 const TIP_CLASS =
-	"pointer-events-none invisible absolute -top-11 left-1/2 -translate-x-1/2 translate-y-1 scale-95 rounded-lg bg-dock-tip px-2.5 py-1.5 font-mono text-[10px] leading-none tracking-label whitespace-nowrap text-white uppercase opacity-0 shadow-dock-tip ring-1 ring-dock-tip-edge transition duration-200 ease-out group-hover/item:visible group-hover/item:translate-y-0 group-hover/item:scale-100 group-hover/item:opacity-100 group-focus-visible/item:visible group-focus-visible/item:translate-y-0 group-focus-visible/item:scale-100 group-focus-visible/item:opacity-100";
+	"pointer-events-none invisible absolute -top-9 left-1/2 -translate-x-1/2 translate-y-1 scale-95 rounded-lg bg-dock-tip px-2.5 py-1.5 font-mono text-[10px] leading-none tracking-label whitespace-nowrap text-white uppercase opacity-0 shadow-dock-tip ring-1 ring-dock-tip-edge transition duration-200 ease-out group-hover/item:visible group-hover/item:translate-y-0 group-hover/item:scale-100 group-hover/item:opacity-100 group-focus-visible/item:visible group-focus-visible/item:translate-y-0 group-focus-visible/item:scale-100 group-focus-visible/item:opacity-100";
 
 export function Dock() {
 	return (
@@ -61,7 +61,7 @@ export function Dock() {
 				})}
 
 				<span
-					className="mx-1 h-6 w-px bg-linear-to-b from-dock-divider-top to-dock-divider-bottom"
+					className="mx-0.5 h-5 w-px bg-linear-to-b from-dock-divider-top to-dock-divider-bottom"
 					aria-hidden="true"
 				/>
 
@@ -72,7 +72,7 @@ export function Dock() {
 				>
 					<ScrollRing />
 					<RiArrowUpLine
-						className="size-4 sm:size-4.5"
+						className="size-4 sm:size-3.5"
 						aria-hidden="true"
 					/>
 					<span className={TIP_CLASS}>Back to top</span>
