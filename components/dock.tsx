@@ -39,7 +39,7 @@ export function Dock() {
 		<div className="dock-in pointer-events-none fixed inset-x-0 bottom-[calc(1.5rem+env(safe-area-inset-bottom))] z-50 flex justify-center px-4">
 			<nav
 				aria-label="Sections"
-				className="dock-surface dock-edge pointer-events-auto relative flex items-center gap-0.5 rounded-shot p-1.5 shadow-dock sm:gap-1"
+				className="dock-surface dock-edge pointer-events-auto relative flex items-center gap-0.5 rounded-shot p-1.5 shadow-dock"
 			>
 				{SECTIONS.map((item) => {
 					const Icon = item.icon;
@@ -52,7 +52,7 @@ export function Dock() {
 							className={BUTTON_CLASS}
 						>
 							<Icon
-								className="size-4.5 sm:size-5"
+								className="size-4.5 sm:size-3.5"
 								aria-hidden="true"
 							/>
 							<span className={TIP_CLASS}>{item.name}</span>

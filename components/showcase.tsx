@@ -6,11 +6,14 @@ import { Band } from "@/components/band";
 import { CONTENT_INDEX } from "@/components/section";
 import { showcase } from "@/lib/data";
 
+// Card width is a percentage too (see SCATTER_FRAME), so the whole
+// arrangement scales as one piece and stays centred at every width. With a
+// 31% card, the group runs 7% -> 93%, which leaves equal margins either side.
 const LAYOUT = [
-	{ left: "1%", top: "2%", rotate: -5, z: 10 },
-	{ left: "37%", top: "0%", rotate: 3, z: 20 },
-	{ left: "17%", top: "34%", rotate: -3, z: 40 },
-	{ left: "56%", top: "36%", rotate: 4, z: 30 },
+	{ left: "7%", top: "2%", rotate: -5, z: 10 },
+	{ left: "43%", top: "0%", rotate: 3, z: 20 },
+	{ left: "23%", top: "34%", rotate: -3, z: 40 },
+	{ left: "62%", top: "36%", rotate: 4, z: 30 },
 ];
 
 // Entry is owned by the surrounding ScrollStage. Only hover lives here, so the
@@ -18,7 +21,7 @@ const LAYOUT = [
 const HOVER =
 	"transition duration-300 ease-out hover:z-50 hover:-translate-y-3 hover:rotate-0 hover:scale-104";
 
-const SCATTER_FRAME = `absolute w-44 rounded-xl bg-white p-1 shadow-card rotate-(--tilt) sm:w-64 sm:rounded-lg sm:p-1.5 lg:w-90 ${HOVER}`;
+const SCATTER_FRAME = `absolute w-[31%] rounded-xl bg-white p-1 shadow-card rotate-(--tilt) sm:rounded-lg sm:p-1.5 ${HOVER}`;
 
 const STACK_FRAME = `w-full rounded-xl bg-white p-1 shadow-card ${HOVER}`;
 
