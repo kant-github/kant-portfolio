@@ -38,7 +38,7 @@ const ITEMS: DockItem[] = [
 ];
 
 const BUTTON_CLASS =
-	"group/item relative flex size-11 items-center justify-center rounded-full text-dock-ink transition duration-200 ease-out hover:-translate-y-0.5 hover:bg-dock-hover hover:text-white focus-visible:bg-dock-hover focus-visible:text-white focus-visible:outline-none active:translate-y-0";
+	"group/item relative flex size-11 items-center justify-center rounded-md text-dock-ink transition duration-200 ease-out hover:-translate-y-0.5 hover:bg-dock-hover hover:text-white focus-visible:bg-dock-hover focus-visible:text-white focus-visible:outline-none active:translate-y-0";
 
 // The tooltip is the one thing that fades, because it has to appear and
 // disappear. The dock itself is always fully solid.
@@ -50,7 +50,7 @@ export function Dock() {
 		<div className="dock-in pointer-events-none fixed inset-x-0 bottom-[calc(1.5rem+env(safe-area-inset-bottom))] z-50 flex justify-center px-4">
 			<nav
 				aria-label="Quick links"
-				className="dock-surface dock-edge pointer-events-auto relative flex items-center gap-1 rounded-full p-1.5 shadow-dock"
+				className="dock-surface dock-edge pointer-events-auto relative flex items-center gap-1 rounded-shot p-1.5 shadow-dock"
 			>
 				{ITEMS.map((item) => {
 					const Icon = item.icon;
