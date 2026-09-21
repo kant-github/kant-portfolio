@@ -30,6 +30,8 @@
 	--color-dock-ink: #c9c9cf;
 	--color-dock-divider-top: #56565e;
 	--color-dock-divider-bottom: #232327;
+	--color-dock-track: #3a3a41;
+	--color-dock-progress: #4f8cff;
 	--color-dock-tip: #0a0a0c;
 	--color-dock-tip-edge: #2a2a30;
 	--shadow-dock:
@@ -413,7 +415,7 @@ body {
 }
 
 .dock-in {
-	animation: dock-in 700ms cubic-bezier(0.22, 1, 0.36, 1) 1700ms both;
+	animation: dock-in 620ms cubic-bezier(0.22, 1, 0.36, 1) 1000ms both;
 }
 
 @media (prefers-reduced-motion: reduce) {

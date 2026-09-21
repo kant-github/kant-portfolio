@@ -20,6 +20,8 @@ import { STAGE_OFFSET, STAGE_SPRING } from "@/lib/motion";
 type ScrollStageProps = {
 	children: ReactNode;
 	className?: string;
+	/** Anchor target for the dock's section links. */
+	id?: string;
 	/**
 	 * Hold progress at 0 for this long after mount. Sections already on screen
 	 * at load would otherwise arrive half-revealed next to the overture.
@@ -37,6 +39,7 @@ type ScrollStageProps = {
 export function ScrollStage({
 	children,
 	className,
+	id,
 	holdMs = 0,
 	latchAtBottom = false,
 }: ScrollStageProps) {
@@ -147,13 +150,18 @@ export function ScrollStage({
 	}, [latchAtBottom]);
 
 	if (prefersReducedMotion) {
-		return <div className={`stage ${className ?? ""}`}>{children}</div>;
+		return (
+			<div id={id} className={`stage ${className ?? ""}`}>
+				{children}
+			</div>
+		);
 	}
 
 	return (
 		<motion.div
+			id={id}
 			ref={ref}
-			className={`stage ${className ?? ""}`}
+			className={`stage scroll-mt-10 ${className ?? ""}`}
 			style={{ "--p": smooth } as CSSProperties}
 		>
 			{children}

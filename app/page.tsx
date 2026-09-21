@@ -22,25 +22,25 @@ export default function Home() {
 					<Header />
 					<Intro />
 				</div>
-				<ScrollStage holdMs={1500}>
+				<ScrollStage id="work" holdMs={1500}>
 					<Work />
 				</ScrollStage>
-				<ScrollStage holdMs={1500}>
+				<ScrollStage id="experience" holdMs={1500}>
 					<Experience />
 				</ScrollStage>
-				<ScrollStage>
+				<ScrollStage id="testimonials">
 					<Testimonials />
 				</ScrollStage>
-				<ScrollStage>
+				<ScrollStage id="stack">
 					<Stack />
 				</ScrollStage>
-				<ScrollStage>
+				<ScrollStage id="writing">
 					<Writing />
 				</ScrollStage>
-				<ScrollStage>
+				<ScrollStage id="personal">
 					<Personal />
 				</ScrollStage>
-				<ScrollStage latchAtBottom>
+				<ScrollStage id="contact" latchAtBottom>
 					<Contact />
 				</ScrollStage>
 
