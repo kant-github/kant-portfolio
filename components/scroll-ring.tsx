@@ -82,12 +82,9 @@ export function ScrollRing() {
 				pathLength={1}
 				strokeDasharray="1 1"
 				transform={`rotate(-90 ${SIZE / 2} ${SIZE / 2})`}
-				// A tight glow on a 30px arc — enough to read as lit, cheap
-				// enough that it costs nothing at this size.
-				style={{
-					strokeDashoffset: offset,
-					filter: "drop-shadow(0 0 4px rgb(59 130 246 / 0.85))",
-				}}
+				// No drop-shadow here: the svg clips at its square bounds, so a
+				// glow gets cut off and reads as a blue square behind the ring.
+				style={{ strokeDashoffset: offset }}
 			/>
 		</svg>
 	);
