@@ -28,7 +28,12 @@ export function Personal() {
 					<span className="font-medium text-ink">{profile.name}</span>
 					, an engineer at {profile.company} in {profile.location},
 					building backend systems that hold up at scale and the
-					interfaces that sit on top of them. {personal.blurb}
+					interfaces that sit on top of them.
+					{/* the personal half starts its own line: what I do, then
+					    what I do when I am not doing it */}
+					<br />
+					<br />
+					{personal.blurb}
 				</>
 			}
 		>
