@@ -5,7 +5,7 @@ export function TwentyBadge() {
 		<LogoMark>
 			<svg
 				viewBox="0 0 136 136"
-				className="size-3 shrink-0"
+				className="size-[13px] shrink-0"
 				aria-label="Twenty"
 				role="img"
 			>

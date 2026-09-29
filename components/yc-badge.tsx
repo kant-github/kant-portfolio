@@ -5,7 +5,7 @@ export function YcBadge() {
 		<LogoMark>
 			<svg
 				viewBox="0 0 16 16"
-				className="size-3 shrink-0"
+				className="size-[13px] shrink-0"
 				aria-label="Y Combinator"
 				role="img"
 			>
