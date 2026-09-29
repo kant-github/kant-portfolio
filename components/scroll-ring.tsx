@@ -9,8 +9,11 @@ import {
 } from "framer-motion";
 import { useEffect } from "react";
 
-const SIZE = 36;
-const RADIUS = 13.5;
+const SIZE = 32;
+const RADIUS = 12;
+/** The unread part of the ring sits back; the progress arc carries the weight. */
+const TRACK_WIDTH = 1.5;
+const PROGRESS_WIDTH = 2.5;
 
 export function ScrollRing() {
 	const prefersReducedMotion = useReducedMotion();
@@ -58,7 +61,7 @@ export function ScrollRing() {
 				r={RADIUS}
 				fill="none"
 				stroke="var(--color-dock-track)"
-				strokeWidth={2}
+				strokeWidth={TRACK_WIDTH}
 			/>
 			<motion.circle
 				cx={SIZE / 2}
@@ -66,7 +69,7 @@ export function ScrollRing() {
 				r={RADIUS}
 				fill="none"
 				stroke="var(--color-dock-progress)"
-				strokeWidth={2}
+				strokeWidth={PROGRESS_WIDTH}
 				strokeLinecap="round"
 				pathLength={1}
 				strokeDasharray="1 1"

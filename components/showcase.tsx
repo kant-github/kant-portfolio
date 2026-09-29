@@ -60,8 +60,6 @@ const PUSH = 20;
  */
 const SMALL = 0.7;
 const WIDE = "(min-width: 640px)";
-/** A mouse or trackpad. A phone answers no. */
-const HOVER = "(hover: hover)";
 
 function watch(query: string) {
 	return (onChange: () => void) => {
@@ -77,8 +75,6 @@ function reads(query: string) {
 
 const subscribeWide = watch(WIDE);
 const readWide = reads(WIDE);
-const subscribeHover = watch(HOVER);
-const readHover = reads(HOVER);
 
 function getServerSnapshot() {
 	return true;
@@ -170,26 +166,21 @@ export function Showcase({
 		readWide,
 		getServerSnapshot,
 	);
-	const canHover = useSyncExternalStore(
-		subscribeHover,
-		readHover,
-		getServerSnapshot,
-	);
 	const k = isWide ? 1 : SMALL;
 
 	const [open, setOpen] = useState<number | null>(null);
 	const [focused, setFocused] = useState<number | null>(null);
 	/**
-	 * Closing puts the deck back exactly as it was.
+	 * Closing puts the deck back to rest.
 	 *
-	 * A phone never fires `pointerleave`, so without this `focused` would stay
-	 * set after the lightbox closed and the deck would be left fanned open
-	 * around a card nobody is touching any more.
+	 * The deck sits behind the backdrop while the lightbox is up, so it never
+	 * sees the pointer leave — without this it stays fanned open around the
+	 * card you opened, on a phone and on a desktop alike.
 	 */
 	const handleClose = useCallback(() => {
 		setOpen(null);
-		if (!canHover) setFocused(null);
-	}, [canHover]);
+		setFocused(null);
+	}, []);
 
 	return (
 		<>

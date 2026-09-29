@@ -76,9 +76,7 @@ export function ShowcaseLightbox({
 }) {
 	const [mounted, setMounted] = useState(false);
 	const panelRef = useRef<HTMLDivElement>(null);
-	const backdropRef = useRef<HTMLButtonElement>(null);
 	const metaRef = useRef<HTMLDivElement>(null);
-	const [closing, setClosing] = useState(false);
 
 	useEffect(() => setMounted(true), []);
 
@@ -108,54 +106,40 @@ export function ShowcaseLightbox({
 	}, [open]);
 
 	/**
-	 * The backdrop and the caption are the only things driven by hand here.
+	 * The caption is the only thing driven by hand here.
 	 *
 	 * The picture is not animated in this file at all. It shares a `layoutId`
 	 * with the deck card, so framer measures both boxes and morphs one into
 	 * the other — animating width and height separately and scale-correcting
-	 * as it goes. That is exactly what the hand-rolled version could not do:
-	 * it had one uniform scale, so it matched the width and left the height
-	 * about 18% out for the whole flight.
+	 * as it goes.
 	 */
 	useEffect(() => {
 		if (index === null) return;
 
-		const backdrop = backdropRef.current;
 		const meta = metaRef.current;
-		if (!backdrop || !meta) return;
+		if (!meta) return;
 
-		const fade = animate(backdrop, { opacity: BACKDROP }, TRAVEL);
 		const caption = animate(meta, META_SHOWN, META_IN);
-
-		return () => {
-			fade.stop();
-			caption.stop();
-		};
+		return () => caption.stop();
 		// Only on open: the arrows swap the picture inside a frame that is
 		// already in place.
 		// eslint-disable-next-line react-hooks/exhaustive-deps
 	}, [open]);
 
 	/**
-	 * Fade the surround away, then unmount — and unmounting is what hands the
-	 * picture back to framer to fly home to whichever card is showing now.
+	 * Closes at once.
+	 *
+	 * Unmounting is what hands the picture back to framer to fly home, so
+	 * anything awaited here is dead time on screen. The previous version
+	 * awaited the backdrop fade first — 440ms of nothing moving, and then the
+	 * picture flew home over a page that had already gone bare.
+	 *
+	 * The backdrop now fades in parallel, through its own AnimatePresence.
 	 */
-	const requestClose = useCallback(async () => {
-		if (closing || index === null) return;
-
-		const backdrop = backdropRef.current;
-		const meta = metaRef.current;
-
-		setClosing(true);
-
-		// started here and deliberately not awaited: the caption is gone long
-		// before the picture has finished flying home
-		if (meta) animate(meta, META_HIDDEN, META_OUT);
-		if (backdrop) await animate(backdrop, { opacity: 0 }, TRAVEL);
-
-		setClosing(false);
+	const requestClose = useCallback(() => {
+		if (index === null) return;
 		onClose();
-	}, [closing, index, onClose]);
+	}, [index, onClose]);
 
 	const step = useCallback(
 		(delta: number) => {
@@ -222,27 +206,44 @@ export function ShowcaseLightbox({
 	const shot = index === null ? null : items[index];
 
 	return createPortal(
-		<AnimatePresence>
-			{shot && index !== null ? (
-				<div
-					key="lightbox"
-					className="fixed inset-0 z-[60] flex items-center justify-center p-4 sm:p-8"
-				>
-					<button
-						ref={backdropRef}
+		<>
+			{/* Its own presence, on its own layer. The panel below unmounts the
+			    instant you close so the picture can start flying home, and the
+			    backdrop stays behind to fade out alongside it. */}
+			<AnimatePresence>
+				{open ? (
+					<motion.button
+						key="backdrop"
 						type="button"
 						aria-label="Close"
 						tabIndex={-1}
-						onClick={() => void requestClose()}
-						className="absolute inset-0 cursor-default bg-page/70 opacity-0 backdrop-blur-xl"
+						initial={{ opacity: 0 }}
+						animate={{ opacity: BACKDROP }}
+						exit={{ opacity: 0 }}
+						transition={TRAVEL}
+						onClick={requestClose}
+						// Off the moment it starts leaving. It is still on
+						// screen while it fades, and a full-screen button at
+						// zero opacity would otherwise swallow every click on
+						// the page behind it.
+						style={{ pointerEvents: open ? "auto" : "none" }}
+						className="fixed inset-0 z-[59] cursor-default bg-page/70 backdrop-blur-xl"
 					/>
+				) : null}
+			</AnimatePresence>
 
+			{shot && index !== null ? (
+				<div
+					key="lightbox"
+					// lets a click outside the panel reach the backdrop below
+					className="pointer-events-none fixed inset-0 z-[60] flex items-center justify-center p-4 sm:p-8"
+				>
 					<div
 						ref={panelRef}
 						role="dialog"
 						aria-modal="true"
 						aria-labelledby="showcase-title"
-						className="relative flex w-full max-w-lg flex-col gap-4"
+						className="pointer-events-auto relative flex w-full max-w-lg flex-col gap-4"
 					>
 						<motion.div
 							// the same id the deck card carries: framer treats
@@ -262,21 +263,30 @@ export function ShowcaseLightbox({
 								aspectRatio: `${shot.width} / ${shot.height}`,
 							}}
 						>
-							<Image
-								key={shot.src}
-								src={shot.src}
-								alt={shot.alt}
-								width={shot.width}
-								height={shot.height}
-								sizes="(min-width: 512px) 512px, 92vw"
-								priority
-								unoptimized
-								// object-cover at the shot's own ratio crops
-								// nothing here, and crops to 16:10 back in the
-								// deck — so the crop simply opens out as the
-								// frame changes shape
-								className="size-full rounded-[6.5px] object-cover object-top"
-							/>
+							{/* Scale-corrected. The frame is scaled non-uniformly
+							    while it morphs, and a plain child inherits that
+							    — the picture was rendering at ratio 1.57 when
+							    its true ratio is 1.33, an 18% squash that ran
+							    for the whole flight. `layout` makes framer undo
+							    the parent's scale each frame, so the picture
+							    keeps its shape and the frame crops it instead. */}
+							<motion.div layout className="size-full">
+								<Image
+									key={shot.src}
+									src={shot.src}
+									alt={shot.alt}
+									width={shot.width}
+									height={shot.height}
+									sizes="(min-width: 512px) 512px, 92vw"
+									priority
+									unoptimized
+									// object-cover at the shot's own ratio crops
+									// nothing here, and crops to 16:10 back in the
+									// deck — so the crop simply opens out as the
+									// frame changes shape
+									className="size-full object-cover object-top"
+								/>
+							</motion.div>
 						</motion.div>
 
 						<div
@@ -324,7 +334,7 @@ export function ShowcaseLightbox({
 								<button
 									type="button"
 									aria-label="Close"
-									onClick={() => void requestClose()}
+									onClick={requestClose}
 									className="flex size-9 items-center justify-center rounded-full text-mute ring-1 ring-line transition hover:bg-surface hover:text-ink"
 								>
 									<RiCloseLine className="size-4.5" />
@@ -334,7 +344,7 @@ export function ShowcaseLightbox({
 					</div>
 				</div>
 			) : null}
-		</AnimatePresence>,
+		</>,
 		document.body,
 	);
 }
