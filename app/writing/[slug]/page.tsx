@@ -65,10 +65,10 @@ export default async function WritingPost({
 						<p className={LABEL_CLASS}>
 							{shortDate(meta.date)} — {minutes} min read
 						</p>
-						<h1 className="text-[clamp(2rem,6vw,2.75rem)] leading-[1.12] font-semibold tracking-[-0.02em] text-ink">
+						<h1 className="text-[clamp(1.75rem,5vw,2.25rem)] leading-[1.15] font-semibold tracking-[-0.02em] text-ink">
 							{meta.title}
 						</h1>
-						<p className="text-[1.0625rem] leading-relaxed text-mute">
+						<p className="text-base leading-relaxed text-mute">
 							{meta.summary}
 						</p>
 					</header>

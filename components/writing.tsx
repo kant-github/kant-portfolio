@@ -6,11 +6,11 @@ import { RiArrowDownSLine } from "react-icons/ri";
 import { CONTENT_INDEX, Section } from "@/components/section";
 import { postList } from "@/lib/writing";
 
-const ROW = 44;
+const ROW = 40;
 const RAIL = 12;
 const END_X = 26;
 const BEND = 7;
-const TRUNK_TOP = 32;
+const TRUNK_TOP = 30;
 const DASH = "3.5 3";
 
 function rowCentre(index: number) {
@@ -80,7 +80,7 @@ export function Writing() {
 				<Connectors count={postList.length} lit={lit} />
 
 				<div
-					className="stage-item flex h-11 items-center gap-2.5"
+					className="stage-item flex h-10 items-center gap-2.5"
 					style={{ "--i": CONTENT_INDEX } as CSSProperties}
 				>
 					<span className="ml-0.5 flex size-5 shrink-0 items-center justify-center rounded-[5px] bg-tree-accent text-white">
@@ -89,7 +89,7 @@ export function Writing() {
 							aria-hidden="true"
 						/>
 					</span>
-					<span className="text-ink">
+					<span className="font-medium text-ink">
 						Notes on what I am building and learning.
 					</span>
 				</div>

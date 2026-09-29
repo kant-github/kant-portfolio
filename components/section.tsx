@@ -2,7 +2,7 @@ import type { CSSProperties, ReactNode } from "react";
 import { SplitLabel } from "@/components/split-label";
 
 export const LABEL_CLASS =
-	"font-mono text-xs tracking-label text-mute uppercase";
+	"font-mono text-[11px] tracking-label text-mute uppercase";
 
 export const CONTENT_INDEX = 2;
 

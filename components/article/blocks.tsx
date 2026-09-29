@@ -184,7 +184,7 @@ export function Blocks({ items }: { items: Block[] }) {
 					case "quote":
 						return (
 							<Band key={key} className="my-12">
-								<blockquote className="mx-auto max-w-160 px-4 text-center text-[1.35rem] leading-[1.45] text-ink">
+								<blockquote className="mx-auto max-w-160 px-4 text-center text-[1.1875rem] leading-[1.5] text-ink">
 									<Inline text={block.text} />
 								</blockquote>
 							</Band>
@@ -196,7 +196,7 @@ export function Blocks({ items }: { items: Block[] }) {
 								key={key}
 								className="my-8 flex flex-col items-center gap-1 rounded-md border border-line bg-surface py-6"
 							>
-								<p className="font-mono text-3xl text-ink">
+								<p className="font-mono text-2xl text-ink">
 									{block.value}
 								</p>
 								<p className={LABEL_CLASS}>{block.label}</p>

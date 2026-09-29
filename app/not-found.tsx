@@ -6,7 +6,7 @@ export default function NotFound() {
 		<div className="flex min-h-screen w-full items-center justify-center px-4">
 			<main className="flex max-w-160 flex-col items-start gap-4">
 				<p className={LABEL_CLASS}>404</p>
-				<h1 className="text-[clamp(1.75rem,5vw,2.25rem)] leading-tight font-semibold text-ink">
+				<h1 className="text-[clamp(1.5rem,4vw,1.875rem)] leading-tight font-semibold text-ink">
 					This page does not exist.
 				</h1>
 				<p className="text-mute">

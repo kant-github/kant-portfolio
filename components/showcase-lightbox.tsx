@@ -290,11 +290,11 @@ export function ShowcaseLightbox({
 							<div className="flex min-w-0 flex-col gap-1">
 								<h3
 									id="showcase-title"
-									className="text-[17px] text-ink"
+									className="text-[15px] font-medium text-ink"
 								>
 									{shot.name}
 								</h3>
-								<p className="text-sm text-mute">
+								<p className="text-[13px] leading-relaxed text-mute">
 									{shot.blurb}
 								</p>
 							</div>

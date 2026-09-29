@@ -19,11 +19,11 @@ export function Experience() {
 							{ "--i": CONTENT_INDEX + index } as CSSProperties
 						}
 					>
-						<p className="font-mono text-xs tracking-label text-mute uppercase">
+						<p className="font-mono text-[11px] tracking-label text-mute uppercase">
 							{item.period}
 						</p>
 
-						<p className="text-ink">
+						<p className="text-[15px] font-medium text-ink">
 							{item.role}{" "}
 							<a
 								href={item.href}

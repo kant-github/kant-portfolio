@@ -17,7 +17,7 @@ export function Toc({ blocks }: { blocks: Block[] }) {
 					<li key={heading.id}>
 						<a
 							href={`#${heading.id}`}
-							className="flex items-baseline gap-3 border-b border-line py-2 text-[15px] text-mute no-underline transition-opacity last:border-b-0 hover:opacity-70"
+							className="flex items-baseline gap-3 border-b border-line py-2 text-sm text-mute no-underline transition-opacity last:border-b-0 hover:opacity-70"
 						>
 							<span className="w-5 shrink-0 font-mono text-[11px] text-line">
 								{String(index + 1).padStart(2, "0")}

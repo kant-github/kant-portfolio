@@ -1,21 +1,146 @@
 @import "tailwindcss";
 
+@custom-variant dark (&:where(.dark, .dark *));
+
+/* Light is the base. `.dark` on <html> (set by next-themes) swaps every token,
+ * so components only ever name a token, never a raw colour. */
 :root {
+	--page: #fafafa;
+	--ink: #111111;
+	--mute: #6b6b6b;
+	--prose: #363636;
+	--line: rgb(0 0 0 / 0.09);
+	--surface: rgb(0 0 0 / 0.03);
+	--dots: rgb(0 0 0 / 0.09);
+
+	/* edge highlights: rgb channels and how strong they are */
+	--rim: 0 0 0;
+	--rim-k: 0.3;
+
+	--thread-rest: #cfcfd4;
+	--thread-hot: #57524b;
+	--pin-ring: rgb(0 0 0 / 0.1);
+	--note-sheen: rgb(255 255 255 / 0.9);
+	--note-cast-near: rgb(0 0 0 / 0.1);
+	--note-cast-far: rgb(0 0 0 / 0.08);
+
+	--tree-line: #d4d4d8;
+	--tree-row: #efeff1;
+
+	--card-top: #ffffff;
+	--card-bottom: #f6f6f6;
+	--card-inset: #ececec;
+
+	--shot-frame: #ffffff;
+	--shot-hairline: rgb(0 0 0 / 0.08);
+	--shot-drop: rgb(0 0 0 / 0.22);
+
+	--dock-top: #ffffff;
+	--dock-mid: #fbfbfb;
+	--dock-bottom: #f3f3f3;
+	--dock-hover: #ececec;
+	--dock-ink: #5c5c5c;
+	--dock-ink-hot: #111111;
+	--dock-divider-top: #d2d2d2;
+	--dock-divider-bottom: #eeeeee;
+	--dock-track: #dddddd;
+	--dock-tip: #ffffff;
+	--dock-tip-ink: #111111;
+	--dock-tip-edge: rgb(0 0 0 / 0.08);
+	--dock-shadow:
+		0 0 0 1px rgb(0 0 0 / 0.05), 0 2px 6px rgb(0 0 0 / 0.06),
+		0 14px 36px -10px rgb(0 0 0 / 0.16), 0 30px 60px -20px rgb(0 0 0 / 0.12);
+	--dock-tip-shadow:
+		0 6px 18px -6px rgb(0 0 0 / 0.18), 0 2px 5px rgb(0 0 0 / 0.08);
+
+	--card-shadow:
+		0 1px 3px rgb(0 0 0 / 0.08), 0 10px 24px rgb(0 0 0 / 0.08),
+		0 28px 60px rgb(0 0 0 / 0.1);
+
+	--key-top: #ffffff;
+	--key-bottom: #efefef;
+	--key-shadow:
+		inset 0 1px 0 rgb(255 255 255 / 1), inset 0 0 0 1px rgb(0 0 0 / 0.09),
+		inset 0 -2px 2px rgb(0 0 0 / 0.06), 0 1px 0 rgb(0 0 0 / 0.14),
+		0 2px 5px rgb(0 0 0 / 0.08);
+	--key-shadow-pressed:
+		inset 0 0 0 1px rgb(0 0 0 / 0.1), inset 0 2px 3px rgb(0 0 0 / 0.12);
+
+	--diagram-line: rgb(0 0 0 / 0.16);
+	--diagram-surface: rgb(0 0 0 / 0.03);
+
+	/* white-only logos are flipped to black; hue-rotate keeps any colour */
+	--mono-filter: invert(1) hue-rotate(180deg);
+}
+
+.dark {
 	--page: #0d0d0d;
 	--ink: #ffffff;
 	--mute: #8f8f8f;
-
 	--prose: #c8c8c8;
 	--line: rgb(255 255 255 / 0.1);
 	--surface: rgb(255 255 255 / 0.04);
-	--surface-dot: rgb(255 255 255 / 0.09);
-	--surface-fade: rgb(13 13 13 / 1);
+	--dots: rgb(255 255 255 / 0.1);
+
+	--rim: 255 255 255;
+	--rim-k: 1;
+
 	--thread-rest: #4f4f55;
 	--thread-hot: #cfcac2;
 	--pin-ring: rgb(0 0 0 / 0.45);
 	--note-sheen: rgb(255 255 255 / 0.06);
 	--note-cast-near: rgb(0 0 0 / 0.55);
 	--note-cast-far: rgb(0 0 0 / 0.45);
+
+	--tree-line: #3a3a3a;
+	--tree-row: #16161a;
+
+	--card-top: #1f1f1f;
+	--card-bottom: #161616;
+	--card-inset: #2a2a2a;
+
+	--shot-frame: #262626;
+	--shot-hairline: rgb(255 255 255 / 0.08);
+	--shot-drop: rgb(0 0 0 / 0.9);
+
+	--dock-top: #1e1e1e;
+	--dock-mid: #191919;
+	--dock-bottom: #131313;
+	--dock-hover: #242424;
+	--dock-ink: #c4c4c4;
+	--dock-ink-hot: #ffffff;
+	--dock-divider-top: #4a4a4a;
+	--dock-divider-bottom: #1c1c1c;
+	--dock-track: #303030;
+	--dock-tip: #0a0a0c;
+	--dock-tip-ink: #ffffff;
+	--dock-tip-edge: #2a2a30;
+	--dock-shadow:
+		0 2px 6px rgb(0 0 0 / 0.5), 0 14px 36px -10px rgb(0 0 0 / 0.75),
+		0 30px 60px -20px rgb(0 0 0 / 0.65);
+	--dock-tip-shadow:
+		0 6px 18px -6px rgb(0 0 0 / 0.7), 0 2px 5px rgb(0 0 0 / 0.5);
+
+	--card-shadow:
+		0 2px 6px rgb(0 0 0 / 0.35), 0 12px 28px rgb(0 0 0 / 0.4),
+		0 34px 70px rgb(0 0 0 / 0.5);
+
+	--key-top: #404040;
+	--key-bottom: #262626;
+	--key-shadow:
+		inset 0 1px 0 rgb(255 255 255 / 0.13),
+		inset 0 0 0 1px rgb(255 255 255 / 0.06),
+		inset 0 -2px 2px rgb(0 0 0 / 0.35), 0 1px 0 rgb(0 0 0 / 0.75),
+		0 2px 5px rgb(0 0 0 / 0.5);
+	--key-shadow-pressed:
+		inset 0 1px 0 rgb(255 255 255 / 0.06),
+		inset 0 0 0 1px rgb(255 255 255 / 0.07),
+		inset 0 2px 3px rgb(0 0 0 / 0.5);
+
+	--diagram-line: rgb(255 255 255 / 0.14);
+	--diagram-surface: rgb(255 255 255 / 0.045);
+
+	--mono-filter: none;
 }
 
 @theme inline {
@@ -25,38 +150,37 @@
 	--color-prose: var(--prose);
 
 	--color-tree-accent: #3b82f6;
-	--color-tree-line: #3a3a3a;
-	--color-tree-row: #16161a;
+	--color-tree-line: var(--tree-line);
+	--color-tree-row: var(--tree-row);
 	--color-line: var(--line);
 	--color-surface: var(--surface);
-	--color-card-top: #1f1f1f;
-	--color-card-bottom: #161616;
-	--color-card-inset: #2a2a2a;
+	--color-card-top: var(--card-top);
+	--color-card-bottom: var(--card-bottom);
+	--color-card-inset: var(--card-inset);
+	--color-key-top: var(--key-top);
+	--color-key-bottom: var(--key-bottom);
 
-	--color-shot-frame: #262626;
+	--color-shot-frame: var(--shot-frame);
 
-	--color-dock-hover: #242424;
-	--color-dock-ink: #c4c4c4;
-	--color-dock-divider-top: #4a4a4a;
-	--color-dock-divider-bottom: #1c1c1c;
-	--color-dock-track: #303030;
+	--color-dock-hover: var(--dock-hover);
+	--color-dock-ink: var(--dock-ink);
+	--color-dock-ink-hot: var(--dock-ink-hot);
+	--color-dock-divider-top: var(--dock-divider-top);
+	--color-dock-divider-bottom: var(--dock-divider-bottom);
+	--color-dock-track: var(--dock-track);
 
 	--color-dock-progress: var(--color-tree-accent);
-	--color-dock-tip: #0a0a0c;
-	--color-dock-tip-edge: #2a2a30;
-	--shadow-dock:
-		0 2px 6px rgb(0 0 0 / 0.5), 0 14px 36px -10px rgb(0 0 0 / 0.75),
-		0 30px 60px -20px rgb(0 0 0 / 0.65);
-	--shadow-dock-tip:
-		0 6px 18px -6px rgb(0 0 0 / 0.7), 0 2px 5px rgb(0 0 0 / 0.5);
+	--color-dock-tip: var(--dock-tip);
+	--color-dock-tip-ink: var(--dock-tip-ink);
+	--color-dock-tip-edge: var(--dock-tip-edge);
+	--shadow-dock: var(--dock-shadow);
+	--shadow-dock-tip: var(--dock-tip-shadow);
 	--font-sans: var(--font-inter);
 	--font-mono: var(--font-geist-mono);
 	--tracking-label: 0.04em;
 	--radius-shot: 10px;
 	--container-showcase: 1180px;
-	--shadow-card:
-		0 2px 6px rgb(0 0 0 / 0.35), 0 12px 28px rgb(0 0 0 / 0.4),
-		0 34px 70px rgb(0 0 0 / 0.5);
+	--shadow-card: var(--card-shadow);
 	--shadow-dot:
 		inset 0 1px 1px rgb(255 255 255 / 0.55),
 		inset 0 -1px 1.5px rgb(0 0 0 / 0.4);
@@ -64,19 +188,12 @@
 		inset 0 1px 0.5px var(--note-sheen),
 		0 10px 18px -6px var(--note-cast-near),
 		0 24px 36px -16px var(--note-cast-far);
-	--shadow-key:
-		inset 0 1px 0 rgb(255 255 255 / 0.13),
-		inset 0 0 0 1px rgb(255 255 255 / 0.06),
-		inset 0 -2px 2px rgb(0 0 0 / 0.35), 0 1px 0 rgb(0 0 0 / 0.75),
-		0 2px 5px rgb(0 0 0 / 0.5);
-	--shadow-key-pressed:
-		inset 0 1px 0 rgb(255 255 255 / 0.06),
-		inset 0 0 0 1px rgb(255 255 255 / 0.07),
-		inset 0 2px 3px rgb(0 0 0 / 0.5);
+	--shadow-key: var(--key-shadow);
+	--shadow-key-pressed: var(--key-shadow-pressed);
 }
 
 html {
-	color-scheme: dark;
+	color-scheme: light;
 	scroll-behavior: smooth;
 }
 
@@ -84,10 +201,18 @@ body {
 	background-color: var(--page);
 	color: var(--ink);
 	font-family: var(--font-inter), system-ui, sans-serif;
-	font-size: 16px;
-	line-height: 24px;
+	font-size: 14px;
+	line-height: 22px;
 	letter-spacing: 0.01em;
 	-webkit-font-smoothing: antialiased;
+}
+
+.dark {
+	color-scheme: dark;
+}
+
+.mono-icon {
+	filter: var(--mono-filter);
 }
 
 ::selection {
@@ -125,9 +250,9 @@ body {
 .lit-edge::before {
 	background: radial-gradient(
 		140% 140% at 0% 0%,
-		rgb(255 255 255 / var(--lit-rim)) 0%,
-		rgb(255 255 255 / calc(var(--lit-rim) * 0.45)) 42%,
-		rgb(255 255 255 / calc(var(--lit-rim) * 0.12)) 72%,
+		rgb(var(--rim) / calc(var(--lit-rim) * var(--rim-k))) 0%,
+		rgb(var(--rim) / calc(var(--lit-rim) * var(--rim-k) * 0.45)) 42%,
+		rgb(var(--rim) / calc(var(--lit-rim) * var(--rim-k) * 0.12)) 72%,
 		transparent 100%
 	);
 }
@@ -323,9 +448,9 @@ body {
 .dock-surface {
 	background-image: radial-gradient(
 		130% 150% at 8% -12%,
-		#1e1e1e 0%,
-		#191919 45%,
-		#131313 100%
+		var(--dock-top) 0%,
+		var(--dock-mid) 45%,
+		var(--dock-bottom) 100%
 	);
 }
 
@@ -337,11 +462,11 @@ body {
 	border-radius: inherit;
 	background-image: radial-gradient(
 		150% 180% at -2% -20%,
-		rgb(255 255 255 / 0.4) 0%,
-		rgb(255 255 255 / 0.26) 14%,
-		rgb(255 255 255 / 0.15) 27%,
-		rgb(255 255 255 / 0.07) 40%,
-		rgb(255 255 255 / 0.025) 52%,
+		rgb(var(--rim) / calc(0.4 * var(--rim-k))) 0%,
+		rgb(var(--rim) / calc(0.26 * var(--rim-k))) 14%,
+		rgb(var(--rim) / calc(0.15 * var(--rim-k))) 27%,
+		rgb(var(--rim) / calc(0.07 * var(--rim-k))) 40%,
+		rgb(var(--rim) / calc(0.025 * var(--rim-k))) 52%,
 		transparent 66%
 	);
 	mask:
@@ -374,7 +499,7 @@ body {
 
 .article {
 	color: var(--prose);
-	font-size: 17px;
+	font-size: 16px;
 	line-height: 1.7;
 	letter-spacing: 0;
 }
@@ -396,7 +521,7 @@ body {
 
 .article h2 {
 	margin: 2.75em 0 0.75em;
-	font-size: 1.5rem;
+	font-size: 1.3125rem;
 	font-weight: 550;
 	line-height: 1.25;
 	color: var(--ink);
@@ -416,7 +541,7 @@ body {
 .article a {
 	color: var(--ink);
 	text-decoration: underline;
-	text-decoration-color: rgb(255 255 255 / 0.35);
+	text-decoration-color: color-mix(in oklab, var(--ink) 35%, transparent);
 	text-underline-offset: 0.2em;
 	transition: text-decoration-color 0.2s ease-out;
 }
@@ -464,7 +589,7 @@ body {
 }
 
 .article li::marker {
-	color: rgb(255 255 255 / 0.3);
+	color: color-mix(in oklab, var(--ink) 30%, transparent);
 }
 
 .article hr {
@@ -530,7 +655,7 @@ body {
 
 .article .code-lang {
 	margin-left: auto;
-	color: rgb(255 255 255 / 0.28);
+	color: color-mix(in oklab, var(--ink) 28%, transparent);
 }
 
 .article .code-body pre {
@@ -543,15 +668,26 @@ body {
 	tab-size: 2;
 }
 
+/* Shiki writes both palettes as variables; the theme picks one. */
+.article .code-body .shiki,
+.article .code-body .shiki span {
+	color: var(--shiki-light);
+}
+
+.dark .article .code-body .shiki,
+.dark .article .code-body .shiki span {
+	color: var(--shiki-dark);
+}
+
 .article .code-body code {
 	display: block;
-	font-size: 13.5px;
+	font-size: 13px;
 	line-height: 1.7;
 }
 
 @media (max-width: 640px) {
 	.article .code-body code {
-		font-size: 12.5px;
+		font-size: 12px;
 	}
 }
 
@@ -579,7 +715,7 @@ body {
 }
 
 .tree-row {
-	height: 44px;
+	height: 40px;
 }
 
 .shot-frame {
@@ -590,8 +726,8 @@ body {
 	/* a hairline all the way round so the frame still has an edge on its dark
 	 * side, then the drop that lifts it off the page */
 	box-shadow:
-		0 0 0 0.5px rgb(255 255 255 / 0.08),
-		0 16px 40px -8px rgb(0 0 0 / 0.9);
+		0 0 0 0.5px var(--shot-hairline),
+		0 16px 40px -8px var(--shot-drop);
 }
 
 .shot-frame::before {
@@ -602,10 +738,10 @@ body {
 	border-radius: inherit;
 	background-image: radial-gradient(
 		150% 180% at -4% -18%,
-		rgb(255 255 255 / 0.34) 0%,
-		rgb(255 255 255 / 0.2) 16%,
-		rgb(255 255 255 / 0.1) 30%,
-		rgb(255 255 255 / 0.04) 44%,
+		rgb(var(--rim) / calc(0.34 * var(--rim-k))) 0%,
+		rgb(var(--rim) / calc(0.2 * var(--rim-k))) 16%,
+		rgb(var(--rim) / calc(0.1 * var(--rim-k))) 30%,
+		rgb(var(--rim) / calc(0.04 * var(--rim-k))) 44%,
 		transparent 64%
 	);
 	mask:
@@ -653,6 +789,18 @@ body {
 .deck-card:focus-visible {
 	outline: 1px solid var(--ink);
 	outline-offset: 4px;
+}
+
+/* The theme switch: the new theme grows out of the dock button as a circle
+ * (see ThemeToggle). The default cross-fade is turned off so only that runs. */
+::view-transition-old(root),
+::view-transition-new(root) {
+	animation: none;
+	mix-blend-mode: normal;
+}
+
+::view-transition-new(root) {
+	z-index: 1;
 }
 
 @media (prefers-reduced-motion: reduce) {

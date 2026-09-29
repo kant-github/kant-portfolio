@@ -180,7 +180,7 @@ export function Showcase({
 				</div>
 
 				{/* the line is always present, so nothing jumps as the name changes */}
-				<p className="text-center text-[15px] text-ink">
+				<p className="text-center text-sm font-medium text-ink">
 					{showcase[named]?.name}
 				</p>
 			</div>

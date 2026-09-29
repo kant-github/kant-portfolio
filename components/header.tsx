@@ -33,7 +33,7 @@ export function Header() {
 			</div>
 
 			<p
-				className="stage-item stage-blur mt-4 text-ink"
+				className="stage-item stage-blur mt-4 text-[15px] font-medium text-ink"
 				style={{ "--i": 2 } as CSSProperties}
 			>
 				{profile.name}

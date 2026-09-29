@@ -3,7 +3,7 @@ import Image from "next/image";
 import { CONTENT_INDEX, Section } from "@/components/section";
 import { personal } from "@/lib/data";
 
-const CAPTION_CLASS = "font-mono text-xs tracking-label text-mute uppercase";
+const CAPTION_CLASS = "font-mono text-[11px] tracking-label text-mute uppercase";
 
 const TILT = ["-5deg", "3deg", "-2deg", "4deg", "-3deg"];
 
