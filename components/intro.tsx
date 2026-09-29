@@ -10,7 +10,7 @@ export function Intro() {
 				className="stage-item stage-blur text-mute"
 				style={{ "--i": 3 } as CSSProperties}
 			>
-				Hey, I&apos;m Rishi, a full stack developer at{" "}
+				Hey, I&apos;m Rishi, an engineer at{" "}
 				<a
 					href={profile.companyHref}
 					target="_blank"

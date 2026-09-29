@@ -1,9 +1,18 @@
 "use client";
 
 import Image from "next/image";
-import { useSyncExternalStore, type CSSProperties } from "react";
-import { Band } from "@/components/band";
+import {
+	useCallback,
+	useRef,
+	useState,
+	useSyncExternalStore,
+	type CSSProperties,
+} from "react";
 import { CONTENT_INDEX } from "@/components/section";
+import {
+	ShowcaseLightbox,
+	type CardRect,
+} from "@/components/showcase-lightbox";
 import { showcase } from "@/lib/data";
 
 // Card width is a percentage too (see SCATTER_FRAME), so the whole
@@ -21,9 +30,9 @@ const LAYOUT = [
 const HOVER =
 	"transition duration-300 ease-out hover:z-50 hover:-translate-y-3 hover:rotate-0 hover:scale-104";
 
-const SCATTER_FRAME = `absolute w-[31%] rounded-xl bg-white p-1 shadow-card rotate-(--tilt) sm:rounded-lg sm:p-1.5 ${HOVER}`;
+const SCATTER_FRAME = `absolute w-[31%] cursor-pointer rounded-xl bg-white p-1 shadow-card rotate-(--tilt) sm:rounded-lg sm:p-1.5 ${HOVER}`;
 
-const STACK_FRAME = `w-full rounded-xl bg-white p-1 shadow-card ${HOVER}`;
+const STACK_FRAME = `w-full cursor-pointer rounded-xl bg-white p-1 shadow-card ${HOVER}`;
 
 const WIDE = "(min-width: 640px)";
 
@@ -48,8 +57,36 @@ export function Showcase() {
 		getServerSnapshot,
 	);
 
+	const [open, setOpen] = useState<number | null>(null);
+	const cards = useRef<(HTMLButtonElement | null)[]>([]);
+
+	/**
+	 * Measured live rather than captured on click, so closing lands on
+	 * whichever card the arrows left you on — and stays correct if the page
+	 * was resized while the overlay was up.
+	 */
+	const getCardRect = useCallback(
+		(index: number): CardRect | null => {
+			const card = cards.current[index];
+			if (!card) return null;
+
+			const rect = card.getBoundingClientRect();
+
+			return {
+				top: rect.top,
+				left: rect.left,
+				width: rect.width,
+				height: rect.height,
+				rotate: isWide
+					? (LAYOUT[index % LAYOUT.length]?.rotate ?? 0)
+					: 0,
+			};
+		},
+		[isWide],
+	);
+
 	return (
-		<Band>
+		<>
 			<div
 				className={
 					isWide
@@ -62,8 +99,14 @@ export function Showcase() {
 					const spot = LAYOUT[index % LAYOUT.length];
 
 					return (
-						<figure
+						<button
 							key={shot.src}
+							ref={(node) => {
+								cards.current[index] = node;
+							}}
+							type="button"
+							aria-label={`Open ${shot.name}`}
+							onClick={() => setOpen(index)}
 							style={
 								isWide
 									? ({
@@ -81,12 +124,21 @@ export function Showcase() {
 								alt={shot.alt}
 								width={1200}
 								height={900}
-								className="aspect-4/3 w-full rounded-[8px] sm:rounded-md object-cover ring-1 ring-black/10"
+								sizes="(min-width: 640px) 380px, 90vw"
+								className="aspect-4/3 w-full rounded-[8px] object-cover ring-1 ring-black/10 sm:rounded-md"
 							/>
-						</figure>
+						</button>
 					);
 				})}
 			</div>
-		</Band>
+
+			<ShowcaseLightbox
+				items={showcase}
+				index={open}
+				getCardRect={getCardRect}
+				onClose={() => setOpen(null)}
+				onIndexChange={setOpen}
+			/>
+		</>
 	);
 }

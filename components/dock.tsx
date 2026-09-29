@@ -6,9 +6,8 @@ import {
 	RiArrowUpLine,
 	RiBriefcase4Fill,
 	RiBuilding2Fill,
-	RiChat3Fill,
+	// RiChat3Fill,
 	RiImage2Fill,
-	RiMailFill,
 	RiQuillPenFill,
 	RiStackFill,
 } from "react-icons/ri";
@@ -23,11 +22,10 @@ type DockItem = {
 const SECTIONS: DockItem[] = [
 	{ name: "Work", href: "/#work", icon: RiBriefcase4Fill },
 	{ name: "Experience", href: "/#experience", icon: RiBuilding2Fill },
-	{ name: "Testimonials", href: "/#testimonials", icon: RiChat3Fill },
+	// { name: "Testimonials", href: "/#testimonials", icon: RiChat3Fill },
 	{ name: "Stack", href: "/#stack", icon: RiStackFill },
 	{ name: "Writing", href: "/#writing", icon: RiQuillPenFill },
 	{ name: "Personal", href: "/#personal", icon: RiImage2Fill },
-	{ name: "Contact", href: "/#contact", icon: RiMailFill },
 ];
 
 const BUTTON_CLASS =

@@ -24,6 +24,11 @@
 	--color-ink: var(--ink);
 	--color-mute: var(--mute);
 	--color-prose: var(--prose);
+	/* Writing tree. A file-explorer style list: one blue marker on the open
+	 * branch, everything else neutral. */
+	--color-tree-accent: #3b82f6;
+	--color-tree-line: #3a3a3a;
+	--color-tree-row: #16161a;
 	--color-line: var(--line);
 	--color-surface: var(--surface);
 	--color-card-top: #1f1f1f;
@@ -35,7 +40,8 @@
 	--color-dock-divider-top: #4a4a4a;
 	--color-dock-divider-bottom: #1c1c1c;
 	--color-dock-track: #303030;
-	--color-dock-progress: #0ec704;
+	/* same blue as the writing tree, so the site has one accent */
+	--color-dock-progress: var(--color-tree-accent);
 	--color-dock-tip: #0a0a0c;
 	--color-dock-tip-edge: #2a2a30;
 	--shadow-dock:
@@ -422,6 +428,16 @@ body {
 	animation: dock-in 620ms cubic-bezier(0.22, 1, 0.36, 1) 1000ms both;
 }
 
+/* A modal is up: the dock steps back rather than floating over the backdrop.
+ * Driven by a data attribute so neither component has to import the other. */
+[data-overlay="open"] .dock-in {
+	/* !important because .dock-in's entry keyframe uses fill-mode: both, and a
+	 * filled animation beats a normal declaration in the cascade. */
+	opacity: 0 !important;
+	pointer-events: none;
+	transition: opacity 200ms ease-out;
+}
+
 /* --- Long-form article typography ---------------------------------------
  *
  * Scoped element selectors rather than utilities on every node: the renderer
@@ -653,6 +669,22 @@ body {
 .stage-soft {
 	--stage-rise: 18px;
 	filter: none;
+}
+
+/* --- Writing tree --------------------------------------------------------
+ * The connectors are drawn as SVG paths in writing.tsx, not CSS borders: a
+ * dashed CSS border breaks up badly around a border-radius, which is what made
+ * the elbows look chopped. An SVG dash array flows smoothly through a curve.
+ */
+
+.tree-row {
+	height: 44px;
+}
+
+@media (prefers-reduced-motion: reduce) {
+	.tree-row {
+		transition: none;
+	}
 }
 
 @media (prefers-reduced-motion: reduce) {

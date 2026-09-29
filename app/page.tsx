@@ -1,4 +1,3 @@
-import { Contact } from "@/components/contact";
 import { Dock } from "@/components/dock";
 import { Experience } from "@/components/experience";
 import { Footer } from "@/components/footer";
@@ -7,7 +6,7 @@ import { Intro } from "@/components/intro";
 import { Personal } from "@/components/personal";
 import { ScrollStage } from "@/components/scroll-stage";
 import { Stack } from "@/components/stack";
-import { Testimonials } from "@/components/testimonials";
+// import { Testimonials } from "@/components/testimonials";
 import { Work } from "@/components/work";
 import { Writing } from "@/components/writing";
 
@@ -28,9 +27,11 @@ export default function Home() {
 				<ScrollStage id="experience" holdMs={1500}>
 					<Experience />
 				</ScrollStage>
+				{/* Hidden for now.
 				<ScrollStage id="testimonials">
 					<Testimonials />
 				</ScrollStage>
+				*/}
 				<ScrollStage id="stack">
 					<Stack />
 				</ScrollStage>
@@ -40,10 +41,6 @@ export default function Home() {
 				<ScrollStage id="personal">
 					<Personal />
 				</ScrollStage>
-				<ScrollStage id="contact" latchAtBottom>
-					<Contact />
-				</ScrollStage>
-
 				<ScrollStage latchAtBottom>
 					<Footer />
 				</ScrollStage>

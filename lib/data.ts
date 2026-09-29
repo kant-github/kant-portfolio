@@ -1,11 +1,9 @@
 export const profile = {
 	name: "Rishi Kant",
-	role: "Full Stack Developer",
+	role: "Engineer",
 	email: "kantrishi7779@gmail.com",
 	established: "2003",
 	location: "Noida, India",
-	latitude: 28.5355,
-	longitude: 77.391,
 	company: "AppX",
 	companyHref: "https://appx.co.in",
 	avatar: "/images/Rishi.JPG",
@@ -17,16 +15,73 @@ export const socials = {
 	x: "https://x.com/khairrishi",
 };
 
+export const socialLinks = [
+	{
+		name: "Email",
+		href: `mailto:${profile.email}`,
+		icon: "/images/social/gmail.svg",
+	},
+	{ name: "GitHub", href: socials.github, icon: "/images/social/github.svg" },
+	{ name: "X", href: socials.x, icon: "/images/social/x.svg" },
+	{
+		name: "LinkedIn",
+		href: socials.linkedin,
+		icon: "/images/social/linkedin.svg",
+	},
+];
+
 export type Shot = {
 	src: string;
+	/** Describes the screenshot, for anyone who cannot see it. */
 	alt: string;
+	name: string;
+	/** Live site. */
+	href: string;
+	/** One line, shown when the card is opened. */
+	blurb: string;
+	/** True pixel size, so the opened card can use each shot's own ratio
+	 * rather than forcing them all into the card's 4:3 crop. */
+	width: number;
+	height: number;
 };
 
 export const showcase: Shot[] = [
-	{ src: "/images/work/matcha.png", alt: "Matcha" },
-	{ src: "/images/work/highgarden.png", alt: "HighGarden" },
-	{ src: "/images/work/winterfell.png", alt: "Winterfell" },
-	{ src: "/images/work/nocturn.png", alt: "Nocturn" },
+	{
+		src: "/images/work/matcha.png",
+		alt: "The Matcha board, showing every issue a team has filed laid out on one screen.",
+		name: "Matcha",
+		href: "https://heydarwin.app",
+		blurb: "An engineering board where an agent picks up an issue, works on it in its own sandbox, and opens the pull request for review.",
+		width: 1200,
+		height: 900,
+	},
+	{
+		src: "/images/work/highgarden.png",
+		alt: "The HighGarden trading screen, with an open market and its price chart.",
+		name: "HighGarden",
+		href: "https://highgarden.trade",
+		blurb: "A prediction market built on Solana, made to settle fast.",
+		width: 3024,
+		height: 1964,
+	},
+	{
+		src: "/images/work/winterfell.png",
+		alt: "The Winterfell editor, writing a Solana smart contract in the browser.",
+		name: "Winterfell",
+		href: "https://winterfell.dev",
+		blurb: "Write, test and deploy Anchor smart contracts on Solana from the browser. First place at the Superteam India Hackathon.",
+		width: 3024,
+		height: 1964,
+	},
+	{
+		src: "/images/work/nocturn.png",
+		alt: "A live Nocturn quiz room, with players and the current question on screen.",
+		name: "Nocturn",
+		href: "https://nocturn.app",
+		blurb: "A real-time quiz platform where players compete for on-chain rewards, with rooms synced over WebSockets and Redis Pub/Sub.",
+		width: 1200,
+		height: 900,
+	},
 ];
 
 export type ExperienceItem = {
@@ -41,7 +96,7 @@ export type ExperienceItem = {
 export const experience: ExperienceItem[] = [
 	{
 		period: "NOV 2025 – NOW",
-		role: "Full stack developer at",
+		role: "Engineer at",
 		org: "AppX",
 		href: "https://appx.co.in",
 		badge: "yc",
@@ -196,30 +251,3 @@ export const personal = {
 		],
 	},
 };
-
-export const contactLinks = [
-	{
-		label: "Email",
-		value: profile.email,
-		href: `mailto:${profile.email}`,
-		icon: "mail" as const,
-	},
-	{
-		label: "X.com",
-		value: "@khairrishi",
-		href: socials.x,
-		icon: "x" as const,
-	},
-	{
-		label: "GitHub",
-		value: "@kant-github",
-		href: socials.github,
-		icon: "github" as const,
-	},
-	{
-		label: "LinkedIn",
-		value: "/in/kant-linked",
-		href: socials.linkedin,
-		icon: "linkedin" as const,
-	},
-];

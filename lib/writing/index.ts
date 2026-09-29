@@ -11,6 +11,7 @@ export const posts = [
 		title: "Scaling WebSockets past one server",
 		summary:
 			"One server is easy. The second one breaks your room in a way that never throws an error.",
+		kind: "Realtime",
 	},
 	{
 		slug: "400-million-requests",
@@ -18,6 +19,7 @@ export const posts = [
 		title: "What 400 million requests a day actually looks like",
 		summary:
 			"Divide the number, size for the peak, and spend most of your effort avoiding work.",
+		kind: "Scale",
 	},
 	{
 		slug: "project-vs-product",
@@ -25,6 +27,7 @@ export const posts = [
 		title: "Project mindset vs product mindset",
 		summary:
 			"A project is done when it works. A product is done when people keep using it.",
+		kind: "Craft",
 	},
 ] as const satisfies readonly PostMeta[];
 

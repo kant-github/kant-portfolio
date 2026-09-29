@@ -5,6 +5,7 @@ import { useCallback, useEffect, useState } from "react";
 import { RiCheckLine } from "react-icons/ri";
 import { KeyCap } from "@/components/key-cap";
 import { copyText } from "@/lib/clipboard";
+import { isOverlayOpen } from "@/lib/overlay-state";
 import { profile } from "@/lib/data";
 
 const RESET_DELAY = 2000;
@@ -42,6 +43,9 @@ export function CopyEmail() {
 		function handleKeyDown(event: KeyboardEvent) {
 			if (event.key.toLowerCase() !== "c") return;
 			if (event.metaKey || event.ctrlKey || event.altKey) return;
+			// A modal is up and owns the keyboard; copying silently behind it
+			// would be a surprise.
+			if (isOverlayOpen()) return;
 
 			// event.target is the document itself until something on the page
 			// has been focused, and the document has no closest().

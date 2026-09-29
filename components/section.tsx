@@ -18,16 +18,20 @@ export function Section({
 }) {
 	return (
 		<section className="flex flex-col gap-6">
-			<SplitLabel text={label} className={LABEL_CLASS} />
+			{/* The label and its intro belong together, so they sit on a tight
+			    gap. The larger gap is kept for the step down into the content. */}
+			<div className="flex flex-col gap-1.5">
+				<SplitLabel text={label} className={LABEL_CLASS} />
 
-			{intro ? (
-				<p
-					className="stage-item stage-blur text-mute"
-					style={{ "--i": 1 } as CSSProperties}
-				>
-					{intro}
-				</p>
-			) : null}
+				{intro ? (
+					<p
+						className="stage-item stage-blur text-mute"
+						style={{ "--i": 1 } as CSSProperties}
+					>
+						{intro}
+					</p>
+				) : null}
+			</div>
 
 			{children}
 		</section>

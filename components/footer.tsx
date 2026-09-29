@@ -1,38 +1,42 @@
+import Image from "next/image";
 import type { CSSProperties } from "react";
-import { profile } from "@/lib/data";
+import { socialLinks } from "@/lib/data";
 
-const WEATHER_URL = `https://api.open-meteo.com/v1/forecast?latitude=${profile.latitude}&longitude=${profile.longitude}&current=temperature_2m`;
-
-async function getTemperature() {
-	try {
-		const res = await fetch(WEATHER_URL, { next: { revalidate: 1800 } });
-		if (!res.ok) return null;
-
-		const data = await res.json();
-		const value = data?.current?.temperature_2m;
-
-		return typeof value === "number" ? Math.round(value) : null;
-	} catch {
-		return null;
-	}
-}
-
-export async function Footer() {
-	const temperature = await getTemperature();
-
+export function Footer() {
 	return (
-		<footer className="flex items-center justify-between gap-4 border-t border-line pt-6 font-mono text-xs tracking-label text-mute uppercase">
-			<span className="stage-item" style={{ "--i": 0 } as CSSProperties}>
-				{profile.location}
-			</span>
-			{temperature === null ? null : (
-				<span
-					className="stage-item"
-					style={{ "--i": 1 } as CSSProperties}
-				>
-					{temperature}°C
-				</span>
-			)}
+		<footer className="border-t border-line pt-6">
+			<ul
+				className="stage-item flex items-center gap-2"
+				style={{ "--i": 0 } as CSSProperties}
+			>
+				{socialLinks.map((link) => (
+					<li key={link.name}>
+						<a
+							href={link.href}
+							target={
+								link.href.startsWith("mailto:")
+									? undefined
+									: "_blank"
+							}
+							rel="noreferrer"
+							aria-label={link.name}
+							title={link.name}
+							className="flex size-9 items-center justify-center rounded-md opacity-80 transition duration-200 hover:-translate-y-0.5 hover:bg-surface hover:opacity-100"
+						>
+							{/* real brand marks, served as-is: they are vector, so
+							    Next's raster pipeline has nothing to do here */}
+							<Image
+								src={link.icon}
+								alt=""
+								width={18}
+								height={18}
+								unoptimized
+								className="size-[18px]"
+							/>
+						</a>
+					</li>
+				))}
+			</ul>
 		</footer>
 	);
 }

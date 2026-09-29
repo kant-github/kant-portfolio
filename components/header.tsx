@@ -1,27 +1,12 @@
 import Image from "next/image";
 import type { CSSProperties } from "react";
-import { Clock } from "@/components/clock";
-import { LABEL_CLASS } from "@/components/section";
-import { SplitLabel } from "@/components/split-label";
 import { profile } from "@/lib/data";
 
 export function Header() {
 	return (
-		<header className="flex flex-col">
+		<header className="flex flex-col pt-20">
 			<div
-				className={`stage-rule flex items-baseline justify-between pb-3 ${LABEL_CLASS}`}
-			>
-				<SplitLabel text={`EST. ${profile.established}`} />
-				<span
-					className="stage-item"
-					style={{ "--i": 0.4 } as CSSProperties}
-				>
-					<Clock />
-				</span>
-			</div>
-
-			<div
-				className="stage-item lit-edge relative mt-10 size-14 rounded-shot"
+				className="stage-item lit-edge relative size-14 rounded-shot"
 				style={
 					{
 						"--i": 1.2,

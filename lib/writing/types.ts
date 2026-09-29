@@ -46,4 +46,6 @@ export type PostMeta = {
 	title: string;
 	/** One sentence. Used for the article intro and the page description. */
 	summary: string;
+	/** Short category shown in the card pill. */
+	kind: string;
 };
