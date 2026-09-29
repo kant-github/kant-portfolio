@@ -1,5 +1,6 @@
 import type { Metadata } from "next";
 import { Geist_Mono, Inter } from "next/font/google";
+import { EdgeBlur } from "@/components/edge-blur";
 import { Providers } from "@/components/providers";
 import { profile } from "@/lib/data";
 import "./globals.css";
@@ -37,7 +38,10 @@ export default function RootLayout({ children }: LayoutProps<"/">) {
 				</noscript>
 			</head>
 			<body className="min-h-full">
-				<Providers>{children}</Providers>
+				<Providers>
+					{children}
+					<EdgeBlur />
+				</Providers>
 			</body>
 		</html>
 	);
