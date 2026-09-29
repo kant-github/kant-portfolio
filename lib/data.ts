@@ -106,7 +106,9 @@ export type ExperienceItem = {
 	role: string;
 	org: string;
 	href: string;
-	badge?: "yc" | "twenty";
+	badge?: "appx" | "twenty";
+	/** Y Combinator batch, shown after the name with the YC mark */
+	yc?: string;
 	description: string;
 };
 
@@ -116,7 +118,8 @@ export const experience: ExperienceItem[] = [
 		role: "Engineer at",
 		org: "AppX",
 		href: "https://appx.co.in",
-		badge: "yc",
+		badge: "appx",
+		yc: "S21",
 		description:
 			"Building applications and dashboards from the ground up for educators and creators, and the backend behind them, which serves 400 million requests a day with high availability.",
 	},
