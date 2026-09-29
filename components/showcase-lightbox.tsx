@@ -29,8 +29,31 @@ export type CardRect = {
 
 type Flip = { x: number; y: number; scale: number; rotate: number };
 
-const BACKDROP = 0.94;
+/**
+ * The backdrop fades all the way in, and its tint lives in the background
+ * colour instead (`bg-page/70`).
+ *
+ * It has to be that way round. An opaque background on a half-opaque element
+ * paints straight over the blurred layer underneath it, so the blur does
+ * nothing and the page behind shows through sharp — which is exactly what the
+ * first attempt looked like.
+ */
+const BACKDROP = 1;
 const TRAVEL = { duration: 0.44, ease: [0.22, 1, 0.36, 1] as const };
+
+/**
+ * The caption leaves far faster than the picture does. It is not travelling
+ * anywhere — it has no card to fly back to — so holding it on screen for the
+ * whole return flight just looks like it was forgotten.
+ */
+const META_IN = {
+	duration: 0.3,
+	ease: [0.22, 1, 0.36, 1] as const,
+	delay: 0.14,
+};
+const META_OUT = { duration: 0.12, ease: [0.4, 0, 1, 1] as const };
+const META_HIDDEN = { opacity: 0, transform: "translateY(6px)" };
+const META_SHOWN = { opacity: 1, transform: "translateY(0px)" };
 
 const FOCUSABLE =
 	'a[href], button:not([disabled]), [tabindex]:not([tabindex="-1"])';
@@ -73,6 +96,7 @@ export function ShowcaseLightbox({
 	const panelRef = useRef<HTMLDivElement>(null);
 	const frameRef = useRef<HTMLDivElement>(null);
 	const backdropRef = useRef<HTMLButtonElement>(null);
+	const metaRef = useRef<HTMLDivElement>(null);
 	const [closing, setClosing] = useState(false);
 	const still = useReducedMotion() === true;
 
@@ -126,18 +150,21 @@ export function ShowcaseLightbox({
 
 		const frame = frameRef.current;
 		const backdrop = backdropRef.current;
-		if (!frame || !backdrop) return;
+		const meta = metaRef.current;
+		if (!frame || !backdrop || !meta) return;
 
 		const from = flipFor(index);
 
 		if (still || !from) {
 			frame.style.transform = "none";
 			backdrop.style.opacity = String(BACKDROP);
+			Object.assign(meta.style, META_SHOWN);
 			return;
 		}
 
 		frame.style.transform = `translate(${from.x}px, ${from.y}px) scale(${from.scale}) rotate(${from.rotate}deg)`;
 		backdrop.style.opacity = "0";
+		Object.assign(meta.style, META_HIDDEN);
 
 		const flight = animate(
 			frame,
@@ -145,10 +172,12 @@ export function ShowcaseLightbox({
 			TRAVEL,
 		);
 		const fade = animate(backdrop, { opacity: BACKDROP }, TRAVEL);
+		const caption = animate(meta, META_SHOWN, META_IN);
 
 		return () => {
 			flight.stop();
 			fade.stop();
+			caption.stop();
 		};
 		// eslint-disable-next-line react-hooks/exhaustive-deps
 	}, [open, still]);
@@ -158,6 +187,7 @@ export function ShowcaseLightbox({
 
 		const frame = frameRef.current;
 		const backdrop = backdropRef.current;
+		const meta = metaRef.current;
 		const back = flipFor(index);
 
 		if (still || !frame || !backdrop || !back) {
@@ -166,6 +196,10 @@ export function ShowcaseLightbox({
 		}
 
 		setClosing(true);
+
+		// started here and deliberately not awaited: the caption is gone long
+		// before the picture has finished flying home
+		if (meta) animate(meta, META_HIDDEN, META_OUT);
 
 		await Promise.all([
 			animate(
@@ -259,7 +293,7 @@ export function ShowcaseLightbox({
 						aria-label="Close"
 						tabIndex={-1}
 						onClick={() => void requestClose()}
-						className="absolute inset-0 cursor-default bg-page opacity-0"
+						className="absolute inset-0 cursor-default bg-page/70 opacity-0 backdrop-blur-xl"
 					/>
 
 					<div
@@ -267,7 +301,7 @@ export function ShowcaseLightbox({
 						role="dialog"
 						aria-modal="true"
 						aria-labelledby="showcase-title"
-						className="relative flex w-full max-w-4xl flex-col gap-4"
+						className="relative flex w-full max-w-lg flex-col gap-4"
 					>
 						<div
 							ref={frameRef}
@@ -279,14 +313,17 @@ export function ShowcaseLightbox({
 								alt={shot.alt}
 								width={shot.width}
 								height={shot.height}
-								sizes="(min-width: 896px) 896px, 92vw"
+								sizes="(min-width: 512px) 512px, 92vw"
 								priority
 								unoptimized
 								className="h-auto w-full rounded-lg"
 							/>
 						</div>
 
-						<div className="showcase-meta flex flex-col gap-3 sm:flex-row sm:items-start sm:justify-between sm:gap-4">
+						<div
+							ref={metaRef}
+							className="showcase-meta flex flex-col gap-3 sm:flex-row sm:items-start sm:justify-between sm:gap-4"
+						>
 							<div className="flex min-w-0 flex-col gap-1">
 								<h3
 									id="showcase-title"
