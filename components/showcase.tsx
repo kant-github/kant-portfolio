@@ -60,16 +60,25 @@ const PUSH = 20;
  */
 const SMALL = 0.7;
 const WIDE = "(min-width: 640px)";
+/** A mouse or trackpad. A phone answers no. */
+const HOVER = "(hover: hover)";
 
-function subscribe(onChange: () => void) {
-	const query = window.matchMedia(WIDE);
-	query.addEventListener("change", onChange);
-	return () => query.removeEventListener("change", onChange);
+function watch(query: string) {
+	return (onChange: () => void) => {
+		const media = window.matchMedia(query);
+		media.addEventListener("change", onChange);
+		return () => media.removeEventListener("change", onChange);
+	};
 }
 
-function getSnapshot() {
-	return window.matchMedia(WIDE).matches;
+function reads(query: string) {
+	return () => window.matchMedia(query).matches;
 }
+
+const subscribeWide = watch(WIDE);
+const readWide = reads(WIDE);
+const subscribeHover = watch(HOVER);
+const readHover = reads(HOVER);
 
 function getServerSnapshot() {
 	return true;
@@ -117,9 +126,6 @@ const NAME_TRAVEL = { duration: 0.28, ease: EASE };
 /** The fan's own movement, kept at the feel the CSS transition had. */
 const FAN = { duration: 0.5, ease: EASE };
 
-/** Long enough for a tapped card to straighten before it opens. */
-const STRAIGHTEN_MS = 120;
-
 type Place = { x: number; y: number; tilt: number };
 
 /**
@@ -160,44 +166,30 @@ export function Showcase({
 	stageIndex?: number;
 }) {
 	const isWide = useSyncExternalStore(
-		subscribe,
-		getSnapshot,
+		subscribeWide,
+		readWide,
+		getServerSnapshot,
+	);
+	const canHover = useSyncExternalStore(
+		subscribeHover,
+		readHover,
 		getServerSnapshot,
 	);
 	const k = isWide ? 1 : SMALL;
 
 	const [open, setOpen] = useState<number | null>(null);
 	const [focused, setFocused] = useState<number | null>(null);
-	const straighten = useRef<number | null>(null);
-
 	/**
-	 * A phone has no hover, so a tap would otherwise open a card while it is
-	 * still tilted — and framer's projection cannot measure a rotated box, it
-	 * measures the larger upright box around it.
+	 * Closing puts the deck back exactly as it was.
 	 *
-	 * So a tap on a card that is not already open pulls it out of the fan
-	 * first, exactly as hover does, and opens it once it is straight. On a
-	 * pointer device `onPointerEnter` has already run, so this opens at once.
+	 * A phone never fires `pointerleave`, so without this `focused` would stay
+	 * set after the lightbox closed and the deck would be left fanned open
+	 * around a card nobody is touching any more.
 	 */
-	const handleClick = useCallback(
-		(index: number) => {
-			if (focused === index) {
-				setOpen(index);
-				return;
-			}
-
-			setFocused(index);
-
-			if (straighten.current !== null) {
-				window.clearTimeout(straighten.current);
-			}
-			straighten.current = window.setTimeout(
-				() => setOpen(index),
-				STRAIGHTEN_MS,
-			);
-		},
-		[focused],
-	);
+	const handleClose = useCallback(() => {
+		setOpen(null);
+		if (!canHover) setFocused(null);
+	}, [canHover]);
 
 	return (
 		<>
@@ -230,7 +222,7 @@ export function Showcase({
 								layoutId={`shot-${index}`}
 								type="button"
 								aria-label={`Open ${shot.name}`}
-								onClick={() => handleClick(index)}
+								onClick={() => setOpen(index)}
 								onPointerEnter={() => setFocused(index)}
 								onFocus={() => setFocused(index)}
 								// no entry animation: without this the cards
@@ -295,7 +287,7 @@ export function Showcase({
 			<ShowcaseLightbox
 				items={showcase}
 				index={open}
-				onClose={() => setOpen(null)}
+				onClose={handleClose}
 				onIndexChange={setOpen}
 			/>
 		</>
