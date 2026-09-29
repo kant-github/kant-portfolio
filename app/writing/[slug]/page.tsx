@@ -50,14 +50,14 @@ export default async function WritingPost({
 			<main className="flex w-full max-w-160 flex-col gap-10 px-4 pt-10 pb-32">
 				<Link
 					href="/#writing"
-					aria-label="Back to writing"
+					aria-label="Back to case studies"
 					className="group inline-flex w-fit items-center gap-1.5 rounded-md border border-line bg-surface py-1.5 pr-3 pl-1.5 font-mono text-[11px] tracking-label text-mute uppercase transition-colors hover:border-ink/20 hover:text-ink"
 				>
 					<RiArrowLeftSLine
 						className="size-4 transition-transform duration-200 group-hover:-translate-x-0.5"
 						aria-hidden="true"
 					/>
-					Writing
+					Case studies
 				</Link>
 
 				<article className="article">

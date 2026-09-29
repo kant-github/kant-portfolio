@@ -28,7 +28,7 @@ type DockItem = {
 const SECTIONS: DockItem[] = [
 	{ id: "work", name: "Work", icon: RiBriefcase4Fill },
 	{ id: "experience", name: "Experience", icon: RiBuilding2Fill },
-	{ id: "writing", name: "Writing", icon: RiQuillPenFill },
+	{ id: "writing", name: "Case studies", icon: RiQuillPenFill },
 	{ id: "personal", name: "Personal", icon: RiImage2Fill },
 ];
 
