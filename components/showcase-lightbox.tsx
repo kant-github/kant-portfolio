@@ -1,14 +1,8 @@
 "use client";
 
-import { animate, useReducedMotion } from "framer-motion";
+import { AnimatePresence, animate, motion } from "framer-motion";
 import Image from "next/image";
-import {
-	useCallback,
-	useEffect,
-	useLayoutEffect,
-	useRef,
-	useState,
-} from "react";
+import { useCallback, useEffect, useRef, useState } from "react";
 import { createPortal } from "react-dom";
 import {
 	RiArrowLeftSLine,
@@ -18,16 +12,6 @@ import {
 } from "react-icons/ri";
 import type { Shot } from "@/lib/data";
 import { closeOverlay, openOverlay } from "@/lib/overlay-state";
-
-export type CardRect = {
-	top: number;
-	left: number;
-	width: number;
-	height: number;
-	rotate: number;
-};
-
-type Flip = { x: number; y: number; scale: number; rotate: number };
 
 /**
  * The backdrop fades all the way in, and its tint lives in the background
@@ -82,23 +66,19 @@ function useScrollLock(active: boolean) {
 export function ShowcaseLightbox({
 	items,
 	index,
-	getCardRect,
 	onClose,
 	onIndexChange,
 }: {
 	items: Shot[];
 	index: number | null;
-	getCardRect: (index: number) => CardRect | null;
 	onClose: () => void;
 	onIndexChange: (next: number) => void;
 }) {
 	const [mounted, setMounted] = useState(false);
 	const panelRef = useRef<HTMLDivElement>(null);
-	const frameRef = useRef<HTMLDivElement>(null);
 	const backdropRef = useRef<HTMLButtonElement>(null);
 	const metaRef = useRef<HTMLDivElement>(null);
 	const [closing, setClosing] = useState(false);
-	const still = useReducedMotion() === true;
 
 	useEffect(() => setMounted(true), []);
 
@@ -127,94 +107,55 @@ export function ShowcaseLightbox({
 		};
 	}, [open]);
 
-	const flipFor = useCallback(
-		(at: number): Flip | null => {
-			const frame = frameRef.current;
-			const card = getCardRect(at);
-			if (!frame || !card) return null;
-
-			const to = frame.getBoundingClientRect();
-
-			return {
-				x: card.left + card.width / 2 - (to.left + to.width / 2),
-				y: card.top + card.height / 2 - (to.top + to.height / 2),
-				scale: card.width / to.width,
-				rotate: card.rotate,
-			};
-		},
-		[getCardRect],
-	);
-
-	useLayoutEffect(() => {
+	/**
+	 * The backdrop and the caption are the only things driven by hand here.
+	 *
+	 * The picture is not animated in this file at all. It shares a `layoutId`
+	 * with the deck card, so framer measures both boxes and morphs one into
+	 * the other — animating width and height separately and scale-correcting
+	 * as it goes. That is exactly what the hand-rolled version could not do:
+	 * it had one uniform scale, so it matched the width and left the height
+	 * about 18% out for the whole flight.
+	 */
+	useEffect(() => {
 		if (index === null) return;
 
-		const frame = frameRef.current;
 		const backdrop = backdropRef.current;
 		const meta = metaRef.current;
-		if (!frame || !backdrop || !meta) return;
+		if (!backdrop || !meta) return;
 
-		const from = flipFor(index);
-
-		if (still || !from) {
-			frame.style.transform = "none";
-			backdrop.style.opacity = String(BACKDROP);
-			Object.assign(meta.style, META_SHOWN);
-			return;
-		}
-
-		frame.style.transform = `translate(${from.x}px, ${from.y}px) scale(${from.scale}) rotate(${from.rotate}deg)`;
-		backdrop.style.opacity = "0";
-		Object.assign(meta.style, META_HIDDEN);
-
-		const flight = animate(
-			frame,
-			{ transform: "translate(0px, 0px) scale(1) rotate(0deg)" },
-			TRAVEL,
-		);
 		const fade = animate(backdrop, { opacity: BACKDROP }, TRAVEL);
 		const caption = animate(meta, META_SHOWN, META_IN);
 
 		return () => {
-			flight.stop();
 			fade.stop();
 			caption.stop();
 		};
+		// Only on open: the arrows swap the picture inside a frame that is
+		// already in place.
 		// eslint-disable-next-line react-hooks/exhaustive-deps
-	}, [open, still]);
+	}, [open]);
 
+	/**
+	 * Fade the surround away, then unmount — and unmounting is what hands the
+	 * picture back to framer to fly home to whichever card is showing now.
+	 */
 	const requestClose = useCallback(async () => {
 		if (closing || index === null) return;
 
-		const frame = frameRef.current;
 		const backdrop = backdropRef.current;
 		const meta = metaRef.current;
-		const back = flipFor(index);
-
-		if (still || !frame || !backdrop || !back) {
-			onClose();
-			return;
-		}
 
 		setClosing(true);
 
 		// started here and deliberately not awaited: the caption is gone long
 		// before the picture has finished flying home
 		if (meta) animate(meta, META_HIDDEN, META_OUT);
-
-		await Promise.all([
-			animate(
-				frame,
-				{
-					transform: `translate(${back.x}px, ${back.y}px) scale(${back.scale}) rotate(${back.rotate}deg)`,
-				},
-				TRAVEL,
-			),
-			animate(backdrop, { opacity: 0 }, TRAVEL),
-		]);
+		if (backdrop) await animate(backdrop, { opacity: 0 }, TRAVEL);
 
 		setClosing(false);
 		onClose();
-	}, [closing, index, flipFor, still, onClose]);
+	}, [closing, index, onClose]);
 
 	const step = useCallback(
 		(delta: number) => {
@@ -281,7 +222,7 @@ export function ShowcaseLightbox({
 	const shot = index === null ? null : items[index];
 
 	return createPortal(
-		<>
+		<AnimatePresence>
 			{shot && index !== null ? (
 				<div
 					key="lightbox"
@@ -303,9 +244,23 @@ export function ShowcaseLightbox({
 						aria-labelledby="showcase-title"
 						className="relative flex w-full max-w-lg flex-col gap-4"
 					>
-						<div
-							ref={frameRef}
-							className="overflow-hidden rounded-xl bg-white p-1.5 shadow-card ring-1 ring-black/5 will-change-transform dark:ring-0"
+						<motion.div
+							// the same id the deck card carries: framer treats
+							// them as one element and morphs between them
+							layoutId={`shot-${index}`}
+							// without this the node roots itself at its React
+							// parent, whose transforms and scroll do not apply
+							// to an element portalled under <body> — and the
+							// flight silently starts from the wrong place
+							data-framer-portal-id="showcase"
+							transition={TRAVEL}
+							// the same frame class the deck card uses, so the
+							// border, hairline, lit rim and shadow are one
+							// element throughout and nothing snaps
+							className="shot-frame w-full overflow-hidden"
+							style={{
+								aspectRatio: `${shot.width} / ${shot.height}`,
+							}}
 						>
 							<Image
 								key={shot.src}
@@ -316,9 +271,13 @@ export function ShowcaseLightbox({
 								sizes="(min-width: 512px) 512px, 92vw"
 								priority
 								unoptimized
-								className="h-auto w-full rounded-lg"
+								// object-cover at the shot's own ratio crops
+								// nothing here, and crops to 16:10 back in the
+								// deck — so the crop simply opens out as the
+								// frame changes shape
+								className="size-full rounded-[6.5px] object-cover object-top"
 							/>
-						</div>
+						</motion.div>
 
 						<div
 							ref={metaRef}
@@ -375,7 +334,7 @@ export function ShowcaseLightbox({
 					</div>
 				</div>
 			) : null}
-		</>,
+		</AnimatePresence>,
 		document.body,
 	);
 }

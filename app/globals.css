@@ -720,9 +720,11 @@ body {
 
 .shot-frame {
 	position: relative;
-	border-radius: 10px;
+	/* --frame-k lets the deck shrink the frame on a phone without a
+	 * transform; everywhere else it stays 1 */
+	border-radius: calc(10px * var(--frame-k, 1));
 	background: var(--color-shot-frame);
-	padding: 4.5px;
+	padding: calc(4.5px * var(--frame-k, 1));
 	/* a hairline all the way round so the frame still has an edge on its dark
 	 * side, then the drop that lifts it off the page */
 	box-shadow:
@@ -765,6 +767,7 @@ body {
 	width: 100%;
 	height: 150px;
 	--deck-scale: 0.7;
+	--frame-k: var(--deck-scale);
 }
 
 @media (min-width: 640px) {
@@ -774,16 +777,28 @@ body {
 	}
 }
 
+/**
+ * A card in the fan.
+ *
+ * Everything here is deliberately kept out of `transform`, because framer owns
+ * that now: the card is a shared-layout element, and framer's projection can
+ * only account for transforms it set itself as motion values. Anything written
+ * here as a `transform` would be baked into the measurement and never
+ * subtracted, and the open animation would fly from the wrong place.
+ *
+ * So the phone's smaller deck is a real size change, not a `scale()`, and the
+ * centring uses the standalone `translate` property, which composes before
+ * `transform` rather than competing with it.
+ */
 .deck-card {
 	/* set here rather than with utilities: .shot-frame is plain CSS and
 	 * Tailwind's are layered, so its `position: relative` would win */
 	position: absolute;
 	top: 50%;
 	left: 50%;
+	translate: -50% -50%;
+	width: calc(210px * var(--deck-scale));
 	cursor: pointer;
-	/* every card is pinned to the middle of the deck and moved by its
-	 * transform alone, so this is the only thing that ever animates */
-	transition: transform 500ms cubic-bezier(0.22, 1, 0.36, 1);
 }
 
 .deck-card:focus-visible {
@@ -805,8 +820,8 @@ body {
 
 @media (prefers-reduced-motion: reduce) {
 	.deck-card {
-		/* the transform also does the positioning now, so it has to stay —
-		 * clearing it would pile every card on the deck's centre */
+		/* framer drives the fan now, and MotionConfig reducedMotion="user"
+		 * already makes it instant, so there is nothing to switch off here */
 		transition: none;
 	}
 }

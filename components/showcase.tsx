@@ -2,12 +2,15 @@
 
 import { AnimatePresence, motion } from "framer-motion";
 import Image from "next/image";
-import { useCallback, useRef, useState, type CSSProperties } from "react";
-import { CONTENT_INDEX } from "@/components/section";
 import {
-	ShowcaseLightbox,
-	type CardRect,
-} from "@/components/showcase-lightbox";
+	useCallback,
+	useRef,
+	useState,
+	useSyncExternalStore,
+	type CSSProperties,
+} from "react";
+import { CONTENT_INDEX } from "@/components/section";
+import { ShowcaseLightbox } from "@/components/showcase-lightbox";
 import { showcase } from "@/lib/data";
 import { EASE } from "@/lib/motion";
 
@@ -17,9 +20,14 @@ import { EASE } from "@/lib/motion";
  * The geometry below is measured from that page rather than guessed, so the
  * resting fan is the same shape and the same size as the reference.
  *
- * Every card is identical and pinned to the middle of the deck. Nothing about
- * a card's box ever changes — only its transform — so the whole thing is one
- * animated property and the cards can never disagree about where they are.
+ * Every card is pinned to the middle of the deck and moved from there.
+ *
+ * The move is driven by framer motion values rather than a CSS transform
+ * string, because each card is also a shared-layout element: it is the same
+ * element that flies open into the lightbox. Framer's projection can only
+ * subtract transforms it set itself, so a hand-written `transform` here would
+ * be measured as part of the card and the flight would start in the wrong
+ * place. See `.deck-card` in globals.css.
  */
 
 /** Frame width, including the 5px border around the shot (see `.shot-frame`). */
@@ -40,6 +48,32 @@ const CLEAR = CARD + 8;
 const PACK = 22;
 /** Cards with no room to clear the open one only edge away from it. */
 const PUSH = 20;
+
+/**
+ * How much smaller the whole fan is on a phone.
+ *
+ * This used to be a `scale()` inside each card's transform. It cannot be:
+ * framer never sees a CSS transform, so it would measure the card at 210px
+ * while it was really 147px on screen and the flight would land short. The
+ * factor is applied to the numbers instead, and `.deck-card` / `.shot-frame`
+ * size themselves off the matching `--deck-scale`.
+ */
+const SMALL = 0.7;
+const WIDE = "(min-width: 640px)";
+
+function subscribe(onChange: () => void) {
+	const query = window.matchMedia(WIDE);
+	query.addEventListener("change", onChange);
+	return () => query.removeEventListener("change", onChange);
+}
+
+function getSnapshot() {
+	return window.matchMedia(WIDE).matches;
+}
+
+function getServerSnapshot() {
+	return true;
+}
 
 function middleOf(count: number) {
 	return (count - 1) / 2;
@@ -80,6 +114,12 @@ const NAME_LEAVE = {
 };
 const NAME_TRAVEL = { duration: 0.28, ease: EASE };
 
+/** The fan's own movement, kept at the feel the CSS transition had. */
+const FAN = { duration: 0.5, ease: EASE };
+
+/** Long enough for a tapped card to straighten before it opens. */
+const STRAIGHTEN_MS = 120;
+
 type Place = { x: number; y: number; tilt: number };
 
 /**
@@ -91,11 +131,7 @@ type Place = { x: number; y: number; tilt: number };
  * packs tight beyond it. The shorter side has nowhere to go, so it only edges
  * outwards.
  */
-function placeFor(
-	index: number,
-	focused: number | null,
-	count: number,
-): Place {
+function placeFor(index: number, focused: number | null, count: number): Place {
 	if (focused === null) {
 		return { x: restX(index, count), y: 0, tilt: restTilt(index, count) };
 	}
@@ -123,30 +159,45 @@ export function Showcase({
 	/** Its place in the section's reveal order. */
 	stageIndex?: number;
 }) {
+	const isWide = useSyncExternalStore(
+		subscribe,
+		getSnapshot,
+		getServerSnapshot,
+	);
+	const k = isWide ? 1 : SMALL;
+
 	const [open, setOpen] = useState<number | null>(null);
 	const [focused, setFocused] = useState<number | null>(null);
-	const cards = useRef<(HTMLButtonElement | null)[]>([]);
+	const straighten = useRef<number | null>(null);
 
 	/**
-	 * Measured live rather than captured on click, so the lightbox flies from
-	 * wherever the card actually is — and the cards move now.
+	 * A phone has no hover, so a tap would otherwise open a card while it is
+	 * still tilted — and framer's projection cannot measure a rotated box, it
+	 * measures the larger upright box around it.
+	 *
+	 * So a tap on a card that is not already open pulls it out of the fan
+	 * first, exactly as hover does, and opens it once it is straight. On a
+	 * pointer device `onPointerEnter` has already run, so this opens at once.
 	 */
-	const getCardRect = useCallback((index: number): CardRect | null => {
-		const card = cards.current[index];
-		if (!card) return null;
+	const handleClick = useCallback(
+		(index: number) => {
+			if (focused === index) {
+				setOpen(index);
+				return;
+			}
 
-		const rect = card.getBoundingClientRect();
+			setFocused(index);
 
-		return {
-			top: rect.top,
-			left: rect.left,
-			width: rect.width,
-			height: rect.height,
-			// a click always opens the card it is hovering, and that card has
-			// already straightened up
-			rotate: 0,
-		};
-	}, []);
+			if (straighten.current !== null) {
+				window.clearTimeout(straighten.current);
+			}
+			straighten.current = window.setTimeout(
+				() => setOpen(index),
+				STRAIGHTEN_MS,
+			);
+		},
+		[focused],
+	);
 
 	return (
 		<>
@@ -155,32 +206,51 @@ export function Showcase({
 				style={{ "--i": stageIndex } as CSSProperties}
 			>
 				{/* The cards are absolutely placed, so the deck needs its own
-				    height. `--deck-scale` shrinks the whole fan on a phone rather
-				    than restacking it — see `.deck` in globals.css. */}
+				    height. On a phone the whole fan is smaller — a real size
+				    change, not a scale; see `.deck` in globals.css. */}
 				<div className="deck" onPointerLeave={() => setFocused(null)}>
 					{showcase.map((shot, index) => {
 						const at = placeFor(index, focused, showcase.length);
 
 						return (
-							<button
-								// the src alone is not unique: the same shot can
-								// appear twice in the deck
-								key={`${shot.src}-${index}`}
-								ref={(node) => {
-									cards.current[index] = node;
-								}}
+							<motion.button
+								// The src alone is not unique — the same shot can
+								// appear twice in the deck.
+								//
+								// The breakpoint is in the key on purpose. The
+								// server has to guess a width, so the first
+								// render is the desktop fan; without the
+								// remount, framer would treat the correction to
+								// the phone fan as a change to animate and
+								// every phone load would slide into place.
+								key={`${shot.src}-${index}-${isWide ? "w" : "n"}`}
+								// the card and the opened frame are the same
+								// element as far as framer is concerned, which is
+								// what makes one morph into the other
+								layoutId={`shot-${index}`}
 								type="button"
 								aria-label={`Open ${shot.name}`}
-								onClick={() => setOpen(index)}
+								onClick={() => handleClick(index)}
 								onPointerEnter={() => setFocused(index)}
 								onFocus={() => setFocused(index)}
+								// no entry animation: without this the cards
+								// render stacked at the deck's centre and only
+								// fan out once the first frame runs, which
+								// reads as a flash on every load
+								initial={false}
+								// motion values, not a transform string: framer
+								// has to own these to be able to subtract them
+								// when it measures
+								animate={{
+									x: at.x * k,
+									y: at.y * k,
+									rotate: at.tilt,
+								}}
+								transition={FAN}
 								style={{
 									zIndex: layerFor(index, showcase.length),
-									// the scale sits before the offset so the whole
-									// fan shrinks together, spacing included
-									transform: `translate(-50%, -50%) scale(var(--deck-scale)) translate(${at.x}px, ${at.y}px) rotate(${at.tilt}deg)`,
 								}}
-								className="shot-frame deck-card w-[210px]"
+								className="shot-frame deck-card"
 							>
 								<Image
 									src={shot.src}
@@ -190,7 +260,7 @@ export function Showcase({
 									sizes="210px"
 									className="aspect-16/10 w-full rounded-[6.5px] object-cover object-top"
 								/>
-							</button>
+							</motion.button>
 						);
 					})}
 				</div>
@@ -225,7 +295,6 @@ export function Showcase({
 			<ShowcaseLightbox
 				items={showcase}
 				index={open}
-				getCardRect={getCardRect}
 				onClose={() => setOpen(null)}
 				onIndexChange={setOpen}
 			/>

@@ -1,7 +1,7 @@
 import type { CSSProperties } from "react";
 import Image from "next/image";
 import { CONTENT_INDEX, Section } from "@/components/section";
-import { personal } from "@/lib/data";
+import { personal, profile } from "@/lib/data";
 
 const CAPTION_CLASS =
 	"font-mono text-[11px] tracking-label text-mute uppercase";
@@ -20,7 +20,21 @@ export function Personal() {
 	const { width, overlap } = rowSizing(personal.photos.items.length);
 
 	return (
-		<Section label="Personal" intro={personal.blurb}>
+		<Section
+			label="Personal"
+			intro={
+				// The name carries the site's usual emphasis and the rest sits
+				// back in the muted tone the paragraph already has, so the eye
+				// lands on who this is before reading the sentence.
+				<>
+					I am{" "}
+					<span className="font-medium text-ink">{profile.name}</span>
+					, an engineer at {profile.company} in {profile.location},
+					building backend systems that hold up at scale and the
+					interfaces that sit on top of them. {personal.blurb}
+				</>
+			}
+		>
 			<div className="flex flex-col gap-6">
 				<div className="flex flex-col gap-4">
 					<div
