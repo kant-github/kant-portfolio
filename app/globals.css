@@ -487,6 +487,67 @@ body {
 	animation: dock-in 620ms cubic-bezier(0.22, 1, 0.36, 1) 1000ms both;
 }
 
+/* Sun in light mode, moon in dark (components/theme-icon.tsx). Each state
+ * holds the timing for arriving at it: going dark the rays leave first and
+ * the moon follows, going light the moon lets go first and the rays return. */
+.theme-icon-body,
+.theme-icon-rays {
+	transform-box: view-box;
+	transform-origin: 12px 12px;
+}
+
+.theme-icon-body {
+	transform: scale(0.5);
+	transition: transform 480ms cubic-bezier(0.22, 1, 0.36, 1);
+}
+
+.theme-icon-bite {
+	transform: translate(7px, -7px);
+	transition: transform 420ms cubic-bezier(0.22, 1, 0.36, 1);
+}
+
+.theme-icon-rays {
+	transition:
+		transform 520ms cubic-bezier(0.34, 1.4, 0.64, 1) 140ms,
+		opacity 260ms ease-out 140ms;
+}
+
+.dark .theme-icon-body {
+	transform: scale(1);
+	transition-delay: 90ms;
+}
+
+.dark .theme-icon-bite {
+	transform: none;
+	transition: transform 520ms cubic-bezier(0.22, 1, 0.36, 1) 90ms;
+}
+
+.dark .theme-icon-rays {
+	transform: rotate(90deg) scale(0.5);
+	opacity: 0;
+	transition:
+		transform 420ms cubic-bezier(0.22, 1, 0.36, 1),
+		opacity 200ms ease-out;
+}
+
+@media (prefers-reduced-motion: reduce) {
+	.theme-icon * {
+		transition: none !important;
+	}
+}
+
+@keyframes dock-label-in {
+	from {
+		opacity: 0;
+		transform: translateY(4px);
+		filter: blur(3px);
+	}
+}
+
+.dock-label-in {
+	animation: dock-label-in 240ms cubic-bezier(0.22, 1, 0.36, 1);
+}
+
 [data-overlay="open"] .dock-in {
 	opacity: 0 !important;
 	pointer-events: none;

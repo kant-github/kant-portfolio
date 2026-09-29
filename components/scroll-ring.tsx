@@ -9,12 +9,9 @@ import {
 } from "framer-motion";
 import { useEffect } from "react";
 
-const SIZE = 32;
-const RADIUS = 12;
+const RADIUS = 8.5;
 
-const TRACK_WIDTH = 1.5;
-const PROGRESS_WIDTH = 2.5;
-
+/** How far down the page the reader is, drawn as a ring that fills clockwise. */
 export function ScrollRing() {
 	const prefersReducedMotion = useReducedMotion();
 	const raw = useMotionValue(0);
@@ -51,29 +48,28 @@ export function ScrollRing() {
 
 	return (
 		<svg
-			viewBox={`0 0 ${SIZE} ${SIZE}`}
-			className="pointer-events-none absolute inset-0 z-10 size-full"
+			viewBox="0 0 24 24"
+			className="size-6 shrink-0 -rotate-90"
 			aria-hidden="true"
 		>
 			<circle
-				cx={SIZE / 2}
-				cy={SIZE / 2}
+				cx="12"
+				cy="12"
 				r={RADIUS}
 				fill="none"
-				stroke="var(--color-dock-track)"
-				strokeWidth={TRACK_WIDTH}
+				className="stroke-neutral-300 dark:stroke-neutral-600/70"
+				strokeWidth={1.25}
 			/>
 			<motion.circle
-				cx={SIZE / 2}
-				cy={SIZE / 2}
+				cx="12"
+				cy="12"
 				r={RADIUS}
 				fill="none"
-				stroke="var(--color-dock-progress)"
-				strokeWidth={PROGRESS_WIDTH}
+				stroke="#2667ff"
+				strokeWidth={2}
 				strokeLinecap="round"
 				pathLength={1}
 				strokeDasharray="1 1"
-				transform={`rotate(-90 ${SIZE / 2} ${SIZE / 2})`}
 				style={{ strokeDashoffset: offset }}
 			/>
 		</svg>

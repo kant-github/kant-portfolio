@@ -1,6 +1,9 @@
 export type Theme = "light" | "dark";
 
-const NO_TRANSITIONS = "*,*::before,*::after{transition:none!important}";
+// everything snaps to the new theme at once, except the dock's sun and moon,
+// which is meant to be seen morphing
+const NO_TRANSITIONS =
+	"*:not(.theme-icon,.theme-icon *),*::before,*::after{transition:none!important}";
 const REVEAL = { duration: 560, easing: "cubic-bezier(0.22, 1, 0.36, 1)" };
 
 function paint(next: Theme) {
