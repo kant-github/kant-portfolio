@@ -254,9 +254,6 @@ export const stack: StackItem[] = [
 export const personal = {
 	blurb: "Away from the terminal I am usually listening to something loud or reading about distributed systems.",
 	photos: {
-		caption: "Some moments from this year",
-		linkLabel: "See more on X",
-		href: socials.x,
 		items: [
 			{
 				src: "/images/gallery/01.jpg",

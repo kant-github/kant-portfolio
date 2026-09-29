@@ -270,7 +270,14 @@ export function ShowcaseLightbox({
 							    for the whole flight. `layout` makes framer undo
 							    the parent's scale each frame, so the picture
 							    keeps its shape and the frame crops it instead. */}
-							<motion.div layout className="size-full">
+							<motion.div
+								layout
+								// the radius lives here, not on the picture:
+								// framer corrects border-radius on a `layout`
+								// element as it scales, so the corners stay
+								// round the whole way through the morph
+								className="size-full overflow-hidden rounded-[6.5px]"
+							>
 								<Image
 									key={shot.src}
 									src={shot.src}

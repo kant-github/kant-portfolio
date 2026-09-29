@@ -3,9 +3,6 @@ import Image from "next/image";
 import { CONTENT_INDEX, Section } from "@/components/section";
 import { personal, profile } from "@/lib/data";
 
-const CAPTION_CLASS =
-	"font-mono text-[11px] tracking-label text-mute uppercase";
-
 const TILT = ["-5deg", "3deg", "-2deg", "4deg", "-3deg"];
 
 const CARD_CLASS =
@@ -64,23 +61,6 @@ export function Personal() {
 								/>
 							</figure>
 						))}
-					</div>
-
-					<div
-						className="stage-item flex items-center justify-between gap-4"
-						style={{ "--i": CONTENT_INDEX + 1 } as CSSProperties}
-					>
-						<p className={CAPTION_CLASS}>
-							{personal.photos.caption}
-						</p>
-						<a
-							href={personal.photos.href}
-							target="_blank"
-							rel="noreferrer"
-							className={`${CAPTION_CLASS} transition-opacity hover:opacity-70`}
-						>
-							{personal.photos.linkLabel}
-						</a>
 					</div>
 				</div>
 			</div>
