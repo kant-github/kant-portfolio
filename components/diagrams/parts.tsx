@@ -2,8 +2,8 @@ import type { ReactNode } from "react";
 
 export const INK = "var(--ink)";
 export const MUTE = "var(--mute)";
-export const LINE = "rgb(255 255 255 / 0.14)";
-export const SURFACE = "rgb(255 255 255 / 0.045)";
+export const LINE = "var(--diagram-line)";
+export const SURFACE = "var(--diagram-surface)";
 export const ACCENT = "#2767ff";
 export const WARN = "#e5893b";
 

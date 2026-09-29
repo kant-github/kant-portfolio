@@ -1,15 +1,19 @@
 "use client";
 
 import { motion } from "framer-motion";
-import { useState } from "react";
+import { useTheme } from "next-themes";
+import { useState, type MouseEvent } from "react";
 import {
 	RiArrowUpLine,
 	RiBriefcase4Fill,
 	RiBuilding2Fill,
 	RiImage2Fill,
+	RiMoonFill,
 	RiQuillPenFill,
+	RiSunFill,
 } from "react-icons/ri";
 import { ScrollRing } from "@/components/scroll-ring";
+import { switchTheme } from "@/lib/theme-switch";
 
 type DockItem = {
 	name: string;
@@ -25,10 +29,10 @@ const SECTIONS: DockItem[] = [
 ];
 
 const BUTTON_CLASS =
-	"group/item relative flex size-8 items-center justify-center rounded-md text-dock-ink transition duration-200 ease-out hover:bg-dock-hover hover:text-white focus-visible:bg-dock-hover focus-visible:text-white focus-visible:outline-none active:translate-y-0 sm:size-9";
+	"group/item relative flex size-8 items-center justify-center rounded-md text-dock-ink transition duration-200 ease-out hover:bg-dock-hover hover:text-dock-ink-hot focus-visible:bg-dock-hover focus-visible:text-dock-ink-hot focus-visible:outline-none active:translate-y-0 sm:size-9";
 
 const TIP_CLASS =
-	"pointer-events-none invisible absolute -top-9 left-1/2 -translate-x-1/2 translate-y-1 scale-95 rounded-lg bg-dock-tip px-2.5 py-1.5 font-mono text-[10px] leading-none tracking-label whitespace-nowrap text-white uppercase opacity-0 shadow-dock-tip ring-1 ring-dock-tip-edge transition duration-200 ease-out group-hover/item:visible group-hover/item:translate-y-0 group-hover/item:scale-100 group-hover/item:opacity-100 group-focus-visible/item:visible group-focus-visible/item:translate-y-0 group-focus-visible/item:scale-100 group-focus-visible/item:opacity-100";
+	"pointer-events-none invisible absolute -top-9 left-1/2 -translate-x-1/2 translate-y-1 scale-95 rounded-lg bg-dock-tip px-2.5 py-1.5 font-mono text-[10px] leading-none tracking-label whitespace-nowrap text-dock-tip-ink uppercase opacity-0 shadow-dock-tip ring-1 ring-dock-tip-edge transition duration-200 ease-out group-hover/item:visible group-hover/item:translate-y-0 group-hover/item:scale-100 group-hover/item:opacity-100 group-focus-visible/item:visible group-focus-visible/item:translate-y-0 group-focus-visible/item:scale-100 group-focus-visible/item:opacity-100";
 
 const GLIDE = {
 	type: "spring",
@@ -37,8 +41,26 @@ const GLIDE = {
 	mass: 0.6,
 } as const;
 
+const DIVIDER_CLASS =
+	"mx-1.5 h-5 w-px bg-linear-to-b from-dock-divider-top to-dock-divider-bottom";
+
 export function Dock() {
 	const [hovered, setHovered] = useState<string | null>(null);
+	const { setTheme } = useTheme();
+
+	// read from <html> rather than React state: the class is the truth, and it
+	// is already right on the first click, before next-themes has hydrated
+	function toggleTheme(event: MouseEvent<HTMLButtonElement>) {
+		const rect = event.currentTarget.getBoundingClientRect();
+		const dark = document.documentElement.classList.contains("dark");
+
+		switchTheme(
+			dark ? "light" : "dark",
+			rect.left + rect.width / 2,
+			rect.top + rect.height / 2,
+			setTheme,
+		);
+	}
 
 	const glider = (
 		<motion.span
@@ -77,10 +99,7 @@ export function Dock() {
 					);
 				})}
 
-				<span
-					className="mx-1.5 h-5 w-px bg-linear-to-b from-dock-divider-top to-dock-divider-bottom"
-					aria-hidden="true"
-				/>
+				<span className={DIVIDER_CLASS} aria-hidden="true" />
 
 				<a
 					href="/#top"
@@ -97,6 +116,33 @@ export function Dock() {
 					/>
 					<span className={TIP_CLASS}>Back to top</span>
 				</a>
+
+				<span className={DIVIDER_CLASS} aria-hidden="true" />
+
+				{/* Both icons are always rendered and CSS shows the right one,
+				    so the server HTML matches whichever theme loads. */}
+				<button
+					type="button"
+					aria-label="Switch between light and dark mode"
+					className={`${BUTTON_CLASS} cursor-pointer`}
+					onClick={toggleTheme}
+					onPointerEnter={() => setHovered("theme")}
+					onFocus={() => setHovered("theme")}
+				>
+					{hovered === "theme" ? glider : null}
+					<RiMoonFill
+						className="relative z-10 size-4 sm:size-4.5 dark:hidden"
+						aria-hidden="true"
+					/>
+					<RiSunFill
+						className="relative z-10 hidden size-4 sm:size-4.5 dark:block"
+						aria-hidden="true"
+					/>
+					<span className={TIP_CLASS}>
+						<span className="dark:hidden">Dark mode</span>
+						<span className="hidden dark:inline">Light mode</span>
+					</span>
+				</button>
 			</nav>
 		</div>
 	);

@@ -28,6 +28,7 @@ export default function RootLayout({ children }: LayoutProps<"/">) {
 	return (
 		<html
 			lang="en"
+			suppressHydrationWarning
 			className={`${inter.variable} ${geistMono.variable} h-full antialiased`}
 		>
 			<head>

@@ -49,7 +49,7 @@ function Callout({
 		>
 			<p className="flex items-center gap-2 text-ink">
 				<Icon
-					className={`size-4 shrink-0 ${tone === "warn" ? "text-amber-400" : "text-mute"}`}
+					className={`size-4 shrink-0 ${tone === "warn" ? "text-amber-500 dark:text-amber-400" : "text-mute"}`}
 					aria-hidden="true"
 				/>
 				<strong className="font-medium">{title}</strong>
@@ -158,7 +158,7 @@ export function Blocks({ items }: { items: Block[] }) {
 					case "image":
 						return (
 							<Figure key={key} caption={block.caption}>
-								<span className="mx-auto block max-w-sm rounded-lg bg-white p-1 shadow-card">
+								<span className="mx-auto block max-w-sm rounded-lg bg-white p-1 shadow-card ring-1 ring-black/5 dark:ring-0">
 									<Image
 										src={block.src}
 										alt={block.alt}

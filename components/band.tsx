@@ -1,7 +1,6 @@
 import type { ReactNode } from "react";
 
-const DOTS =
-	"radial-gradient(circle, rgb(255 255 255 / 0.1) 1px, transparent 1px)";
+const DOTS = "radial-gradient(circle, var(--dots) 1px, transparent 1px)";
 
 export function Band({
 	children,

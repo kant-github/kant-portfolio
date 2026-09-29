@@ -15,14 +15,27 @@ export const socials = {
 	x: "https://x.com/khairrishi",
 };
 
-export const socialLinks = [
+export type SocialLink = {
+	name: string;
+	href: string;
+	icon: string;
+	/** A white-only icon, flipped to black in light mode. */
+	mono?: boolean;
+};
+
+export const socialLinks: SocialLink[] = [
 	{
 		name: "Email",
 		href: `mailto:${profile.email}`,
 		icon: "/images/social/gmail.svg",
 	},
-	{ name: "GitHub", href: socials.github, icon: "/images/social/github.svg" },
-	{ name: "X", href: socials.x, icon: "/images/social/x.svg" },
+	{
+		name: "GitHub",
+		href: socials.github,
+		icon: "/images/social/github.svg",
+		mono: true,
+	},
+	{ name: "X", href: socials.x, icon: "/images/social/x.svg", mono: true },
 	{
 		name: "LinkedIn",
 		href: socials.linkedin,
@@ -123,6 +136,8 @@ export type StackItem = {
 	note: string;
 	logo: string;
 	href: string;
+	/** A white-only logo, flipped to black in light mode. */
+	mono?: boolean;
 };
 
 export const stack: StackItem[] = [
@@ -136,6 +151,7 @@ export const stack: StackItem[] = [
 		name: "Next.js",
 		note: "Framework",
 		logo: "/images/stack/nextjs.svg",
+		mono: true,
 		href: "https://nextjs.org",
 	},
 	{
@@ -160,6 +176,7 @@ export const stack: StackItem[] = [
 		name: "Socket.IO",
 		note: "Realtime",
 		logo: "/images/stack/socketio.svg",
+		mono: true,
 		href: "https://socket.io",
 	},
 	{
@@ -178,6 +195,7 @@ export const stack: StackItem[] = [
 		name: "Kafka",
 		note: "Streaming",
 		logo: "/images/stack/kafka.svg",
+		mono: true,
 		href: "https://kafka.apache.org",
 	},
 	{
@@ -196,6 +214,7 @@ export const stack: StackItem[] = [
 		name: "AWS",
 		note: "Infrastructure",
 		logo: "/images/stack/amazonwebservices.svg",
+		mono: true,
 		href: "https://aws.amazon.com",
 	},
 	{
@@ -214,6 +233,7 @@ export const stack: StackItem[] = [
 		name: "Solidity",
 		note: "Smart contracts",
 		logo: "/images/stack/solidity.svg",
+		mono: true,
 		href: "https://soliditylang.org",
 	},
 	{
@@ -226,6 +246,7 @@ export const stack: StackItem[] = [
 		name: "GitHub",
 		note: "Code & CI",
 		logo: "/images/stack/github.svg",
+		mono: true,
 		href: "https://github.com",
 	},
 ];

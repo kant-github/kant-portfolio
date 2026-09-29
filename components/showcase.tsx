@@ -1,5 +1,6 @@
 "use client";
 
+import { AnimatePresence, motion } from "framer-motion";
 import Image from "next/image";
 import { useCallback, useRef, useState, type CSSProperties } from "react";
 import { CONTENT_INDEX } from "@/components/section";
@@ -8,6 +9,7 @@ import {
 	type CardRect,
 } from "@/components/showcase-lightbox";
 import { showcase } from "@/lib/data";
+import { EASE } from "@/lib/motion";
 
 /**
  * A fanned deck of screenshots, the way perfolios.shwn.design does it.
@@ -60,6 +62,23 @@ function restTilt(index: number, count: number) {
 function layerFor(index: number, count: number) {
 	return Math.ceil(count / 2) - Math.abs(index - Math.floor(middleOf(count)));
 }
+
+/**
+ * The name under the deck. It comes up out of a blur and leaves upwards, so a
+ * swap reads as one name handing over to the next rather than two separate
+ * fades.
+ */
+const NAME_ENTER = { opacity: 0, filter: "blur(4px)", y: 4 };
+const NAME_REST = { opacity: 1, filter: "blur(0px)", y: 0 };
+const NAME_LEAVE = {
+	opacity: 0,
+	filter: "blur(4px)",
+	y: -4,
+	// shorter than the entrance: sweeping across the deck leaves one layer
+	// per card behind, and they need to clear faster than they arrive
+	transition: { duration: 0.18, ease: EASE },
+};
+const NAME_TRAVEL = { duration: 0.28, ease: EASE };
 
 type Place = { x: number; y: number; tilt: number };
 
@@ -129,9 +148,6 @@ export function Showcase({
 		};
 	}, []);
 
-	/** The middle card carries the name line while nothing is hovered. */
-	const named = focused ?? Math.floor(middleOf(showcase.length));
-
 	return (
 		<>
 			<div
@@ -179,10 +195,31 @@ export function Showcase({
 					})}
 				</div>
 
-				{/* the line is always present, so nothing jumps as the name changes */}
-				<p className="text-center text-sm font-medium text-ink">
-					{showcase[named]?.name}
-				</p>
+				{/* The name belongs to whichever card is open, so there is
+				    nothing to say until one is. The box keeps its height
+				    either way, so the page never jumps.
+
+				    Both names are on top of each other while they swap — the
+				    old one rises and blurs away as the new one comes up out of
+				    a blur — which is why they are taken out of the flow. */}
+				<div className="relative h-6">
+					<AnimatePresence initial={false}>
+						{focused === null ? null : (
+							<motion.p
+								// by index, not by name: two cards can share a
+								// name, and that should still animate
+								key={focused}
+								initial={NAME_ENTER}
+								animate={NAME_REST}
+								exit={NAME_LEAVE}
+								transition={NAME_TRAVEL}
+								className="absolute inset-x-0 text-center text-sm font-medium text-ink"
+							>
+								{showcase[focused].name}
+							</motion.p>
+						)}
+					</AnimatePresence>
+				</div>
 			</div>
 
 			<ShowcaseLightbox

@@ -259,7 +259,7 @@ export function ShowcaseLightbox({
 						aria-label="Close"
 						tabIndex={-1}
 						onClick={() => void requestClose()}
-						className="absolute inset-0 cursor-default bg-black opacity-0"
+						className="absolute inset-0 cursor-default bg-page opacity-0"
 					/>
 
 					<div
@@ -271,7 +271,7 @@ export function ShowcaseLightbox({
 					>
 						<div
 							ref={frameRef}
-							className="overflow-hidden rounded-xl bg-white p-1.5 shadow-card will-change-transform"
+							className="overflow-hidden rounded-xl bg-white p-1.5 shadow-card ring-1 ring-black/5 will-change-transform dark:ring-0"
 						>
 							<Image
 								key={shot.src}

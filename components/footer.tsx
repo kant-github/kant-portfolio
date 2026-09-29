@@ -29,7 +29,7 @@ export function Footer() {
 								width={18}
 								height={18}
 								unoptimized
-								className="size-[18px]"
+								className={`size-[18px] ${link.mono ? "mono-icon" : ""}`}
 							/>
 						</a>
 					</li>

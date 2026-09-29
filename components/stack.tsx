@@ -27,7 +27,7 @@ export function Stack() {
 								alt={item.name}
 								width={36}
 								height={36}
-								className="size-9 object-contain"
+								className={`size-9 object-contain ${item.mono ? "mono-icon" : ""}`}
 							/>
 						</a>
 					</li>

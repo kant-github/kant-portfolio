@@ -28,7 +28,7 @@ export function Header() {
 					role="img"
 					aria-label="Online"
 					title="Online"
-					className="dot-pop absolute -right-0.25 -bottom-0.25 size-4 rounded-full border-2 border-black bg-green-400 shadow-dot"
+					className="dot-pop absolute -right-0.25 -bottom-0.25 size-4 rounded-full border-2 border-page bg-green-400 shadow-dot"
 				/>
 			</div>
 

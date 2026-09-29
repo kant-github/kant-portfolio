@@ -3,12 +3,13 @@ import Image from "next/image";
 import { CONTENT_INDEX, Section } from "@/components/section";
 import { personal } from "@/lib/data";
 
-const CAPTION_CLASS = "font-mono text-[11px] tracking-label text-mute uppercase";
+const CAPTION_CLASS =
+	"font-mono text-[11px] tracking-label text-mute uppercase";
 
 const TILT = ["-5deg", "3deg", "-2deg", "4deg", "-3deg"];
 
 const CARD_CLASS =
-	"relative shrink-0 rounded-lg bg-white p-1 shadow-card rotate-(--tilt) transition duration-300 hover:z-10 hover:-translate-y-2 hover:rotate-0";
+	"relative shrink-0 rounded-lg bg-white p-1 shadow-card ring-1 ring-black/5 rotate-(--tilt) dark:ring-0 transition duration-300 hover:z-10 hover:-translate-y-2 hover:rotate-0";
 
 function rowSizing(count: number) {
 	const width = 400 / (3 * count + 1);
