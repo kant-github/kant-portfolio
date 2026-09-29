@@ -20,9 +20,6 @@ export function Personal() {
 		<Section
 			label="Personal"
 			intro={
-				// The name carries the site's usual emphasis and the rest sits
-				// back in the muted tone the paragraph already has, so the eye
-				// lands on who this is before reading the sentence.
 				<>
 					I am{" "}
 					<span className="font-medium text-ink">{profile.name}</span>
@@ -30,8 +27,6 @@ export function Personal() {
 					currently exploring infrastructure, the Ethereum chain,
 					lending protocols, cryptography, and how MPC works under the
 					hood.
-					{/* the personal half starts its own line: what I do, then
-					    what I do when I am not doing it */}
 					<br />
 					<br />
 					{personal.blurb}

@@ -13,30 +13,14 @@ import {
 import type { Shot } from "@/lib/data";
 import { closeOverlay, openOverlay } from "@/lib/overlay-state";
 
-/**
- * The backdrop fades all the way in, and its tint lives in the background
- * colour instead (`bg-page/70`).
- *
- * It has to be that way round. An opaque background on a half-opaque element
- * paints straight over the blurred layer underneath it, so the blur does
- * nothing and the page behind shows through sharp — which is exactly what the
- * first attempt looked like.
- */
 const BACKDROP = 1;
 const TRAVEL = { duration: 0.44, ease: [0.22, 1, 0.36, 1] as const };
 
-/**
- * The caption leaves far faster than the picture does. It is not travelling
- * anywhere — it has no card to fly back to — so holding it on screen for the
- * whole return flight just looks like it was forgotten.
- */
 const META_IN = {
 	duration: 0.3,
 	ease: [0.22, 1, 0.36, 1] as const,
 	delay: 0.14,
 };
-const META_OUT = { duration: 0.12, ease: [0.4, 0, 1, 1] as const };
-const META_HIDDEN = { opacity: 0, transform: "translateY(6px)" };
 const META_SHOWN = { opacity: 1, transform: "translateY(0px)" };
 
 const FOCUSABLE =
@@ -105,14 +89,6 @@ export function ShowcaseLightbox({
 		};
 	}, [open]);
 
-	/**
-	 * The caption is the only thing driven by hand here.
-	 *
-	 * The picture is not animated in this file at all. It shares a `layoutId`
-	 * with the deck card, so framer measures both boxes and morphs one into
-	 * the other — animating width and height separately and scale-correcting
-	 * as it goes.
-	 */
 	useEffect(() => {
 		if (index === null) return;
 
@@ -126,16 +102,6 @@ export function ShowcaseLightbox({
 		// eslint-disable-next-line react-hooks/exhaustive-deps
 	}, [open]);
 
-	/**
-	 * Closes at once.
-	 *
-	 * Unmounting is what hands the picture back to framer to fly home, so
-	 * anything awaited here is dead time on screen. The previous version
-	 * awaited the backdrop fade first — 440ms of nothing moving, and then the
-	 * picture flew home over a page that had already gone bare.
-	 *
-	 * The backdrop now fades in parallel, through its own AnimatePresence.
-	 */
 	const requestClose = useCallback(() => {
 		if (index === null) return;
 		onClose();
@@ -207,9 +173,6 @@ export function ShowcaseLightbox({
 
 	return createPortal(
 		<>
-			{/* Its own presence, on its own layer. The panel below unmounts the
-			    instant you close so the picture can start flying home, and the
-			    backdrop stays behind to fade out alongside it. */}
 			<AnimatePresence>
 				{open ? (
 					<motion.button
@@ -222,10 +185,7 @@ export function ShowcaseLightbox({
 						exit={{ opacity: 0 }}
 						transition={TRAVEL}
 						onClick={requestClose}
-						// Off the moment it starts leaving. It is still on
-						// screen while it fades, and a full-screen button at
-						// zero opacity would otherwise swallow every click on
-						// the page behind it.
+
 						style={{ pointerEvents: open ? "auto" : "none" }}
 						className="fixed inset-0 z-[59] cursor-default bg-page/70 backdrop-blur-xl"
 					/>
@@ -235,7 +195,7 @@ export function ShowcaseLightbox({
 			{shot && index !== null ? (
 				<div
 					key="lightbox"
-					// lets a click outside the panel reach the backdrop below
+
 					className="pointer-events-none fixed inset-0 z-[60] flex items-center justify-center p-4 sm:p-8"
 				>
 					<div
@@ -246,36 +206,19 @@ export function ShowcaseLightbox({
 						className="pointer-events-auto relative flex w-full max-w-lg flex-col gap-4"
 					>
 						<motion.div
-							// the same id the deck card carries: framer treats
-							// them as one element and morphs between them
 							layoutId={`shot-${index}`}
-							// without this the node roots itself at its React
-							// parent, whose transforms and scroll do not apply
-							// to an element portalled under <body> — and the
-							// flight silently starts from the wrong place
+
 							data-framer-portal-id="showcase"
 							transition={TRAVEL}
-							// the same frame class the deck card uses, so the
-							// border, hairline, lit rim and shadow are one
-							// element throughout and nothing snaps
+
 							className="shot-frame w-full overflow-hidden"
 							style={{
 								aspectRatio: `${shot.width} / ${shot.height}`,
 							}}
 						>
-							{/* Scale-corrected. The frame is scaled non-uniformly
-							    while it morphs, and a plain child inherits that
-							    — the picture was rendering at ratio 1.57 when
-							    its true ratio is 1.33, an 18% squash that ran
-							    for the whole flight. `layout` makes framer undo
-							    the parent's scale each frame, so the picture
-							    keeps its shape and the frame crops it instead. */}
 							<motion.div
 								layout
-								// the radius lives here, not on the picture:
-								// framer corrects border-radius on a `layout`
-								// element as it scales, so the corners stay
-								// round the whole way through the morph
+
 								className="size-full overflow-hidden rounded-[6.5px]"
 							>
 								<Image
@@ -287,10 +230,7 @@ export function ShowcaseLightbox({
 									sizes="(min-width: 512px) 512px, 92vw"
 									priority
 									unoptimized
-									// object-cover at the shot's own ratio crops
-									// nothing here, and crops to 16:10 back in the
-									// deck — so the crop simply opens out as the
-									// frame changes shape
+
 									className="size-full object-cover object-top"
 								/>
 							</motion.div>

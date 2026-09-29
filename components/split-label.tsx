@@ -7,7 +7,7 @@ export function SplitLabel({
 }: {
 	text: string;
 	className?: string;
-	/** Its place in the section's reveal order. */
+
 	index?: number;
 }) {
 	const chars = [...text];

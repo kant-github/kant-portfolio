@@ -48,8 +48,6 @@ export function Dock() {
 	const [hovered, setHovered] = useState<string | null>(null);
 	const { setTheme } = useTheme();
 
-	// read from <html> rather than React state: the class is the truth, and it
-	// is already right on the first click, before next-themes has hydrated
 	function toggleTheme(event: MouseEvent<HTMLButtonElement>) {
 		const rect = event.currentTarget.getBoundingClientRect();
 		const dark = document.documentElement.classList.contains("dark");
@@ -119,8 +117,6 @@ export function Dock() {
 
 				<span className={DIVIDER_CLASS} aria-hidden="true" />
 
-				{/* Both icons are always rendered and CSS shows the right one,
-				    so the server HTML matches whichever theme loads. */}
 				<button
 					type="button"
 					aria-label="Switch between light and dark mode"

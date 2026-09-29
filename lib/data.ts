@@ -19,7 +19,7 @@ export type SocialLink = {
 	name: string;
 	href: string;
 	icon: string;
-	/** A white-only icon, flipped to black in light mode. */
+
 	mono?: boolean;
 };
 
@@ -136,7 +136,7 @@ export type StackItem = {
 	note: string;
 	logo: string;
 	href: string;
-	/** A white-only logo, flipped to black in light mode. */
+
 	mono?: boolean;
 };
 

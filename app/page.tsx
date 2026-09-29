@@ -21,9 +21,7 @@ export default function Home() {
 				<ScrollStage id="writing">
 					<Writing />
 				</ScrollStage>
-				{/* Last on the page now, so it can never scroll far enough to
-				    reach a centre-of-viewport trigger. latchAtBottom finishes
-				    the reveal once there is nothing left to scroll. */}
+
 				<ScrollStage id="personal" latchAtBottom>
 					<Personal />
 				</ScrollStage>

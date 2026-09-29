@@ -2,8 +2,6 @@
 
 @custom-variant dark (&:where(.dark, .dark *));
 
-/* Light is the base. `.dark` on <html> (set by next-themes) swaps every token,
- * so components only ever name a token, never a raw colour. */
 :root {
 	--page: #fafafa;
 	--ink: #111111;
@@ -13,7 +11,6 @@
 	--surface: rgb(0 0 0 / 0.03);
 	--dots: rgb(0 0 0 / 0.09);
 
-	/* edge highlights: rgb channels and how strong they are */
 	--rim: 0 0 0;
 	--rim-k: 0.3;
 
@@ -69,7 +66,6 @@
 	--diagram-line: rgb(0 0 0 / 0.16);
 	--diagram-surface: rgb(0 0 0 / 0.03);
 
-	/* white-only logos are flipped to black; hue-rotate keeps any colour */
 	--mono-filter: invert(1) hue-rotate(180deg);
 }
 
@@ -668,7 +664,6 @@ body {
 	tab-size: 2;
 }
 
-/* Shiki writes both palettes as variables; the theme picks one. */
 .article .code-body .shiki,
 .article .code-body .shiki span {
 	color: var(--shiki-light);
@@ -720,13 +715,11 @@ body {
 
 .shot-frame {
 	position: relative;
-	/* --frame-k lets the deck shrink the frame on a phone without a
-	 * transform; everywhere else it stays 1 */
+
 	border-radius: calc(10px * var(--frame-k, 1));
 	background: var(--color-shot-frame);
 	padding: calc(4.5px * var(--frame-k, 1));
-	/* a hairline all the way round so the frame still has an edge on its dark
-	 * side, then the drop that lifts it off the page */
+
 	box-shadow:
 		0 0 0 0.5px var(--shot-hairline),
 		0 16px 40px -8px var(--shot-drop);
@@ -754,14 +747,6 @@ body {
 	z-index: 1;
 }
 
-/**
- * The deck's own box. The cards inside are absolutely placed, so this is what
- * gives the fan its height.
- *
- * A phone gets the same fan at 70%, not a restacked list: the reference shrinks
- * it rather than changing its shape, and the scale sits inside each card's
- * transform so the spacing shrinks with the cards.
- */
 .deck {
 	position: relative;
 	width: 100%;
@@ -777,22 +762,7 @@ body {
 	}
 }
 
-/**
- * A card in the fan.
- *
- * Everything here is deliberately kept out of `transform`, because framer owns
- * that now: the card is a shared-layout element, and framer's projection can
- * only account for transforms it set itself as motion values. Anything written
- * here as a `transform` would be baked into the measurement and never
- * subtracted, and the open animation would fly from the wrong place.
- *
- * So the phone's smaller deck is a real size change, not a `scale()`, and the
- * centring uses the standalone `translate` property, which composes before
- * `transform` rather than competing with it.
- */
 .deck-card {
-	/* set here rather than with utilities: .shot-frame is plain CSS and
-	 * Tailwind's are layered, so its `position: relative` would win */
 	position: absolute;
 	top: 50%;
 	left: 50%;
@@ -806,8 +776,6 @@ body {
 	outline-offset: 4px;
 }
 
-/* The theme switch: the new theme grows out of the dock button as a circle
- * (see ThemeToggle). The default cross-fade is turned off so only that runs. */
 ::view-transition-old(root),
 ::view-transition-new(root) {
 	animation: none;
@@ -820,8 +788,6 @@ body {
 
 @media (prefers-reduced-motion: reduce) {
 	.deck-card {
-		/* framer drives the fan now, and MotionConfig reducedMotion="user"
-		 * already makes it instant, so there is nothing to switch off here */
 		transition: none;
 	}
 }

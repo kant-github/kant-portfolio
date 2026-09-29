@@ -11,7 +11,7 @@ import { useEffect } from "react";
 
 const SIZE = 32;
 const RADIUS = 12;
-/** The unread part of the ring sits back; the progress arc carries the weight. */
+
 const TRACK_WIDTH = 1.5;
 const PROGRESS_WIDTH = 2.5;
 

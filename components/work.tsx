@@ -3,13 +3,6 @@ import { LABEL_CLASS } from "@/components/section";
 import { Showcase } from "@/components/showcase";
 import { SplitLabel } from "@/components/split-label";
 
-/**
- * The one section that leads with its content: the deck opens the page, and
- * the heading reads as a caption underneath it rather than a title above it.
- *
- * That flip is why this does not use `Section` — the stage indices have to run
- * deck, label, intro rather than the other way round.
- */
 export function Work() {
 	return (
 		<section className="flex flex-col gap-6">

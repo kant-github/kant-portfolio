@@ -35,7 +35,7 @@ export async function CodeBlock({
 	const html = highlighter.codeToHtml(code, {
 		lang: isSupported(lang) ? lang : "text",
 		themes: THEMES,
-		// no inline colour: globals.css picks --shiki-light or --shiki-dark
+
 		defaultColor: false,
 	});
 

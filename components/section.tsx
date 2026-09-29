@@ -12,7 +12,7 @@ export function Section({
 	children,
 }: {
 	label: string;
-	/** Rich, not just a string: a section may want a word picked out of it. */
+
 	intro?: ReactNode;
 	children: ReactNode;
 }) {

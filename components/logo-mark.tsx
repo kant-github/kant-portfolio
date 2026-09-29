@@ -1,10 +1,5 @@
 import type { CSSProperties, ReactNode } from "react";
 
-/**
- * The small tile every company logo sits in, so a square YC mark and a
- * rounded Twenty mark read as the same kind of thing. Just a faint fill and
- * a soft light on the top-left edge, kept almost invisible on purpose.
- */
 export function LogoMark({ children }: { children: ReactNode }) {
 	return (
 		<span
