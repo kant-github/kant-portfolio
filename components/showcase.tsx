@@ -215,7 +215,20 @@ export function Showcase({
 								aria-label={`Open ${shot.name}`}
 								onClick={() => setOpen(index)}
 								onPointerEnter={() => setFocused(index)}
-								onFocus={() => setFocused(index)}
+								// Keyboard focus only. The lightbox hands focus
+								// back to the card it came from when it closes,
+								// and a plain onFocus would take that as a
+								// reason to fan the deck open again — the deck
+								// would sit open until you hovered it.
+								onFocus={(event) => {
+									if (
+										event.currentTarget.matches(
+											":focus-visible",
+										)
+									) {
+										setFocused(index);
+									}
+								}}
 								// no entry animation: without this the cards
 								// render stacked at the deck's centre and only
 								// fan out once the first frame runs, which
