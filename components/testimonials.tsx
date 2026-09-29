@@ -25,8 +25,6 @@ export function Testimonials() {
 	const [revealed, setRevealed] = useState(false);
 	const [settled, setSettled] = useState(false);
 
-	// This board is the largest animation on the site and used to run
-	// regardless of the OS setting.
 	const still = prefersReducedMotion === true;
 	const shown = revealed || still;
 	const [focused, setFocused] = useState<string | null>(null);

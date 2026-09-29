@@ -6,24 +6,20 @@ import {
 	RiArrowUpLine,
 	RiBriefcase4Fill,
 	RiBuilding2Fill,
-	// RiChat3Fill,
 	RiImage2Fill,
 	RiQuillPenFill,
-	RiStackFill,
 } from "react-icons/ri";
 import { ScrollRing } from "@/components/scroll-ring";
 
 type DockItem = {
 	name: string;
 	href: string;
-	icon: typeof RiStackFill;
+	icon: typeof RiBriefcase4Fill;
 };
 
 const SECTIONS: DockItem[] = [
 	{ name: "Work", href: "/#work", icon: RiBriefcase4Fill },
 	{ name: "Experience", href: "/#experience", icon: RiBuilding2Fill },
-	// { name: "Testimonials", href: "/#testimonials", icon: RiChat3Fill },
-	{ name: "Stack", href: "/#stack", icon: RiStackFill },
 	{ name: "Writing", href: "/#writing", icon: RiQuillPenFill },
 	{ name: "Personal", href: "/#personal", icon: RiImage2Fill },
 ];
@@ -31,8 +27,6 @@ const SECTIONS: DockItem[] = [
 const BUTTON_CLASS =
 	"group/item relative flex size-8 items-center justify-center rounded-md text-dock-ink transition duration-200 ease-out hover:bg-dock-hover hover:text-white focus-visible:bg-dock-hover focus-visible:text-white focus-visible:outline-none active:translate-y-0 sm:size-9";
 
-// The tooltip is the one thing that fades, because it has to appear and
-// disappear. The dock itself is always fully solid.
 const TIP_CLASS =
 	"pointer-events-none invisible absolute -top-9 left-1/2 -translate-x-1/2 translate-y-1 scale-95 rounded-lg bg-dock-tip px-2.5 py-1.5 font-mono text-[10px] leading-none tracking-label whitespace-nowrap text-white uppercase opacity-0 shadow-dock-tip ring-1 ring-dock-tip-edge transition duration-200 ease-out group-hover/item:visible group-hover/item:translate-y-0 group-hover/item:scale-100 group-hover/item:opacity-100 group-focus-visible/item:visible group-focus-visible/item:translate-y-0 group-focus-visible/item:scale-100 group-focus-visible/item:opacity-100";
 
@@ -44,8 +38,6 @@ const GLIDE = {
 } as const;
 
 export function Dock() {
-	// One shared element that slides between buttons, rather than each button
-	// fading its own background in and out.
 	const [hovered, setHovered] = useState<string | null>(null);
 
 	const glider = (

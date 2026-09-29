@@ -20,19 +20,8 @@ import { STAGE_OFFSET, STAGE_SPRING } from "@/lib/motion";
 type ScrollStageProps = {
 	children: ReactNode;
 	className?: string;
-	/** Anchor target for the dock's section links. */
 	id?: string;
-	/**
-	 * Hold progress at 0 for this long after mount. Sections already on screen
-	 * at load would otherwise arrive half-revealed next to the overture.
-	 * Released early on the first user scroll.
-	 */
 	holdMs?: number;
-	/**
-	 * Finish the reveal once the document runs out of scroll. The last section
-	 * and the footer can never bring their top edge far enough up the viewport
-	 * to reach the end of the range on their own.
-	 */
 	latchAtBottom?: boolean;
 };
 
@@ -51,8 +40,6 @@ export function ScrollStage({
 		offset: [...STAGE_OFFSET],
 	});
 
-	// Progress only ever moves forward, so scrolling back up never un-reveals
-	// a section and nothing is ever caught half-blurred.
 	const latched = useMotionValue(0);
 	const smooth = useSpring(latched, STAGE_SPRING);
 
@@ -63,9 +50,6 @@ export function ScrollStage({
 		if (value > latched.get()) latched.set(value);
 	});
 
-	// A reload part-way down the page, or a back-navigation, restores the
-	// scroll position before we mount. Jump straight to the right value rather
-	// than animating up to it, which would flash.
 	useLayoutEffect(() => {
 		if (holding.current) return;
 
@@ -73,7 +57,6 @@ export function ScrollStage({
 		latched.set(value);
 		smooth.jump(value);
 
-		// Tells the failsafe in <head> that hydration landed.
 		document.documentElement.dataset.stageReady = "1";
 	}, [latched, smooth, scrollYProgress]);
 
@@ -89,13 +72,9 @@ export function ScrollStage({
 
 			latched.set(value);
 
-			// Already scrolled well past it: springing up now would just be a
-			// late animation on content the reader has already arrived at.
 			if (window.scrollY > window.innerHeight) smooth.jump(value);
 		};
 
-		// Someone who scrolled before hydration has opted out of the opening,
-		// so do not hold their content back behind it.
 		if (window.scrollY > 0) {
 			release();
 			return;
@@ -113,8 +92,6 @@ export function ScrollStage({
 		};
 	}, [holdMs, latched, smooth, scrollYProgress]);
 
-	// will-change goes on only while the section is genuinely moving, and is
-	// keyed off the smoothed value so it survives the spring's settle.
 	const live = useRef(false);
 
 	useMotionValueEvent(smooth, "change", (value) => {

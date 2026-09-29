@@ -43,12 +43,8 @@ export function CopyEmail() {
 		function handleKeyDown(event: KeyboardEvent) {
 			if (event.key.toLowerCase() !== "c") return;
 			if (event.metaKey || event.ctrlKey || event.altKey) return;
-			// A modal is up and owns the keyboard; copying silently behind it
-			// would be a surprise.
 			if (isOverlayOpen()) return;
 
-			// event.target is the document itself until something on the page
-			// has been focused, and the document has no closest().
 			const target = event.target;
 			if (
 				target instanceof Element &&

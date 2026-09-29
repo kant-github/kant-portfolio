@@ -31,8 +31,6 @@ export default function RootLayout({ children }: LayoutProps<"/">) {
 			className={`${inter.variable} ${geistMono.variable} h-full antialiased`}
 		>
 			<head>
-				{/* Staged sections render hidden and are revealed by JS. If JS never
-				    arrives, put everything back rather than leaving a blank page. */}
 				<noscript>
 					<style>{".stage{--p:1 !important}"}</style>
 				</noscript>

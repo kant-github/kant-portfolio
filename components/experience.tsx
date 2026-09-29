@@ -1,5 +1,6 @@
 import type { CSSProperties } from "react";
 import { CONTENT_INDEX, Section } from "@/components/section";
+import { TwentyBadge } from "@/components/twenty-badge";
 import { YcBadge } from "@/components/yc-badge";
 import { experience } from "@/lib/data";
 
@@ -31,6 +32,9 @@ export function Experience() {
 								className="inline-flex items-center gap-1.5 transition-opacity hover:opacity-70"
 							>
 								{item.badge === "yc" ? <YcBadge /> : null}
+								{item.badge === "twenty" ? (
+									<TwentyBadge />
+								) : null}
 								{item.org}
 							</a>
 						</p>

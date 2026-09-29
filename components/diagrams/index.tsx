@@ -203,8 +203,6 @@ function WsRedis() {
 }
 
 function TrafficPeaks() {
-	// A day of traffic: a low overnight trough, a working-day plateau, and one
-	// notification spike that dwarfs the mean.
 	const points = [
 		12, 9, 7, 6, 6, 8, 14, 26, 38, 44, 47, 45, 48, 52, 49, 46, 44, 92, 58,
 		42, 36, 28, 20, 15,
@@ -495,9 +493,6 @@ function LatencyBudget() {
 }
 
 function LineVsLoop() {
-	// Strict mirror: two 300-wide halves, centred at 160 and 460, divider at
-	// 310. Every element is placed relative to its own half's centre, which is
-	// what keeps the whole drawing balanced.
 	const leftMid = 160;
 	const rightMid = 460;
 	const stops = ["start", "build", "ship"];
@@ -519,7 +514,6 @@ function LineVsLoop() {
 				PROJECT
 			</text>
 
-			{/* the line: 210 wide, centred on leftMid */}
 			<line
 				x1={leftMid - 105}
 				y1={112}
@@ -546,7 +540,6 @@ function LineVsLoop() {
 					</g>
 				);
 			})}
-			{/* the full stop: a short bar where the line runs out */}
 			<line
 				x1={leftMid + 100}
 				y1={100}
@@ -584,7 +577,6 @@ function LineVsLoop() {
 				PRODUCT
 			</text>
 
-			{/* the loop: r=54 centred on rightMid, so both halves balance */}
 			<circle
 				cx={rightMid}
 				cy={112}

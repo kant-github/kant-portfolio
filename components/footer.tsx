@@ -23,8 +23,6 @@ export function Footer() {
 							title={link.name}
 							className="flex size-9 items-center justify-center rounded-md opacity-80 transition duration-200 hover:-translate-y-0.5 hover:bg-surface hover:opacity-100"
 						>
-							{/* real brand marks, served as-is: they are vector, so
-							    Next's raster pipeline has nothing to do here */}
 							<Image
 								src={link.icon}
 								alt=""

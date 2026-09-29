@@ -8,10 +8,6 @@ function countWords(text: string) {
 	return text.trim().split(/\s+/).filter(Boolean).length;
 }
 
-/**
- * Derived from the body rather than typed by hand, which is how the old
- * numbers drifted (four short paragraphs were labelled "6 m").
- */
 export function readingMinutes(blocks: Block[]) {
 	let words = 0;
 	let seconds = 0;
@@ -28,7 +24,10 @@ export function readingMinutes(blocks: Block[]) {
 				break;
 			case "list":
 			case "takeaways":
-				words += block.items.reduce((sum, item) => sum + countWords(item), 0);
+				words += block.items.reduce(
+					(sum, item) => sum + countWords(item),
+					0,
+				);
 				break;
 			case "callout":
 				words += countWords(block.title) + countWords(block.text);
@@ -43,7 +42,9 @@ export function readingMinutes(blocks: Block[]) {
 			case "image":
 				seconds += SECONDS_PER_FIGURE;
 				words += countWords(
-					block.type === "diagram" ? block.caption : (block.caption ?? ""),
+					block.type === "diagram"
+						? block.caption
+						: (block.caption ?? ""),
 				);
 				break;
 		}

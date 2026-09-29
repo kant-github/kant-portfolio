@@ -1,10 +1,6 @@
 import { LABEL_CLASS } from "@/components/section";
 import type { Block } from "@/lib/writing/types";
 
-/**
- * A skim path for anyone who will not read the whole thing. Inline rather than
- * a sidebar, so it works the same at 640px and at 375px.
- */
 export function Toc({ blocks }: { blocks: Block[] }) {
 	const headings = blocks.filter((block) => block.type === "h2");
 

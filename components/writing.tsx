@@ -7,40 +7,22 @@ import { CONTENT_INDEX, Section } from "@/components/section";
 import { postList } from "@/lib/writing";
 
 const ROW = 44;
-/** x of the trunk: the centre of the 24px folder chevron */
 const RAIL = 12;
-/** where a branch stops, just before a row's square icon */
 const END_X = 26;
-/** corner radius on each elbow */
 const BEND = 7;
-/** the trunk starts at the bottom edge of the chevron box */
-const TRUNK_TOP = 34;
+const TRUNK_TOP = 32;
 const DASH = "3.5 3";
 
-/** Vertical centre of child row i, measured from the top of the tree. */
 function rowCentre(index: number) {
 	return ROW + index * ROW + ROW / 2;
 }
 
-/**
- * The vertical run of the tree, from under the folder down to `toY`.
- */
 function Trunk({ toY }: { toY: number }) {
 	return (
 		<path d={`M ${RAIL} ${TRUNK_TOP} V ${toY}`} strokeDasharray={DASH} />
 	);
 }
 
-/**
- * Where a row peels off the trunk: a solid rounded corner, then a dashed arm.
- *
- * The corner is solid on purpose. Dashing it too was what made elbows look
- * chopped — wherever the dash pattern happened to land, the whole curve could
- * fall inside a gap, leaving two straight ends meeting at a sharp angle.
- *
- * Every row gets this same corner, lit or not, so the faint tree and the
- * hovered one are the same shape rather than a T-junction against a curve.
- */
 function Corner({ index }: { index: number }) {
 	const y = rowCentre(index);
 
@@ -57,10 +39,6 @@ function Corner({ index }: { index: number }) {
 	);
 }
 
-/**
- * The faint tree is always there. Hovering a row redraws the same geometry in
- * the accent colour, from the folder down to that row only.
- */
 function Connectors({ count, lit }: { count: number; lit: number | null }) {
 	return (
 		<svg
@@ -105,13 +83,13 @@ export function Writing() {
 					className="stage-item flex h-11 items-center gap-2.5"
 					style={{ "--i": CONTENT_INDEX } as CSSProperties}
 				>
-					<span className="flex size-6 shrink-0 items-center justify-center rounded-md bg-tree-accent text-white">
+					<span className="ml-0.5 flex size-5 shrink-0 items-center justify-center rounded-[5px] bg-tree-accent text-white">
 						<RiArrowDownSLine
-							className="size-4"
+							className="size-3.5"
 							aria-hidden="true"
 						/>
 					</span>
-					<span className="text-[17px] text-ink">
+					<span className="text-ink">
 						Notes on what I am building and learning.
 					</span>
 				</div>
@@ -148,7 +126,7 @@ export function Writing() {
 									/>
 
 									<span
-										className={`flex-1 truncate text-[17px] transition-colors duration-200 ${
+										className={`flex-1 truncate text-sm transition-colors duration-200 ${
 											active ? "text-ink" : "text-mute"
 										}`}
 									>

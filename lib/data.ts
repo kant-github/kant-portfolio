@@ -32,20 +32,33 @@ export const socialLinks = [
 
 export type Shot = {
 	src: string;
-	/** Describes the screenshot, for anyone who cannot see it. */
 	alt: string;
 	name: string;
-	/** Live site. */
 	href: string;
-	/** One line, shown when the card is opened. */
 	blurb: string;
-	/** True pixel size, so the opened card can use each shot's own ratio
-	 * rather than forcing them all into the card's 4:3 crop. */
 	width: number;
 	height: number;
 };
 
 export const showcase: Shot[] = [
+	{
+		src: "/images/work/nocturn.png",
+		alt: "A live Nocturn quiz room, with players and the current question on screen.",
+		name: "Nocturn",
+		href: "https://nocturn.app",
+		blurb: "A real-time quiz platform where players compete for on-chain rewards, with rooms synced over WebSockets and Redis Pub/Sub.",
+		width: 1200,
+		height: 900,
+	},
+	{
+		src: "/images/work/winterfell.png",
+		alt: "The Winterfell editor, writing a Solana smart contract in the browser.",
+		name: "Winterfell",
+		href: "https://winterfell.dev",
+		blurb: "Write, test and deploy Anchor smart contracts on Solana from the browser. First place at the Superteam India Hackathon.",
+		width: 3024,
+		height: 1964,
+	},
 	{
 		src: "/images/work/matcha.png",
 		alt: "The Matcha board, showing every issue a team has filed laid out on one screen.",
@@ -65,15 +78,6 @@ export const showcase: Shot[] = [
 		height: 1964,
 	},
 	{
-		src: "/images/work/winterfell.png",
-		alt: "The Winterfell editor, writing a Solana smart contract in the browser.",
-		name: "Winterfell",
-		href: "https://winterfell.dev",
-		blurb: "Write, test and deploy Anchor smart contracts on Solana from the browser. First place at the Superteam India Hackathon.",
-		width: 3024,
-		height: 1964,
-	},
-	{
 		src: "/images/work/nocturn.png",
 		alt: "A live Nocturn quiz room, with players and the current question on screen.",
 		name: "Nocturn",
@@ -89,7 +93,7 @@ export type ExperienceItem = {
 	role: string;
 	org: string;
 	href: string;
-	badge?: "yc";
+	badge?: "yc" | "twenty";
 	description: string;
 };
 
@@ -108,6 +112,7 @@ export const experience: ExperienceItem[] = [
 		role: "Open-source contributor at",
 		org: "Twenty",
 		href: "https://github.com/twentyhq/twenty",
+		badge: "twenty",
 		description:
 			"Fixed UI bugs across the codebase, improving layout and responsiveness, and worked with the community to keep the design consistent across the platform.",
 	},

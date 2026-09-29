@@ -1,10 +1,5 @@
 import type { ReactNode } from "react";
 
-/**
- * A deliberately tiny inline markup: `code`, **bold** and [label](href).
- * Anything more (tables, footnotes, nested lists) belongs in a block type, not
- * in here, so this parser never has to grow.
- */
 const PATTERN = /(`[^`]+`|\*\*[^*]+\*\*|\[[^\]]+\]\([^)]+\))/g;
 
 export function Inline({ text }: { text: string }) {

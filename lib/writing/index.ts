@@ -33,10 +33,6 @@ export const posts = [
 
 export type Slug = (typeof posts)[number]["slug"];
 
-/**
- * Keyed by the slug union, so adding a post without a body — the old silent
- * build-time 404 — is now a compile error.
- */
 export const bodies: Record<Slug, Block[]> = {
 	"scaling-websockets-with-redis": websockets,
 	"400-million-requests": requests,
@@ -52,7 +48,6 @@ export function getPost(slug: string) {
 	return { meta, blocks, minutes: readingMinutes(blocks) };
 }
 
-/** DD/MM/YY, matching the rest of the site. */
 export function shortDate(iso: string) {
 	const [year, month, day] = iso.split("-");
 	return `${day}/${month}/${year.slice(2)}`;

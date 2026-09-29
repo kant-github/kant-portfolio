@@ -1,14 +1,3 @@
-/**
- * Article bodies are typed blocks rather than markdown or MDX. It keeps the
- * repo's "change the data, not the components" convention, every block is
- * type-checked, and a diagram can be a real React component instead of a
- * string the renderer has to interpret.
- *
- * Inline text in `p`, `list`, `callout` and `quote` supports a tiny markup the
- * renderer parses: `code`, **bold**, and [label](href). Nothing else — no
- * tables, no footnotes, no nested lists.
- */
-
 export type DiagramName =
 	| "ws-one-server"
 	| "ws-two-servers"
@@ -41,11 +30,8 @@ export type Block =
 
 export type PostMeta = {
 	slug: string;
-	/** ISO date, so it can be sorted and formatted. */
 	date: string;
 	title: string;
-	/** One sentence. Used for the article intro and the page description. */
 	summary: string;
-	/** Short category shown in the card pill. */
 	kind: string;
 };

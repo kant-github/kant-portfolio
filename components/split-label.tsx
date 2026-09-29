@@ -1,16 +1,14 @@
 import type { CSSProperties } from "react";
 
-/**
- * A mono label that sets itself one character at a time with a caret running
- * ahead of the text. Pure render, so this stays a Server Component — the
- * animation is entirely CSS driven off the stage progress it inherits.
- */
 export function SplitLabel({
 	text,
 	className,
+	index = 0,
 }: {
 	text: string;
 	className?: string;
+	/** Its place in the section's reveal order. */
+	index?: number;
 }) {
 	const chars = [...text];
 
@@ -18,14 +16,14 @@ export function SplitLabel({
 		<p
 			aria-label={text}
 			className={`stage-item stage-label ${className ?? ""}`}
-			style={{ "--i": 0, "--cn": chars.length } as CSSProperties}
+			style={{ "--i": index, "--cn": chars.length } as CSSProperties}
 		>
-			{chars.map((char, index) => (
+			{chars.map((char, at) => (
 				<span
-					key={`${char}-${index}`}
+					key={`${char}-${at}`}
 					aria-hidden="true"
 					className="stage-char"
-					style={{ "--ci": index } as CSSProperties}
+					style={{ "--ci": at } as CSSProperties}
 				>
 					{char === " " ? " " : char}
 				</span>

@@ -71,8 +71,6 @@ export function ScrollRing() {
 				pathLength={1}
 				strokeDasharray="1 1"
 				transform={`rotate(-90 ${SIZE / 2} ${SIZE / 2})`}
-				// No drop-shadow here: the svg clips at its square bounds, so a
-				// glow gets cut off and reads as a blue square behind the ring.
 				style={{ strokeDashoffset: offset }}
 			/>
 		</svg>

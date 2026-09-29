@@ -19,7 +19,6 @@ import {
 import type { Shot } from "@/lib/data";
 import { closeOverlay, openOverlay } from "@/lib/overlay-state";
 
-/** A card on the page, as measured at the moment it was clicked. */
 export type CardRect = {
 	top: number;
 	left: number;
@@ -28,12 +27,9 @@ export type CardRect = {
 	rotate: number;
 };
 
-/** The transform that puts the opened frame back over its card. */
 type Flip = { x: number; y: number; scale: number; rotate: number };
 
 const BACKDROP = 0.94;
-/** The house expo-out curve, spelled out: the imperative animate() wants
- * a plain tuple, not the readonly EASE export. */
 const TRAVEL = { duration: 0.44, ease: [0.22, 1, 0.36, 1] as const };
 
 const FOCUSABLE =
@@ -51,8 +47,6 @@ function useScrollLock(active: boolean) {
 		};
 
 		body.style.overflow = "hidden";
-		// Removing the scrollbar widens the layout, and the page jumps
-		// sideways unless that width is handed back as padding.
 		if (gap > 0) body.style.paddingRight = `${gap}px`;
 
 		return () => {
@@ -71,7 +65,6 @@ export function ShowcaseLightbox({
 }: {
 	items: Shot[];
 	index: number | null;
-	/** Measures the card for an index, so the frame can fly to and from it. */
 	getCardRect: (index: number) => CardRect | null;
 	onClose: () => void;
 	onIndexChange: (next: number) => void;
@@ -88,22 +81,34 @@ export function ShowcaseLightbox({
 	const open = index !== null;
 	useScrollLock(open);
 
-	/**
-	 * The transform that would put the opened frame back over its card.
-	 *
-	 * Measured from both rects rather than guessed. The first version scaled
-	 * the whole panel from a hardcoded 896px, which never matched the real
-	 * width and dragged the text along with it — scaled text re-rasterises
-	 * every frame, which is what made it crawl.
-	 */
+	useEffect(() => {
+		if (!open) return;
+
+		openOverlay();
+		document.documentElement.dataset.overlay = "open";
+
+		return () => {
+			closeOverlay();
+			delete document.documentElement.dataset.overlay;
+		};
+	}, [open]);
+
+	useEffect(() => {
+		if (!open) return;
+
+		const opener = document.activeElement;
+
+		return () => {
+			if (opener instanceof HTMLElement) opener.focus();
+		};
+	}, [open]);
+
 	const flipFor = useCallback(
 		(at: number): Flip | null => {
 			const frame = frameRef.current;
 			const card = getCardRect(at);
 			if (!frame || !card) return null;
 
-			// at rest the frame carries no transform, so this is its true
-			// layout box
 			const to = frame.getBoundingClientRect();
 
 			return {
@@ -116,14 +121,6 @@ export function ShowcaseLightbox({
 		[getCardRect],
 	);
 
-	/**
-	 * Driven imperatively, not with `initial`/`exit`.
-	 *
-	 * `initial` is captured once when the element mounts, and the measurement
-	 * can only happen after that — so the declarative version always fell back
-	 * to a plain scale. Setting the transform in a layout effect puts it in
-	 * place before the first paint, then the animation runs from there.
-	 */
 	useLayoutEffect(() => {
 		if (index === null) return;
 
@@ -153,12 +150,9 @@ export function ShowcaseLightbox({
 			flight.stop();
 			fade.stop();
 		};
-		// Only on open: switching project with the arrows swaps the image
-		// inside a frame that is already in place.
 		// eslint-disable-next-line react-hooks/exhaustive-deps
 	}, [open, still]);
 
-	/** Fly back to whichever card is showing, then unmount. */
 	const requestClose = useCallback(async () => {
 		if (closing || index === null) return;
 
@@ -218,8 +212,6 @@ export function ShowcaseLightbox({
 				return;
 			}
 
-			// Keep Tab inside the dialog: wrap from the last control back to
-			// the first, so focus can never reach the page behind.
 			if (event.key !== "Tab") return;
 
 			const stops =
@@ -259,8 +251,6 @@ export function ShowcaseLightbox({
 			{shot && index !== null ? (
 				<div
 					key="lightbox"
-					// z-60 clears the z-50 ceiling shared by the dock and the
-					// reading progress bar
 					className="fixed inset-0 z-[60] flex items-center justify-center p-4 sm:p-8"
 				>
 					<button
@@ -291,14 +281,11 @@ export function ShowcaseLightbox({
 								height={shot.height}
 								sizes="(min-width: 896px) 896px, 92vw"
 								priority
-								// served as the original file: this is the one
-								// place the screenshot is actually looked at
 								unoptimized
 								className="h-auto w-full rounded-lg"
 							/>
 						</div>
 
-						{/* the text only fades — scaling it is what crawled */}
 						<div className="showcase-meta flex flex-col gap-3 sm:flex-row sm:items-start sm:justify-between sm:gap-4">
 							<div className="flex min-w-0 flex-col gap-1">
 								<h3

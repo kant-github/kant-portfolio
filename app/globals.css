@@ -4,8 +4,7 @@
 	--page: #0d0d0d;
 	--ink: #ffffff;
 	--mute: #8f8f8f;
-	/* Long-form body text. Brighter than --mute, clearly below --ink, so the
-	 * article keeps three levels: emphasis, body, caption. */
+
 	--prose: #c8c8c8;
 	--line: rgb(255 255 255 / 0.1);
 	--surface: rgb(255 255 255 / 0.04);
@@ -24,8 +23,7 @@
 	--color-ink: var(--ink);
 	--color-mute: var(--mute);
 	--color-prose: var(--prose);
-	/* Writing tree. A file-explorer style list: one blue marker on the open
-	 * branch, everything else neutral. */
+
 	--color-tree-accent: #3b82f6;
 	--color-tree-line: #3a3a3a;
 	--color-tree-row: #16161a;
@@ -34,13 +32,15 @@
 	--color-card-top: #1f1f1f;
 	--color-card-bottom: #161616;
 	--color-card-inset: #2a2a2a;
-	/* Dock. Every surface colour is solid — the dock is never see-through. */
+
+	--color-shot-frame: #262626;
+
 	--color-dock-hover: #242424;
 	--color-dock-ink: #c4c4c4;
 	--color-dock-divider-top: #4a4a4a;
 	--color-dock-divider-bottom: #1c1c1c;
 	--color-dock-track: #303030;
-	/* same blue as the writing tree, so the site has one accent */
+
 	--color-dock-progress: var(--color-tree-accent);
 	--color-dock-tip: #0a0a0c;
 	--color-dock-tip-edge: #2a2a30;
@@ -150,21 +150,6 @@ body {
 	--lit-spread: var(--lit-spread-end);
 }
 
-/* --- Staged reveal -------------------------------------------------------
- *
- * A .stage element owns one number, --p (0 to 1). Every .stage-item beneath it
- * derives its own local progress from --p and its own index --i, so the whole
- * cascade is plain CSS and the children can stay Server Components.
- *
- * --p is driven two ways: ScrollStage writes it per frame from scroll position,
- * and .overture animates it once on load with @keyframes. Registering it below
- * is what makes the second one possible.
- *
- * Safety: --p rests at 1. ScrollStage server-renders --p:0 inline, so its
- * subtree is hidden from the very first paint (no visible-then-hidden flash),
- * and the <noscript> rule and the failsafe below put it back if JS never lands.
- */
-
 @property --p {
 	syntax: "<number>";
 	inherits: true;
@@ -178,17 +163,14 @@ body {
 }
 
 .stage {
-	/* progress each --i step waits before starting */
 	--stage-step: 0.07;
-	/* progress one item takes to resolve once it starts */
+
 	--stage-span: 0.5;
 	--stage-rise: 14px;
 
-	/* layout style only — `paint` would clip the Band's full-width bleed */
 	contain: layout style;
 }
 
-/* Long lists need a tighter step or the last item never finishes. */
 .stage-dense {
 	--stage-step: 0.022;
 	--stage-span: 0.45;
@@ -200,19 +182,13 @@ body {
 		calc((var(--p) - var(--i) * var(--stage-step)) / var(--stage-span)),
 		1
 	);
-	/* cubic ease-out, written out because calc() has no pow() */
+
 	--e: calc(1 - (1 - var(--t)) * (1 - var(--t)) * (1 - var(--t)));
 
-	/* Opacity runs linear and 1.6x ahead of the movement: text becomes
-	 * readable before it stops moving, which is what keeps a fade-up from
-	 * feeling sluggish. */
 	opacity: clamp(0, calc(var(--t) * 1.6), 1);
 	transform: translate3d(0, calc((1 - var(--e)) * var(--stage-rise)), 0);
 }
 
-/* Blur is opt-in and only ever goes on a text leaf. On a wrapper it would
- * promote the whole subtree into one filtered surface — that is the fastest
- * way to wreck the frame budget on this page. */
 .stage-blur {
 	--stage-blur: 6px;
 	--tb: clamp(0, calc(var(--t) / 0.6), 1);
@@ -220,23 +196,18 @@ body {
 	filter: blur(calc(round(down, (1 - var(--eb)) * var(--stage-blur), 0.5px)));
 }
 
-/* Without round(), the radius changes every frame and each change forces a
- * fresh rasterization. Quantising to 0.5px caps that at 12 for a whole reveal. */
 @supports not (width: round(down, 1px, 1px)) {
 	.stage-blur {
 		filter: blur(calc((1 - var(--eb)) * var(--stage-blur)));
 	}
 }
 
-/* Narrow screens are the worst case for GPU cost and the least likely to show
- * the effect at all. */
 @media (max-width: 639px) {
 	.stage-blur {
 		filter: none;
 	}
 }
 
-/* A hairline that draws in from one end. */
 .stage-rule {
 	position: relative;
 }
@@ -253,14 +224,10 @@ body {
 	transform-origin: var(--rule-origin, left);
 }
 
-/* Alternating direction reads as an editorial ledger rather than a sweep. */
 .stage-rule:nth-child(even) {
 	--rule-origin: right;
 }
 
-/* Mono labels set themselves one character at a time, with a caret running
- * ahead of the text. The characters pre-exist at low opacity and resolve in
- * colour, so the box never changes width and nothing reflows. */
 .stage-label {
 	position: relative;
 	display: inline-block;
@@ -283,12 +250,11 @@ body {
 	width: 0.55ch;
 	height: 0.95em;
 	background: var(--ink);
-	/* 1ch is the glyph advance; the extra 0.04em is tracking-label, without
-	 * which the caret drifts left of its character across a long word. */
+
 	transform: translateX(
 		calc(clamp(0, calc(var(--t) / 0.7), 1) * var(--cn) * (1ch + 0.04em))
 	);
-	/* triangular envelope: appears with the first character, gone with the last */
+
 	opacity: clamp(
 		0,
 		min(calc(var(--t) * 22), calc((0.76 - var(--t)) * 22)),
@@ -296,8 +262,6 @@ body {
 	);
 }
 
-/* Hint the compositor only while a section is actually mid-reveal. Left on
- * permanently it costs GPU memory and softens text in Safari. */
 .stage.is-live .stage-item {
 	will-change: opacity, transform;
 }
@@ -306,18 +270,10 @@ body {
 	will-change: opacity, transform, filter;
 }
 
-/* The document has nothing left to scroll, so the timeline is over. This is
- * what saves the last section and the footer, whose top edge can never reach
- * the finish line. !important beats framer's inline --p by design. */
 .stage.is-settled,
 [data-stage="off"] .stage {
 	--p: 1 !important;
 }
-
-/* --- The load overture ---------------------------------------------------
- * Drives the same --p from a keyframe instead of from scroll, so the header
- * and intro stage by exactly the same rules with no client component.
- */
 
 @keyframes stage-overture {
 	from {
@@ -364,22 +320,7 @@ body {
 	animation: key-tap 220ms ease-out 1650ms both;
 }
 
-/* --- Dock ----------------------------------------------------------------
- * Lit from the top left, the way a solid object catches a light source above
- * and to the side of it. Two parts do the work:
- *
- *  - the surface is a radial gradient whose bright point sits at the top-left
- *    corner, so the body itself falls away into shadow towards bottom-right;
- *  - the border is a 1px ring painted with its own radial gradient, using the
- *    same mask trick as .lit-edge, so the edge is almost white where the light
- *    lands and sinks to a deep blue on the far side.
- *
- * Every colour here is solid. The dock is never see-through.
- */
-
 .dock-surface {
-	/* A narrow range on purpose: enough to read as a lit solid, not enough to
-	 * look like a gradient. */
 	background-image: radial-gradient(
 		130% 150% at 8% -12%,
 		#1e1e1e 0%,
@@ -388,9 +329,6 @@ body {
 	);
 }
 
-/* The 1px ring is where the light actually lands. It is brightest at the
- * top-left corner and sinks back into the surface colour on the far side,
- * using the same mask trick as .lit-edge above. */
 .dock-edge::before {
 	content: "";
 	position: absolute;
@@ -428,25 +366,11 @@ body {
 	animation: dock-in 620ms cubic-bezier(0.22, 1, 0.36, 1) 1000ms both;
 }
 
-/* A modal is up: the dock steps back rather than floating over the backdrop.
- * Driven by a data attribute so neither component has to import the other. */
 [data-overlay="open"] .dock-in {
-	/* !important because .dock-in's entry keyframe uses fill-mode: both, and a
-	 * filled animation beats a normal declaration in the cascade. */
 	opacity: 0 !important;
 	pointer-events: none;
 	transition: opacity 200ms ease-out;
 }
-
-/* --- Long-form article typography ---------------------------------------
- *
- * Scoped element selectors rather than utilities on every node: the renderer
- * emits plain <p>/<h2>/<ul>, and Tailwind v4's preflight has stripped every
- * heading size and list marker, so something has to put them back.
- *
- * Body is 17px/1.7 with no extra tracking. The site's 16px/24px at 0.01em is
- * right for short UI text and tiring over 2,000 words.
- */
 
 .article {
 	color: var(--prose);
@@ -511,7 +435,6 @@ body {
 	color: var(--ink);
 }
 
-/* The code block owns its own type; do not double-style the <code> inside. */
 .article pre code {
 	padding: 0;
 	border: 0;
@@ -551,8 +474,6 @@ body {
 }
 
 .article figure {
-	/* margin-block only: the shorthand would reset margin-inline and beat
-	 * the mx-auto on a full-bleed figure, pushing it off centre. */
 	margin-block: 2.25rem;
 }
 
@@ -577,19 +498,12 @@ body {
 	min-width: 470px;
 }
 
-/* Hairlines stay exactly one device pixel whatever the svg scales to. */
 .article .diagram-scroll svg line,
 .article .diagram-scroll svg rect,
 .article .diagram-scroll svg path,
 .article .diagram-scroll svg circle {
 	vector-effect: non-scaling-stroke;
 }
-
-/* --- Code blocks ---------------------------------------------------------
- * Shiki emits its own <pre class="shiki"> with an inline background. The
- * block below strips that and rehouses it on the site's own surface so it
- * reads as part of the page, not as a pasted screenshot of an editor.
- */
 
 .article .code-figure {
 	margin: 2rem 0;
@@ -621,9 +535,7 @@ body {
 
 .article .code-body pre {
 	margin: 0;
-	/* Horizontal padding lives here, not on each line: shiki separates its
-	 * line spans with a real newline, and <pre> preserves it. Making the
-	 * spans block as well would break every line twice. */
+
 	padding: 0.875rem 1rem;
 	overflow-x: auto;
 	overscroll-behavior-x: contain;
@@ -643,9 +555,6 @@ body {
 	}
 }
 
-/* Blocks that bring their own styling opt out of the prose rules entirely.
- * Without this the table of contents gets decimal markers on top of its own
- * numbers, and its links get the prose underline. */
 .article .not-prose p,
 .article .not-prose ul,
 .article .not-prose ol {
@@ -664,21 +573,94 @@ body {
 	text-decoration: none;
 }
 
-/* Large blocks reveal by opacity and movement only. Blurring a full-bleed
- * band or a photo row is what actually costs frames. */
 .stage-soft {
 	--stage-rise: 18px;
 	filter: none;
 }
 
-/* --- Writing tree --------------------------------------------------------
- * The connectors are drawn as SVG paths in writing.tsx, not CSS borders: a
- * dashed CSS border breaks up badly around a border-radius, which is what made
- * the elbows look chopped. An SVG dash array flows smoothly through a curve.
- */
-
 .tree-row {
 	height: 44px;
+}
+
+.shot-frame {
+	position: relative;
+	border-radius: 10px;
+	background: var(--color-shot-frame);
+	padding: 4.5px;
+	/* a hairline all the way round so the frame still has an edge on its dark
+	 * side, then the drop that lifts it off the page */
+	box-shadow:
+		0 0 0 0.5px rgb(255 255 255 / 0.08),
+		0 16px 40px -8px rgb(0 0 0 / 0.9);
+}
+
+.shot-frame::before {
+	content: "";
+	position: absolute;
+	inset: 0;
+	padding: 1px;
+	border-radius: inherit;
+	background-image: radial-gradient(
+		150% 180% at -4% -18%,
+		rgb(255 255 255 / 0.34) 0%,
+		rgb(255 255 255 / 0.2) 16%,
+		rgb(255 255 255 / 0.1) 30%,
+		rgb(255 255 255 / 0.04) 44%,
+		transparent 64%
+	);
+	mask:
+		linear-gradient(#fff 0 0) content-box,
+		linear-gradient(#fff 0 0);
+	mask-composite: exclude;
+	pointer-events: none;
+	z-index: 1;
+}
+
+/**
+ * The deck's own box. The cards inside are absolutely placed, so this is what
+ * gives the fan its height.
+ *
+ * A phone gets the same fan at 70%, not a restacked list: the reference shrinks
+ * it rather than changing its shape, and the scale sits inside each card's
+ * transform so the spacing shrinks with the cards.
+ */
+.deck {
+	position: relative;
+	width: 100%;
+	height: 150px;
+	--deck-scale: 0.7;
+}
+
+@media (min-width: 640px) {
+	.deck {
+		height: 190px;
+		--deck-scale: 1;
+	}
+}
+
+.deck-card {
+	/* set here rather than with utilities: .shot-frame is plain CSS and
+	 * Tailwind's are layered, so its `position: relative` would win */
+	position: absolute;
+	top: 50%;
+	left: 50%;
+	cursor: pointer;
+	/* every card is pinned to the middle of the deck and moved by its
+	 * transform alone, so this is the only thing that ever animates */
+	transition: transform 500ms cubic-bezier(0.22, 1, 0.36, 1);
+}
+
+.deck-card:focus-visible {
+	outline: 1px solid var(--ink);
+	outline-offset: 4px;
+}
+
+@media (prefers-reduced-motion: reduce) {
+	.deck-card {
+		/* the transform also does the positioning now, so it has to stay —
+		 * clearing it would pile every card on the deck's centre */
+		transition: none;
+	}
 }
 
 @media (prefers-reduced-motion: reduce) {
@@ -693,7 +675,6 @@ body {
 		--lit-spread: var(--lit-spread-end);
 	}
 
-	/* Reduced motion means no movement, not no content. */
 	.stage,
 	.overture {
 		--p: 1 !important;

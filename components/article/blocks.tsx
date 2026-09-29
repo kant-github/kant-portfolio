@@ -24,14 +24,10 @@ function Figure({
 	const figure = (
 		<figure className={wide ? "mx-auto w-full max-w-3xl px-4" : "my-8"}>
 			{children}
-			{/* styled by `.article figcaption` — sentence case, not the
-			    uppercase label treatment */}
 			{caption ? <figcaption>{caption}</figcaption> : null}
 		</figure>
 	);
 
-	// A wide figure breaks out of the 640px column through Band, which is the
-	// only full-bleed primitive on the site.
 	return wide ? <Band className="my-10">{figure}</Band> : figure;
 }
 
@@ -148,8 +144,6 @@ export function Blocks({ items }: { items: Block[] }) {
 								caption={block.caption}
 								wide={block.wide}
 							>
-								{/* tabIndex makes the scroller keyboard-reachable; a
-								    scrollable region without it fails WCAG 2.1.1 */}
 								<div
 									role="region"
 									aria-label={`${block.caption} (scrolls sideways on small screens)`}
@@ -164,8 +158,6 @@ export function Blocks({ items }: { items: Block[] }) {
 					case "image":
 						return (
 							<Figure key={key} caption={block.caption}>
-								{/* framed like the gallery photos and capped well under the
-								    text column, so a meme reads as an aside not a banner */}
 								<span className="mx-auto block max-w-sm rounded-lg bg-white p-1 shadow-card">
 									<Image
 										src={block.src}

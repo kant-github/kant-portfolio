@@ -1,13 +1,5 @@
 import type { ReactNode } from "react";
 
-/**
- * Shared pieces for the article diagrams.
- *
- * Every diagram is an inline SVG with a viewBox and no fixed pixel size, so it
- * scales in the 640px column and in a full-bleed Band. Colours come from the
- * theme tokens, so they sit correctly on the page background and change with it.
- */
-
 export const INK = "var(--ink)";
 export const MUTE = "var(--mute)";
 export const LINE = "rgb(255 255 255 / 0.14)";
@@ -141,7 +133,6 @@ export function Arrow({
 	);
 }
 
-/** Arrow heads have to be declared once per svg document. */
 export function Heads() {
 	return (
 		<defs>

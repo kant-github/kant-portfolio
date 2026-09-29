@@ -1,13 +1,13 @@
 "use client";
 
-import { motion, useMotionValue, useReducedMotion, useSpring } from "framer-motion";
+import {
+	motion,
+	useMotionValue,
+	useReducedMotion,
+	useSpring,
+} from "framer-motion";
 import { useEffect } from "react";
 
-/**
- * Measured directly rather than through framer's useScroll container
- * detection, which did not track the document reliably here. One passive
- * listener, written to a MotionValue, so no React render happens on scroll.
- */
 export function ProgressBar() {
 	const prefersReducedMotion = useReducedMotion();
 	const raw = useMotionValue(0);
@@ -17,7 +17,9 @@ export function ProgressBar() {
 			const root = document.documentElement;
 			const max = root.scrollHeight - root.clientHeight;
 
-			raw.set(max > 0 ? Math.min(1, Math.max(0, window.scrollY / max)) : 1);
+			raw.set(
+				max > 0 ? Math.min(1, Math.max(0, window.scrollY / max)) : 1,
+			);
 		};
 
 		update();
