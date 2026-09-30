@@ -1,6 +1,7 @@
 import { Dock } from "@/components/dock";
 import { Experience } from "@/components/experience";
 import { Personal } from "@/components/personal";
+import { Reach } from "@/components/reach";
 import { ScrollStage } from "@/components/scroll-stage";
 import { SocialRail } from "@/components/social-rail";
 import { Work } from "@/components/work";
@@ -26,6 +27,12 @@ export default function Home() {
 				<ScrollStage id="personal" latchAtBottom>
 					<Personal />
 				</ScrollStage>
+
+				<div className="lg:hidden">
+					<ScrollStage id="reach" latchAtBottom>
+						<Reach />
+					</ScrollStage>
+				</div>
 			</main>
 
 			<Dock />

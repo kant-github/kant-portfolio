@@ -5,10 +5,9 @@ import { FACES } from "@/components/social-faces";
 import type { SocialAccount } from "@/lib/data";
 import { EASE } from "@/lib/motion";
 
-/** Bank card: 85.60 x 53.98 mm, corner radius 3.18 mm. */
-const WIDTH = 280;
-const HEIGHT = Math.round((WIDTH * 53.98) / 85.6);
-const RADIUS = Math.round((WIDTH * 3.18) / 85.6);
+/** Bank card: 85.60 x 53.98 mm, corner radius 3.18 mm at 280px wide. */
+const RATIO = "85.6 / 53.98";
+const RADIUS = 11;
 
 /** The card slides out from the rail. */
 const CARD = {
@@ -27,35 +26,48 @@ const FACE = {
 } as const;
 
 /**
- * The card beside the rail. The shell keeps its size and place while the
- * pointer moves along the rail; only the face (components/social-faces.tsx)
- * changes.
+ * The card itself, at whatever width the caller sets: the face for this
+ * platform (components/social-faces.tsx), the light on it, and a link over
+ * the whole thing. The rail and the phone row both use it.
  */
-export function SocialCard({ account }: { account: SocialAccount }) {
+export function SocialCardShell({
+	account,
+	className = "",
+	focusable = false,
+	swap = false,
+}: {
+	account: SocialAccount;
+	className?: string;
+	/** Whether the link over the card takes keyboard focus. */
+	focusable?: boolean;
+	/** Cross-fade between faces when the account changes. */
+	swap?: boolean;
+}) {
 	const external = !account.href.startsWith("mailto:");
 	const Face = FACES[account.id];
 
-	return (
+	const face = (
 		<motion.div
-			{...CARD}
-			id="social-card"
-			role="tooltip"
-			style={{ width: WIDTH, height: HEIGHT, borderRadius: RADIUS }}
-			className="social-card relative select-none"
+			key={account.id}
+			{...(swap ? FACE : {})}
+			className="absolute inset-0"
+			style={{ borderRadius: RADIUS }}
 		>
-			<AnimatePresence initial={false}>
-				<motion.div
-					key={account.id}
-					{...FACE}
-					className="absolute inset-0"
-					style={{ borderRadius: RADIUS }}
-				>
-					<Face account={account} />
-				</motion.div>
-			</AnimatePresence>
+			<Face account={account} />
+		</motion.div>
+	);
 
-			{/* a soft light from the top-left, and one sweep across the face
-			    as the card comes out */}
+	return (
+		<div
+			className={`social-card relative select-none ${className}`}
+			style={{ aspectRatio: RATIO, borderRadius: RADIUS }}
+		>
+			{swap ? (
+				<AnimatePresence initial={false}>{face}</AnimatePresence>
+			) : (
+				face
+			)}
+
 			<span
 				aria-hidden="true"
 				className="card-light"
@@ -67,10 +79,22 @@ export function SocialCard({ account }: { account: SocialAccount }) {
 				target={external ? "_blank" : undefined}
 				rel={external ? "noreferrer" : undefined}
 				aria-label={`Open ${account.name}, ${account.handle}`}
-				tabIndex={-1}
-				className="absolute inset-0 z-[5]"
+				tabIndex={focusable ? 0 : -1}
+				className="absolute inset-0 z-[5] outline-none focus-visible:ring-2 focus-visible:ring-ink/40 focus-visible:ring-offset-2 focus-visible:ring-offset-page"
 				style={{ borderRadius: RADIUS }}
 			/>
+		</div>
+	);
+}
+
+/**
+ * The card beside the rail. It keeps its size and place while the pointer
+ * moves along the rail; only the face changes.
+ */
+export function SocialCard({ account }: { account: SocialAccount }) {
+	return (
+		<motion.div {...CARD} id="social-card" role="tooltip">
+			<SocialCardShell account={account} className="w-[280px]" swap />
 		</motion.div>
 	);
 }

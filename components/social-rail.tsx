@@ -18,8 +18,9 @@ const LINGER = 160;
  * A short vertical bar of social icons on the left edge of the screen.
  * Resting on an icon slides a card out to its right (social-card.tsx);
  * moving to another icon swaps the card in place. Clicking an icon opens
- * the profile itself. Phones and tablets keep the footer icons instead:
- * the rail only shows once there is empty space beside the centred column.
+ * the profile itself. Phones and tablets get the cards in a row at the end
+ * of the page instead (components/reach.tsx): the rail only shows once
+ * there is empty space beside the centred column.
  */
 export function SocialRail() {
 	const [activeId, setActiveId] = useState<SocialId | null>(null);

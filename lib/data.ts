@@ -15,34 +15,6 @@ export const socials = {
 	x: "https://x.com/khairrishi",
 };
 
-export type SocialLink = {
-	name: string;
-	href: string;
-	icon: string;
-
-	mono?: boolean;
-};
-
-export const socialLinks: SocialLink[] = [
-	{
-		name: "Email",
-		href: `mailto:${profile.email}`,
-		icon: "/images/social/gmail.svg",
-	},
-	{
-		name: "GitHub",
-		href: socials.github,
-		icon: "/images/social/github.svg",
-		mono: true,
-	},
-	{ name: "X", href: socials.x, icon: "/images/social/x.svg", mono: true },
-	{
-		name: "LinkedIn",
-		href: socials.linkedin,
-		icon: "/images/social/linkedin.svg",
-	},
-];
-
 export type SocialId = "github" | "x" | "linkedin" | "email";
 
 export type SocialAccount = {

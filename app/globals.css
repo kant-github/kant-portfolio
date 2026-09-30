@@ -693,12 +693,31 @@ body {
 	}
 }
 
+/* In the phone row, the light on each card waits for the section to
+ * scroll into view before it plays. */
+.social-deck .card-light {
+	animation-play-state: paused;
+}
+
+.stage.is-live .social-deck .card-light {
+	animation-play-state: running;
+}
+
+.no-scrollbar {
+	scrollbar-width: none;
+}
+
+.no-scrollbar::-webkit-scrollbar {
+	display: none;
+}
+
 .card-face {
 	position: absolute;
 	inset: 0;
 	border-radius: inherit;
 	overflow: hidden;
 	isolation: isolate;
+	container-type: inline-size;
 	background-color: var(--face);
 	background-image: var(--material);
 }
@@ -950,8 +969,9 @@ body {
 	padding: 3px 0 0 4px;
 	overflow: hidden;
 	font-family: var(--font-geist-mono), monospace;
-	font-size: 8px;
-	line-height: 8.6px;
+	/* 8px and 8.6px on a 280px card, scaling with the card */
+	font-size: 2.86cqw;
+	line-height: 3.07cqw;
 	letter-spacing: -0.01em;
 	color: var(--ink);
 	opacity: 0.9;
