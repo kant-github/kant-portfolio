@@ -605,10 +605,18 @@ body {
  * texture, grain, mark, print, bevel. Cards look the same in both themes,
  * as real cards would. */
 .social-card {
+	--card-lift: 0;
 	box-shadow:
 		1px 1px 1px rgb(0 0 0 / 0.06),
-		3px 10px 20px -8px rgb(0 0 0 / 0.22),
-		10px 32px 56px -24px rgb(0 0 0 / 0.3);
+		calc(3px + 3px * var(--card-lift)) calc(10px + 6px * var(--card-lift))
+			calc(20px + 8px * var(--card-lift)) -8px rgb(0 0 0 / 0.22),
+		calc(10px + 6px * var(--card-lift)) calc(32px + 14px * var(--card-lift))
+			calc(56px + 16px * var(--card-lift)) -24px rgb(0 0 0 / 0.3);
+}
+
+/* while the pointer tilts the card (components/social-card.tsx) */
+.social-card.is-tilting {
+	will-change: transform;
 }
 
 /* Light on the card. One key light sits above and to the left. It shows
@@ -622,7 +630,7 @@ body {
  * The shadow under the card falls down and to the right to match. */
 @property --card-lx {
 	syntax: "<percentage>";
-	inherits: false;
+	inherits: true;
 	initial-value: 0%;
 }
 
@@ -630,7 +638,6 @@ body {
 	position: absolute;
 	inset: 0;
 	z-index: 4;
-	--card-lx: 0%;
 	background-image: linear-gradient(
 		122deg,
 		rgb(255 255 255 / 0.22) 0%,
@@ -670,6 +677,7 @@ body {
 		transparent 68%
 	);
 	mix-blend-mode: normal;
+	animation: card-catch 1000ms cubic-bezier(0.22, 1, 0.36, 1) 60ms backwards;
 }
 
 /* the far edges fall into shade */
@@ -684,22 +692,34 @@ body {
 
 @keyframes card-turn {
 	from {
-		--card-lx: -40%;
 		background-position: 100% 0%;
 	}
 	to {
-		--card-lx: 0%;
 		background-position: 0% 0%;
+	}
+}
+
+/* The rim catch starts further left and settles as the card comes out.
+ * The fill is backwards only, so once it has played the pointer can move
+ * the catch through --card-lx (set on the shell by the tilt hook). */
+@keyframes card-catch {
+	from {
+		--card-lx: -40%;
+	}
+	to {
+		--card-lx: 0%;
 	}
 }
 
 /* In the phone row, the light on each card waits for the section to
  * scroll into view before it plays. */
-.social-deck .card-light {
+.social-deck .card-light,
+.social-deck .card-light::before {
 	animation-play-state: paused;
 }
 
-.stage.is-live .social-deck .card-light {
+.stage.is-live .social-deck .card-light,
+.stage.is-live .social-deck .card-light::before {
 	animation-play-state: running;
 }
 
@@ -1316,7 +1336,8 @@ body {
 		scroll-behavior: auto;
 	}
 
-	.card-light {
+	.card-light,
+	.card-light::before {
 		animation: none;
 	}
 

@@ -1,6 +1,18 @@
 "use client";
 
-import { AnimatePresence, motion } from "framer-motion";
+import {
+	AnimatePresence,
+	motion,
+	useMotionTemplate,
+	useReducedMotion,
+	useSpring,
+} from "framer-motion";
+import {
+	useCallback,
+	useState,
+	type CSSProperties,
+	type PointerEvent,
+} from "react";
 import { FACES } from "@/components/social-faces";
 import type { SocialAccount } from "@/lib/data";
 import { EASE } from "@/lib/motion";
@@ -25,6 +37,78 @@ const FACE = {
 	transition: { duration: 0.22, ease: EASE },
 } as const;
 
+/** How far a corner dips back under the pointer, in degrees. */
+const MAX_TILT = 7;
+
+/** How far the rim catch slides as the pointer crosses the card, in %. */
+const CATCH_TRAVEL = 20;
+
+const LIFT_SCALE = 1.015;
+
+const SPRING = { stiffness: 260, damping: 22, mass: 0.7 };
+
+/**
+ * The card leans away from the pointer, like a card resting on something
+ * soft: the corner under the pointer dips back and the far side lifts. The
+ * rim light slides with it, and the shadow grows while the card is up. It
+ * all springs back when the pointer leaves.
+ */
+function useTilt(enabled: boolean) {
+	const reduced = useReducedMotion();
+	const on = enabled && !reduced;
+
+	const [tilting, setTilting] = useState(false);
+	const rotateX = useSpring(0, SPRING);
+	const rotateY = useSpring(0, SPRING);
+	const scale = useSpring(1, SPRING);
+	const lift = useSpring(0, SPRING);
+	const catchX = useSpring(0, SPRING);
+
+	const lx = useMotionTemplate`${catchX}%`;
+
+	const onPointerMove = useCallback(
+		(event: PointerEvent<HTMLElement>) => {
+			if (!on) return;
+
+			const rect = event.currentTarget.getBoundingClientRect();
+			const px = (event.clientX - rect.left) / rect.width;
+			const py = (event.clientY - rect.top) / rect.height;
+
+			rotateY.set((px - 0.5) * 2 * MAX_TILT);
+			rotateX.set((0.5 - py) * 2 * MAX_TILT);
+			catchX.set((0.5 - px) * 2 * CATCH_TRAVEL);
+			scale.set(LIFT_SCALE);
+			lift.set(1);
+			setTilting(true);
+		},
+		[on, rotateX, rotateY, catchX, scale, lift],
+	);
+
+	const onPointerLeave = useCallback(() => {
+		rotateX.set(0);
+		rotateY.set(0);
+		catchX.set(0);
+		scale.set(1);
+		lift.set(0);
+		setTilting(false);
+	}, [rotateX, rotateY, catchX, scale, lift]);
+
+	return {
+		tilting: on && tilting,
+		style: on
+			? {
+					rotateX,
+					rotateY,
+					scale,
+					"--card-lift": lift,
+					"--card-lx": lx,
+					transformStyle: "preserve-3d" as const,
+				}
+			: undefined,
+		handlers: on ? { onPointerMove, onPointerLeave } : {},
+	};
+}
+
 /**
  * The card itself, at whatever width the caller sets: the face for this
  * platform (components/social-faces.tsx), the light on it, and a link over
@@ -35,6 +119,7 @@ export function SocialCardShell({
 	className = "",
 	focusable = false,
 	swap = false,
+	tilt = false,
 }: {
 	account: SocialAccount;
 	className?: string;
@@ -42,9 +127,12 @@ export function SocialCardShell({
 	focusable?: boolean;
 	/** Cross-fade between faces when the account changes. */
 	swap?: boolean;
+	/** Lean away from the pointer. Needs `perspective` on the parent. */
+	tilt?: boolean;
 }) {
 	const external = !account.href.startsWith("mailto:");
 	const Face = FACES[account.id];
+	const lean = useTilt(tilt);
 
 	const face = (
 		<motion.div
@@ -58,9 +146,18 @@ export function SocialCardShell({
 	);
 
 	return (
-		<div
-			className={`social-card relative select-none ${className}`}
-			style={{ aspectRatio: RATIO, borderRadius: RADIUS }}
+		<motion.div
+			{...lean.handlers}
+			className={`social-card relative select-none ${
+				lean.tilting ? "is-tilting" : ""
+			} ${className}`}
+			style={
+				{
+					aspectRatio: RATIO,
+					borderRadius: RADIUS,
+					...lean.style,
+				} as CSSProperties
+			}
 		>
 			{swap ? (
 				<AnimatePresence initial={false}>{face}</AnimatePresence>
@@ -83,7 +180,7 @@ export function SocialCardShell({
 				className="absolute inset-0 z-[5] outline-none focus-visible:ring-2 focus-visible:ring-ink/40 focus-visible:ring-offset-2 focus-visible:ring-offset-page"
 				style={{ borderRadius: RADIUS }}
 			/>
-		</div>
+		</motion.div>
 	);
 }
 
@@ -93,8 +190,18 @@ export function SocialCardShell({
  */
 export function SocialCard({ account }: { account: SocialAccount }) {
 	return (
-		<motion.div {...CARD} id="social-card" role="tooltip">
-			<SocialCardShell account={account} className="w-[280px]" swap />
+		<motion.div
+			{...CARD}
+			id="social-card"
+			role="tooltip"
+			style={{ perspective: 900 }}
+		>
+			<SocialCardShell
+				account={account}
+				className="w-[280px]"
+				swap
+				tilt
+			/>
 		</motion.div>
 	);
 }
