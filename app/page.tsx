@@ -2,6 +2,7 @@ import { Dock } from "@/components/dock";
 import { Experience } from "@/components/experience";
 import { Personal } from "@/components/personal";
 import { ScrollStage } from "@/components/scroll-stage";
+import { SocialRail } from "@/components/social-rail";
 import { Work } from "@/components/work";
 import { Writing } from "@/components/writing";
 
@@ -28,6 +29,7 @@ export default function Home() {
 			</main>
 
 			<Dock />
+			<SocialRail />
 		</div>
 	);
 }

@@ -2,7 +2,7 @@
 
 import { AnimatePresence, animate, motion } from "framer-motion";
 import Image from "next/image";
-import { useCallback, useEffect, useRef, useState } from "react";
+import { useCallback, useEffect, useRef } from "react";
 import { createPortal } from "react-dom";
 import {
 	RiArrowLeftSLine,
@@ -11,7 +11,13 @@ import {
 	RiCloseLine,
 } from "react-icons/ri";
 import type { Shot } from "@/lib/data";
-import { closeOverlay, openOverlay } from "@/lib/overlay-state";
+import {
+	useEscape,
+	useFocusTrap,
+	useMounted,
+	useOverlay,
+	useScrollLock,
+} from "@/lib/overlay-hooks";
 
 const BACKDROP = 1;
 const TRAVEL = { duration: 0.44, ease: [0.22, 1, 0.36, 1] as const };
@@ -22,30 +28,6 @@ const META_IN = {
 	delay: 0.14,
 };
 const META_SHOWN = { opacity: 1, transform: "translateY(0px)" };
-
-const FOCUSABLE =
-	'a[href], button:not([disabled]), [tabindex]:not([tabindex="-1"])';
-
-function useScrollLock(active: boolean) {
-	useEffect(() => {
-		if (!active) return;
-
-		const { body, documentElement: root } = document;
-		const gap = window.innerWidth - root.clientWidth;
-		const previous = {
-			overflow: body.style.overflow,
-			paddingRight: body.style.paddingRight,
-		};
-
-		body.style.overflow = "hidden";
-		if (gap > 0) body.style.paddingRight = `${gap}px`;
-
-		return () => {
-			body.style.overflow = previous.overflow;
-			body.style.paddingRight = previous.paddingRight;
-		};
-	}, [active]);
-}
 
 export function ShowcaseLightbox({
 	items,
@@ -58,36 +40,13 @@ export function ShowcaseLightbox({
 	onClose: () => void;
 	onIndexChange: (next: number) => void;
 }) {
-	const [mounted, setMounted] = useState(false);
+	const mounted = useMounted();
 	const panelRef = useRef<HTMLDivElement>(null);
 	const metaRef = useRef<HTMLDivElement>(null);
 
-	useEffect(() => setMounted(true), []);
-
 	const open = index !== null;
 	useScrollLock(open);
-
-	useEffect(() => {
-		if (!open) return;
-
-		openOverlay();
-		document.documentElement.dataset.overlay = "open";
-
-		return () => {
-			closeOverlay();
-			delete document.documentElement.dataset.overlay;
-		};
-	}, [open]);
-
-	useEffect(() => {
-		if (!open) return;
-
-		const opener = document.activeElement;
-
-		return () => {
-			if (opener instanceof HTMLElement) opener.focus();
-		};
-	}, [open]);
+	useOverlay(open);
 
 	useEffect(() => {
 		if (index === null) return;
@@ -115,57 +74,25 @@ export function ShowcaseLightbox({
 		[index, items.length, onIndexChange],
 	);
 
+	useEscape(open, requestClose);
+	useFocusTrap(panelRef, open);
+
 	useEffect(() => {
 		if (!open) return;
 
 		function handleKeyDown(event: KeyboardEvent) {
-			if (event.key === "Escape") {
-				event.preventDefault();
-				void requestClose();
-				return;
-			}
-
 			if (event.key === "ArrowLeft") {
 				event.preventDefault();
 				step(-1);
-				return;
-			}
-
-			if (event.key === "ArrowRight") {
+			} else if (event.key === "ArrowRight") {
 				event.preventDefault();
 				step(1);
-				return;
-			}
-
-			if (event.key !== "Tab") return;
-
-			const stops =
-				panelRef.current?.querySelectorAll<HTMLElement>(FOCUSABLE);
-			if (!stops || stops.length === 0) return;
-
-			const first = stops[0];
-			const last = stops[stops.length - 1];
-
-			if (event.shiftKey && document.activeElement === first) {
-				event.preventDefault();
-				last.focus();
-			} else if (!event.shiftKey && document.activeElement === last) {
-				event.preventDefault();
-				first.focus();
 			}
 		}
 
 		window.addEventListener("keydown", handleKeyDown);
 		return () => window.removeEventListener("keydown", handleKeyDown);
-	}, [open, requestClose, step]);
-
-	useEffect(() => {
-		if (!open) return;
-
-		const stops =
-			panelRef.current?.querySelectorAll<HTMLElement>(FOCUSABLE);
-		stops?.[0]?.focus();
-	}, [open]);
+	}, [open, step]);
 
 	if (!mounted) return null;
 

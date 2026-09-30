@@ -1,11 +1,6 @@
 "use client";
-
 import { useId } from "react";
 
-/* A push pin drawn from scratch: blue plastic head, short neck, wide base
- * disc, steel needle, and a soft shadow on the page. The pin leans 12deg to
- * the left so the needle enters the page at an angle. `active` presses it in
- * (see .push-pin in globals.css). */
 export function PushPin({ active = false }: { active?: boolean }) {
 	const id = useId().replace(/[^a-zA-Z0-9]/g, "");
 	const head = `${id}-head`;
@@ -59,7 +54,6 @@ export function PushPin({ active = false }: { active?: boolean }) {
 				</filter>
 			</defs>
 
-			{/* Shadow lies flat on the page, so it stays outside the tilt. */}
 			<ellipse
 				className="push-pin-shadow"
 				cx="13"
@@ -72,7 +66,6 @@ export function PushPin({ active = false }: { active?: boolean }) {
 			/>
 
 			<g transform="rotate(-12 13.5 25.6)">
-				{/* Needle */}
 				<path
 					d="M12.6 17.2 H14.4 L13.5 25.6 Z"
 					fill={`url(#${steel})`}
@@ -81,7 +74,6 @@ export function PushPin({ active = false }: { active?: boolean }) {
 					strokeLinejoin="round"
 				/>
 
-				{/* Base disc */}
 				<rect
 					x="8.5"
 					y="14.6"
@@ -100,7 +92,6 @@ export function PushPin({ active = false }: { active?: boolean }) {
 					opacity="0.55"
 				/>
 
-				{/* Neck */}
 				<rect
 					x="11.5"
 					y="10.2"
@@ -110,7 +101,6 @@ export function PushPin({ active = false }: { active?: boolean }) {
 					fill={`url(#${neck})`}
 				/>
 
-				{/* Head */}
 				<rect
 					x="7.5"
 					y="3.1"

@@ -43,6 +43,37 @@ export const socialLinks: SocialLink[] = [
 	},
 ];
 
+export type SocialId = "github" | "x" | "linkedin" | "email";
+
+export type SocialAccount = {
+	id: SocialId;
+	name: string;
+	handle: string;
+	href: string;
+};
+
+export const socialAccounts: SocialAccount[] = [
+	{
+		id: "github",
+		name: "GitHub",
+		handle: "@kant-github",
+		href: socials.github,
+	},
+	{ id: "x", name: "X", handle: "@khairrishi", href: socials.x },
+	{
+		id: "linkedin",
+		name: "LinkedIn",
+		handle: "@kant-linked",
+		href: socials.linkedin,
+	},
+	{
+		id: "email",
+		name: "Email",
+		handle: profile.email,
+		href: `mailto:${profile.email}`,
+	},
+];
+
 export type Shot = {
 	src: string;
 	alt: string;
@@ -121,7 +152,7 @@ export const experience: ExperienceItem[] = [
 		badge: "appx",
 		yc: "S21",
 		description:
-			"Building applications and dashboards from the ground up for educators and creators, and the backend behind them, which serves 400 million requests a day with high availability.",
+			"Building applications from the ground up for educators and creators, and the backend behind them, which serves 400 million requests a day with high availability.",
 	},
 	{
 		period: "2025",
