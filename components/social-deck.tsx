@@ -18,6 +18,10 @@ const STEP = 0.45;
  * The four cards in a row you swipe sideways. Each card snaps into place
  * and the next one peeks in from the right edge. Dots under the row show
  * which card is in view; tapping a dot scrolls to it.
+ *
+ * A sideways scroller clips vertically too, so the row carries enough
+ * padding for the shadows and takes the same amount back with negative
+ * margins. A spacer after the last card keeps its shadow inside as well.
  */
 export function SocialDeck() {
 	const scroller = useRef<HTMLUListElement>(null);
@@ -71,7 +75,7 @@ export function SocialDeck() {
 			<ul
 				ref={scroller}
 				aria-label="Social profiles"
-				className="no-scrollbar -mx-4 flex snap-x snap-mandatory gap-3 overflow-x-auto scroll-px-4 px-4 pt-1 pb-3"
+				className="no-scrollbar -mx-4 -mt-6 -mb-20 flex snap-x snap-mandatory gap-3 overflow-x-auto scroll-px-4 px-4 pt-6 pb-20 after:block after:w-8 after:shrink-0"
 			>
 				{socialAccounts.map((account, index) => (
 					<li
