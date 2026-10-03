@@ -29,7 +29,7 @@ type DockItem = {
 const SECTIONS: DockItem[] = [
 	{ id: "work", name: "Work", icon: RiBriefcase4Fill },
 	{ id: "experience", name: "Experience", icon: RiBuilding2Fill },
-	{ id: "writing", name: "Case studies", icon: RiQuillPenFill },
+	{ id: "case-studies", name: "Case studies", icon: RiQuillPenFill },
 	{ id: "personal", name: "Personal", icon: RiImage2Fill },
 ];
 
@@ -184,7 +184,7 @@ export function Dock() {
 						type="button"
 						aria-label="Switch between light and dark mode"
 						onClick={toggleTheme}
-						className={`${ICON_CLASS} ml-1`}
+						className={`${ICON_CLASS} ml-1 rounded-md`}
 					>
 						<ThemeIcon className="size-4" />
 						<span className={TIP_CLASS}>
@@ -217,7 +217,7 @@ export function Dock() {
 									key={item.id}
 									href={`/#${item.id}`}
 									aria-label={item.name}
-									className={ICON_CLASS}
+									className={`${ICON_CLASS} rounded-md`}
 								>
 									<Icon
 										className="size-4"

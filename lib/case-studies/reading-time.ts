@@ -1,4 +1,4 @@
-import type { Block } from "@/lib/writing/types";
+import type { Block } from "@/lib/case-studies/types";
 
 const WORDS_PER_MINUTE = 200;
 const SECONDS_PER_FIGURE = 12;
@@ -8,6 +8,10 @@ function countWords(text: string) {
 	return text.trim().split(/\s+/).filter(Boolean).length;
 }
 
+function countAll(texts: string[]) {
+	return texts.reduce((sum, text) => sum + countWords(text), 0);
+}
+
 export function readingMinutes(blocks: Block[]) {
 	let words = 0;
 	let seconds = 0;
@@ -15,36 +19,44 @@ export function readingMinutes(blocks: Block[]) {
 	for (const block of blocks) {
 		switch (block.type) {
 			case "p":
-			case "h2":
 			case "h3":
-				words += countWords(block.text);
-				break;
 			case "quote":
 				words += countWords(block.text);
 				break;
+			case "chapter":
+				words += countWords(block.title);
+				break;
 			case "list":
 			case "takeaways":
-				words += block.items.reduce(
-					(sum, item) => sum + countWords(item),
-					0,
-				);
+				words += countAll(block.items);
 				break;
 			case "callout":
 				words += countWords(block.title) + countWords(block.text);
 				break;
-			case "stat":
-				words += countWords(block.label) + countWords(block.note ?? "");
+			case "compare":
+				words += countAll([...block.left.items, ...block.right.items]);
+				break;
+			case "steps":
+				words += countAll(
+					block.items.flatMap((item) => [item.title, item.text]),
+				);
+				break;
+			case "timeline":
+				words += countAll(
+					block.items.flatMap((item) => [item.title, item.text]),
+				);
 				break;
 			case "code":
 				seconds += SECONDS_PER_CODE_BLOCK;
 				break;
 			case "diagram":
-			case "image":
+			case "shot":
 				seconds += SECONDS_PER_FIGURE;
-				words += countWords(
-					block.type === "diagram"
-						? block.caption
-						: (block.caption ?? ""),
+				words += countWords(block.caption ?? "");
+				words += countAll(
+					block.type === "shot"
+						? (block.notes ?? []).map((note) => note.text)
+						: [],
 				);
 				break;
 		}

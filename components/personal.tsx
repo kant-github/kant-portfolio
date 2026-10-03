@@ -1,21 +1,9 @@
 import type { CSSProperties } from "react";
-import Image from "next/image";
+import { PhotoRow } from "@/components/photo-row";
 import { CONTENT_INDEX, Section } from "@/components/section";
 import { personal, profile } from "@/lib/data";
 
-const TILT = ["-5deg", "3deg", "-2deg", "4deg", "-3deg"];
-
-const CARD_CLASS =
-	"relative shrink-0 rounded-lg bg-white p-1 shadow-card ring-1 ring-black/5 rotate-(--tilt) dark:ring-0 transition duration-300 hover:z-10 hover:-translate-y-2 hover:rotate-0";
-
-function rowSizing(count: number) {
-	const width = 400 / (3 * count + 1);
-	return { width: `${width}%`, overlap: `${width / 4}%` };
-}
-
 export function Personal() {
-	const { width, overlap } = rowSizing(personal.photos.items.length);
-
 	return (
 		<Section
 			label="Personal"
@@ -33,37 +21,11 @@ export function Personal() {
 				</>
 			}
 		>
-			<div className="flex flex-col gap-6">
-				<div className="flex flex-col gap-4">
-					<div
-						className="stage-item stage-soft flex justify-center px-2"
-						style={{ "--i": CONTENT_INDEX } as CSSProperties}
-					>
-						{personal.photos.items.map((photo, index) => (
-							<figure
-								key={photo.src}
-								style={
-									{
-										"--tilt": TILT[index % TILT.length],
-										width,
-										marginLeft:
-											index === 0 ? 0 : `-${overlap}`,
-									} as CSSProperties
-								}
-								className={CARD_CLASS}
-							>
-								<Image
-									src={photo.src}
-									alt={photo.alt}
-									width={800}
-									height={600}
-									sizes="(min-width: 640px) 256px, 40vw"
-									className="aspect-4/3 w-full rounded-sm object-cover"
-								/>
-							</figure>
-						))}
-					</div>
-				</div>
+			<div
+				className="stage-item stage-soft"
+				style={{ "--i": CONTENT_INDEX } as CSSProperties}
+			>
+				<PhotoRow photos={personal.photos.items} />
 			</div>
 		</Section>
 	);

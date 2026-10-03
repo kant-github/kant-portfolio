@@ -1,3 +1,4 @@
+import { CaseStudies } from "@/components/case-studies";
 import { Dock } from "@/components/dock";
 import { Experience } from "@/components/experience";
 import { Personal } from "@/components/personal";
@@ -5,7 +6,6 @@ import { Reach } from "@/components/reach";
 import { ScrollStage } from "@/components/scroll-stage";
 import { SocialRail } from "@/components/social-rail";
 import { Work } from "@/components/work";
-import { Writing } from "@/components/writing";
 
 export default function Home() {
 	return (
@@ -20,8 +20,8 @@ export default function Home() {
 				<ScrollStage id="experience" holdMs={1500}>
 					<Experience />
 				</ScrollStage>
-				<ScrollStage id="writing">
-					<Writing />
+				<ScrollStage id="case-studies">
+					<CaseStudies />
 				</ScrollStage>
 
 				<ScrollStage id="personal" latchAtBottom>

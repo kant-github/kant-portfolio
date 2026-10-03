@@ -1,7 +1,8 @@
 import { createHighlighter, type Highlighter } from "shiki";
+import { CodeBody } from "@/components/article/code-body";
 import { CopyButton } from "@/components/article/copy-button";
 
-const THEMES = { light: "vitesse-light", dark: "vitesse-dark" } as const;
+const THEMES = { light: "min-light", dark: "vesper" } as const;
 const LANGS = ["ts", "tsx", "js", "json", "bash", "sql"] as const;
 
 type Lang = (typeof LANGS)[number];
@@ -42,15 +43,12 @@ export async function CodeBlock({
 	return (
 		<figure className="not-prose code-figure">
 			<figcaption className="code-bar">
-				<span>{file ?? lang}</span>
-				<span className="code-lang">{lang}</span>
+				<span className="min-w-0 truncate">{file ?? lang}</span>
+				<span className="code-lang shrink-0">{lang}</span>
 				<CopyButton code={code} />
 			</figcaption>
 
-			<div
-				className="code-body"
-				dangerouslySetInnerHTML={{ __html: html }}
-			/>
+			<CodeBody html={html} />
 		</figure>
 	);
 }

@@ -1,4 +1,5 @@
-import type { DiagramName } from "@/lib/writing/types";
+import { CommitTimeline } from "@/components/diagrams/commit-timeline";
+import type { DiagramName } from "@/lib/case-studies/types";
 import {
 	ACCENT,
 	Arrow,
@@ -10,487 +11,7 @@ import {
 	MUTE,
 	SURFACE,
 	Svg,
-	WARN,
 } from "@/components/diagrams/parts";
-
-function WsOneServer() {
-	return (
-		<Svg
-			viewBox="0 0 560 190"
-			title="One server holding every connection in a room, broadcasting by looping over memory"
-		>
-			<Heads />
-			<Box x={20} y={30} w={90} h={34} label="Player A" />
-			<Box x={20} y={78} w={90} h={34} label="Player B" />
-			<Box x={20} y={126} w={90} h={34} label="Player C" />
-
-			<Box
-				x={230}
-				y={62}
-				w={120}
-				h={66}
-				label="Server"
-				sub="rooms in memory"
-				tone="accent"
-			/>
-
-			<Arrow x1={110} y1={47} x2={228} y2={85} tone="accent" />
-			<Arrow x1={110} y1={95} x2={228} y2={95} tone="accent" />
-			<Arrow x1={110} y1={143} x2={228} y2={105} tone="accent" />
-
-			<Box
-				x={430}
-				y={62}
-				w={110}
-				h={66}
-				label="room: 42"
-				sub="Set of 3 sockets"
-			/>
-			<Arrow x1={352} y1={95} x2={428} y2={95} />
-			<Caption x={280} y={175}>
-				one process can see every socket, so a broadcast is a loop
-			</Caption>
-		</Svg>
-	);
-}
-
-function WsTwoServers() {
-	return (
-		<Svg
-			viewBox="0 0 560 230"
-			title="Two servers behind a load balancer, where server A cannot reach players connected to server B"
-		>
-			<Heads />
-			<Box x={20} y={90} w={96} h={40} label="Load" sub="balancer" />
-
-			<Box
-				x={190}
-				y={28}
-				w={120}
-				h={54}
-				label="Server A"
-				sub="host + Player A"
-				tone="accent"
-			/>
-			<Box
-				x={190}
-				y={148}
-				w={120}
-				h={54}
-				label="Server B"
-				sub="Player B + C"
-				tone="warn"
-			/>
-
-			<Arrow x1={116} y1={100} x2={188} y2={60} />
-			<Arrow x1={116} y1={112} x2={188} y2={168} />
-
-			<Box x={410} y={28} w={130} h={54} label="gets the message" />
-			<Box
-				x={410}
-				y={148}
-				w={130}
-				h={54}
-				label="hears nothing"
-				tone="warn"
-			/>
-
-			<Arrow
-				x1={310}
-				y1={55}
-				x2={408}
-				y2={55}
-				tone="accent"
-				label="broadcast"
-			/>
-			<Arrow
-				x1={310}
-				y1={175}
-				x2={408}
-				y2={175}
-				tone="warn"
-				dashed
-				label="never sent"
-			/>
-
-			<text x={280} y={118} textAnchor="middle" fontSize={10} fill={WARN}>
-				A and B cannot see each other&apos;s sockets
-			</text>
-			<Caption x={280} y={220}>
-				no error is thrown — server A told everyone it could see
-			</Caption>
-		</Svg>
-	);
-}
-
-function WsRedis() {
-	return (
-		<Svg
-			viewBox="0 0 640 250"
-			title="Redis Pub/Sub carrying a message between servers so each one delivers to its own sockets"
-		>
-			<Heads />
-			<Box
-				x={20}
-				y={100}
-				w={110}
-				h={48}
-				label="Server A"
-				sub="publishes"
-				tone="accent"
-			/>
-			<Box
-				x={265}
-				y={96}
-				w={110}
-				h={56}
-				label="Redis"
-				sub="channel room:42"
-				tone="accent"
-			/>
-			<Box
-				x={510}
-				y={40}
-				w={110}
-				h={48}
-				label="Server B"
-				sub="subscribed"
-			/>
-			<Box
-				x={510}
-				y={160}
-				w={110}
-				h={48}
-				label="Server C"
-				sub="subscribed"
-			/>
-
-			<Arrow
-				x1={130}
-				y1={124}
-				x2={263}
-				y2={124}
-				tone="accent"
-				label="publish"
-			/>
-			<Arrow
-				x1={375}
-				y1={112}
-				x2={508}
-				y2={70}
-				tone="accent"
-				label="push"
-			/>
-			<Arrow
-				x1={375}
-				y1={136}
-				x2={508}
-				y2={180}
-				tone="accent"
-				label="push"
-			/>
-
-			<Box x={510} y={-2} w={110} h={30} label="its own sockets" />
-			<Box x={510} y={218} w={110} h={30} label="its own sockets" />
-			<Arrow x1={565} y1={38} x2={565} y2={30} />
-			<Arrow x1={565} y1={210} x2={565} y2={216} />
-
-			<Caption x={320} y={236}>
-				no server needs to know about another server&apos;s connections
-			</Caption>
-		</Svg>
-	);
-}
-
-function TrafficPeaks() {
-	const points = [
-		12, 9, 7, 6, 6, 8, 14, 26, 38, 44, 47, 45, 48, 52, 49, 46, 44, 92, 58,
-		42, 36, 28, 20, 15,
-	];
-	const w = 620;
-	const h = 170;
-	const stepX = w / (points.length - 1);
-	const max = 100;
-	const y = (v: number) => h - (v / max) * (h - 30) - 10;
-	const path = points
-		.map(
-			(v, i) =>
-				`${i === 0 ? "M" : "L"} ${(i * stepX).toFixed(1)} ${y(v).toFixed(1)}`,
-		)
-		.join(" ");
-	const mean = points.reduce((a, b) => a + b, 0) / points.length;
-
-	return (
-		<Svg
-			viewBox={`0 0 ${w} ${h + 34}`}
-			title="A day of traffic showing the flat average line against a spike roughly twice the daily plateau"
-		>
-			<Heads />
-			<line
-				x1={0}
-				y1={h - 10}
-				x2={w}
-				y2={h - 10}
-				stroke={LINE}
-				strokeWidth={1}
-			/>
-
-			<path
-				d={`${path} L ${w} ${h - 10} L 0 ${h - 10} Z`}
-				fill={SURFACE}
-			/>
-			<path
-				d={path}
-				fill="none"
-				stroke={ACCENT}
-				strokeWidth={1.75}
-				strokeLinejoin="round"
-			/>
-
-			<line
-				x1={0}
-				y1={y(mean)}
-				x2={w}
-				y2={y(mean)}
-				stroke={MUTE}
-				strokeWidth={1}
-				strokeDasharray="5 5"
-			/>
-			<text x={6} y={y(mean) - 6} fontSize={10} fill={MUTE}>
-				average ~4,600/s
-			</text>
-
-			<circle cx={17 * stepX} cy={y(92)} r={4} fill={WARN} />
-			<text
-				x={17 * stepX - 8}
-				y={y(92) - 10}
-				textAnchor="end"
-				fontSize={10}
-				fill={WARN}
-			>
-				notification goes out
-			</text>
-
-			<Caption x={0} y={h + 22} anchor="start">
-				00:00
-			</Caption>
-			<Caption x={w / 2} y={h + 22}>
-				capacity has to cover the spike, not the line
-			</Caption>
-			<Caption x={w} y={h + 22} anchor="end">
-				24:00
-			</Caption>
-		</Svg>
-	);
-}
-
-function CacheHierarchy() {
-	const layers = [
-		{ label: "Browser", sub: "already has it" },
-		{ label: "CDN", sub: "near the user" },
-		{ label: "App cache", sub: "in process" },
-		{ label: "Redis", sub: "shared" },
-		{ label: "Database", sub: "last resort" },
-	];
-	const w = 640;
-	const boxW = 108;
-	const gap = (w - layers.length * boxW) / (layers.length - 1);
-
-	return (
-		<Svg
-			viewBox="0 0 640 170"
-			title="Five layers a request passes through, from the browser to the database, each able to answer and stop"
-		>
-			<Heads />
-			{layers.map((layer, index) => {
-				const x = index * (boxW + gap);
-				return (
-					<g key={layer.label}>
-						<Box
-							x={x}
-							y={46}
-							w={boxW}
-							h={52}
-							label={layer.label}
-							sub={layer.sub}
-							tone={
-								index === layers.length - 1 ? "warn" : "accent"
-							}
-						/>
-						{index < layers.length - 1 ? (
-							<Arrow
-								x1={x + boxW}
-								y1={72}
-								x2={x + boxW + gap - 2}
-								y2={72}
-								dashed
-							/>
-						) : null}
-						<text
-							x={x + boxW / 2}
-							y={120}
-							textAnchor="middle"
-							fontSize={9}
-							fill={MUTE}
-						>
-							↑ answers here
-						</text>
-					</g>
-				);
-			})}
-			<text x={0} y={28} fontSize={10} fill={INK}>
-				request →
-			</text>
-			<Caption x={320} y={150}>
-				every layer that answers is load the database never sees
-			</Caption>
-		</Svg>
-	);
-}
-
-function CircuitBreaker() {
-	return (
-		<Svg
-			viewBox="0 0 560 200"
-			title="Circuit breaker states: closed, open and half-open, and the transitions between them"
-		>
-			<Heads />
-			<Box
-				x={20}
-				y={70}
-				w={120}
-				h={56}
-				label="CLOSED"
-				sub="calls pass through"
-				tone="accent"
-			/>
-			<Box
-				x={220}
-				y={70}
-				w={120}
-				h={56}
-				label="OPEN"
-				sub="fail instantly"
-				tone="warn"
-			/>
-			<Box
-				x={420}
-				y={70}
-				w={120}
-				h={56}
-				label="HALF-OPEN"
-				sub="let one through"
-			/>
-
-			<Arrow
-				x1={140}
-				y1={88}
-				x2={218}
-				y2={88}
-				tone="warn"
-				label="too many failures"
-			/>
-			<Arrow x1={340} y1={88} x2={418} y2={88} label="after cool-off" />
-
-			<path
-				d="M 480 126 C 480 176, 80 176, 80 128"
-				fill="none"
-				stroke={ACCENT}
-				strokeWidth={1.25}
-				markerEnd="url(#head-accent)"
-			/>
-			<text
-				x={280}
-				y={172}
-				textAnchor="middle"
-				fontSize={9}
-				fill={ACCENT}
-			>
-				test call succeeded → close
-			</text>
-
-			<path
-				d="M 470 68 C 430 24, 300 24, 282 66"
-				fill="none"
-				stroke={WARN}
-				strokeWidth={1.25}
-				strokeDasharray="4 4"
-				markerEnd="url(#head-warn)"
-			/>
-			<text x={376} y={26} textAnchor="middle" fontSize={9} fill={WARN}>
-				still failing → open again
-			</text>
-		</Svg>
-	);
-}
-
-function LatencyBudget() {
-	const parts = [
-		{ label: "app code", value: 12, tone: ACCENT },
-		{ label: "database", value: 38, tone: MUTE },
-		{ label: "cache", value: 6, tone: ACCENT },
-		{ label: "other services", value: 31, tone: MUTE },
-		{ label: "network", value: 13, tone: MUTE },
-	];
-	const w = 600;
-	const total = parts.reduce((sum, part) => sum + part.value, 0);
-	let x = 0;
-
-	return (
-		<Svg
-			viewBox="0 0 600 150"
-			title="A response time broken into parts, showing most of it is spent waiting on other systems"
-		>
-			<text x={0} y={18} fontSize={10} fill={INK}>
-				one response, 100% of its time
-			</text>
-			{parts.map((part) => {
-				const width = (part.value / total) * w;
-				const bar = (
-					<g key={part.label}>
-						<rect
-							x={x}
-							y={32}
-							width={width - 2}
-							height={30}
-							rx={3}
-							fill={part.tone === ACCENT ? ACCENT : SURFACE}
-							stroke={part.tone === ACCENT ? ACCENT : LINE}
-							strokeWidth={1}
-							opacity={part.tone === ACCENT ? 0.85 : 1}
-						/>
-						<text
-							x={x + width / 2}
-							y={82}
-							textAnchor="middle"
-							fontSize={9}
-							fill={MUTE}
-						>
-							{part.label}
-						</text>
-						<text
-							x={x + width / 2}
-							y={96}
-							textAnchor="middle"
-							fontSize={9}
-							fill={INK}
-						>
-							{part.value}%
-						</text>
-					</g>
-				);
-				x += width;
-				return bar;
-			})}
-			<Caption x={300} y={128}>
-				the code you write is rarely the slow part — waiting is
-			</Caption>
-			<Caption x={300} y={142}>
-				shape is illustrative, not measured
-			</Caption>
-		</Svg>
-	);
-}
 
 function LineVsLoop() {
 	const leftMid = 160;
@@ -628,15 +149,128 @@ function LineVsLoop() {
 	);
 }
 
+function Iceberg() {
+	const water = 92;
+	const checks = [
+		["real user?", 230, 128],
+		["invite or error?", 230, 163],
+		["accept first?", 230, 198],
+		["who can invite?", 230, 233],
+		["already a member?", 395, 128],
+		["link expired?", 395, 163],
+		["wrong account?", 395, 198],
+		["double click?", 395, 233],
+	] as const;
+
+	return (
+		<Svg
+			viewBox="0 0 620 292"
+			title="An iceberg. Above the water is one Add collaborator button. Below the water are eight checks it needs."
+		>
+			<polygon
+				points={`245,${water} 280,30 340,30 375,${water}`}
+				fill={SURFACE}
+				stroke={LINE}
+			/>
+			<Box x={250} y={44} w={120} h={30} label="Add collaborator" tone="accent" />
+
+			<polygon
+				points={`212,${water + 2} 408,${water + 2} 520,172 470,274 150,282 88,182`}
+				fill={SURFACE}
+				stroke={LINE}
+			/>
+
+			<line
+				x1={0}
+				y1={water}
+				x2={620}
+				y2={water}
+				stroke={ACCENT}
+				strokeWidth={1}
+				strokeDasharray="5 5"
+				opacity={0.6}
+			/>
+
+			<Caption x={16} y={60} anchor="start">
+				WHAT USERS SEE
+			</Caption>
+			<Caption x={16} y={124} anchor="start">
+				WHAT YOU BUILD
+			</Caption>
+
+			{checks.map(([label, x, y]) => (
+				<g key={label}>
+					<circle cx={x - 62} cy={y - 3} r={2} fill={ACCENT} />
+					<text x={x - 54} y={y} fontSize={10} fill={INK}>
+						{label}
+					</text>
+				</g>
+			))}
+		</Svg>
+	);
+}
+
+function WinterfellPipeline() {
+	const top = 40;
+	const bottom = 160;
+	const h = 46;
+
+	return (
+		<Svg
+			viewBox="0 0 640 262"
+			title="Two rows. Generate: prompt, planner, coder, finalizer, storage. Build: terminal, WebSocket, queue, Kubernetes job, with logs flowing back to the terminal."
+		>
+			<Heads />
+
+			<Caption x={10} y={24} anchor="start">
+				GENERATE
+			</Caption>
+			<Box x={10} y={top} w={90} h={h} label="prompt" sub="you type" />
+			<Box x={130} y={top} w={110} h={h} label="planner" sub="plan + files" />
+			<Box x={270} y={top} w={110} h={h} label="coder" sub="streams code" tone="accent" />
+			<Box x={410} y={top} w={100} h={h} label="finalizer" sub="writes the IDL" />
+			<Box x={540} y={top} w={90} h={h} label="storage" sub="files saved" />
+			<Arrow x1={100} y1={top + h / 2} x2={128} y2={top + h / 2} />
+			<Arrow x1={240} y1={top + h / 2} x2={268} y2={top + h / 2} />
+			<Arrow x1={380} y1={top + h / 2} x2={408} y2={top + h / 2} />
+			<Arrow x1={510} y1={top + h / 2} x2={538} y2={top + h / 2} />
+			<Caption x={320} y={110}>
+				every stage streams back to the browser (SSE)
+			</Caption>
+
+			<line x1={10} y1={128} x2={630} y2={128} stroke={LINE} strokeWidth={1} />
+
+			<Caption x={10} y={146} anchor="start">
+				BUILD
+			</Caption>
+			<Box x={10} y={bottom} w={90} h={h} label="terminal" sub="browser" />
+			<Box x={130} y={bottom} w={110} h={h} label="WebSocket" sub="socket app" />
+			<Box x={270} y={bottom} w={110} h={h} label="queue" sub="BullMQ on Redis" />
+			<Box x={410} y={bottom} w={100} h={h} label="k8s job" sub="anchor build" tone="accent" />
+			<Arrow x1={100} y1={bottom + h / 2} x2={128} y2={bottom + h / 2} />
+			<Arrow x1={240} y1={bottom + h / 2} x2={268} y2={bottom + h / 2} />
+			<Arrow x1={380} y1={bottom + h / 2} x2={408} y2={bottom + h / 2} />
+
+			<path
+				d={`M 460 ${bottom + h} V 234 H 55 V ${bottom + h + 3}`}
+				fill="none"
+				stroke={MUTE}
+				strokeWidth={1.25}
+				strokeDasharray="4 4"
+				markerEnd="url(#head-plain)"
+			/>
+			<Caption x={257} y={252}>
+				logs stream back through Redis pub/sub
+			</Caption>
+		</Svg>
+	);
+}
+
 const DIAGRAMS: Record<DiagramName, () => React.ReactElement> = {
-	"ws-one-server": WsOneServer,
-	"ws-two-servers": WsTwoServers,
-	"ws-redis": WsRedis,
-	"traffic-peaks": TrafficPeaks,
-	"cache-hierarchy": CacheHierarchy,
-	"circuit-breaker": CircuitBreaker,
-	"latency-budget": LatencyBudget,
 	"line-vs-loop": LineVsLoop,
+	iceberg: Iceberg,
+	"winterfell-pipeline": WinterfellPipeline,
+	"commit-timeline": CommitTimeline,
 };
 
 export function Diagram({ name }: { name: DiagramName }) {

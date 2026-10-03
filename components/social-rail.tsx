@@ -84,7 +84,7 @@ export function SocialRail() {
 							}
 							onPointerEnter={() => show(account.id)}
 							onFocus={() => show(account.id)}
-							className={`${ICON_CLASS} block`}
+							className={`${ICON_CLASS} block rounded-[11px]`}
 						>
 							<BrandMark id={account.id} className="size-4" />
 							<span className={TIP_RIGHT_CLASS}>

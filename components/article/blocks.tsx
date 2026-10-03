@@ -1,5 +1,4 @@
-import Image from "next/image";
-import type { CSSProperties } from "react";
+import type { ReactNode } from "react";
 import {
 	RiAlertFill,
 	RiInformationFill,
@@ -7,28 +6,38 @@ import {
 } from "react-icons/ri";
 import { CodeBlock } from "@/components/article/code-block";
 import { Inline } from "@/components/article/inline";
-import { Band } from "@/components/band";
+import { Shot } from "@/components/article/shot";
 import { Diagram } from "@/components/diagrams";
 import { LABEL_CLASS } from "@/components/section";
-import type { Block } from "@/lib/writing/types";
+import type { Block } from "@/lib/case-studies/types";
 
-function Figure({
-	caption,
-	wide,
+export function pad(n: number) {
+	return String(n).padStart(2, "0");
+}
+
+/** One shell for every side box: an icon chip and label up top, body below. */
+function Panel({
+	icon: Icon,
+	label,
+	tone = "note",
 	children,
 }: {
-	caption?: string;
-	wide?: boolean;
-	children: React.ReactNode;
+	icon: typeof RiInformationFill;
+	label: string;
+	tone?: "note" | "warn";
+	children: ReactNode;
 }) {
-	const figure = (
-		<figure className={wide ? "mx-auto w-full max-w-3xl px-4" : "my-8"}>
+	return (
+		<aside className={`panel not-prose ${tone === "warn" ? "is-warn" : ""}`}>
+			<div className="panel-label">
+				<Icon className="panel-icon size-3" aria-hidden="true" />
+				<span className="font-mono text-[11px] tracking-label uppercase">
+					{label}
+				</span>
+			</div>
 			{children}
-			{caption ? <figcaption>{caption}</figcaption> : null}
-		</figure>
+		</aside>
 	);
-
-	return wide ? <Band className="my-10">{figure}</Band> : figure;
 }
 
 function Callout({
@@ -40,47 +49,150 @@ function Callout({
 	title: string;
 	text: string;
 }) {
-	const Icon = tone === "warn" ? RiAlertFill : RiInformationFill;
-
 	return (
-		<aside
-			className="lit-edge my-7 rounded-md border border-line bg-linear-to-b from-card-top to-card-bottom p-5 shadow-note"
-			style={{ "--lit-rim": 0.1 } as CSSProperties}
+		<Panel
+			icon={tone === "warn" ? RiAlertFill : RiInformationFill}
+			label={tone === "warn" ? "Careful" : "Note"}
+			tone={tone}
 		>
-			<p className="flex items-center gap-2 text-ink">
-				<Icon
-					className={`size-4 shrink-0 ${tone === "warn" ? "text-amber-500 dark:text-amber-400" : "text-mute"}`}
-					aria-hidden="true"
-				/>
-				<strong className="font-medium">{title}</strong>
-			</p>
-			<p className="mt-2 text-mute">
+			<p className="text-sm leading-[1.4] font-medium text-ink">{title}</p>
+			<p className="mt-2 text-sm leading-[1.6] text-mute">
 				<Inline text={text} />
 			</p>
-		</aside>
+		</Panel>
 	);
 }
 
 function Takeaways({ items }: { items: string[] }) {
 	return (
-		<aside className="my-10 rounded-md border border-line bg-surface p-5">
-			<p className={`flex items-center gap-2 ${LABEL_CLASS}`}>
-				<RiLightbulbFlashFill className="size-3.5" aria-hidden="true" />
-				The short version
-			</p>
-			<ul className="mt-4 flex flex-col gap-2.5">
+		<Panel icon={RiLightbulbFlashFill} label="TL;DR">
+			<ul className="flex flex-col gap-2.5">
 				{items.map((item) => (
-					<li key={item} className="flex gap-3 text-mute">
-						<span aria-hidden="true" className="text-line">
-							—
-						</span>
+					<li
+						key={item}
+						className="flex gap-3.5 text-[15px] leading-[1.6] text-prose"
+					>
+						<span
+							aria-hidden="true"
+							className="mt-[9px] size-[5px] shrink-0 rounded-[1.5px] bg-tree-accent"
+						/>
 						<span>
 							<Inline text={item} />
 						</span>
 					</li>
 				))}
 			</ul>
-		</aside>
+		</Panel>
+	);
+}
+
+function Quote({ text, by }: Extract<Block, { type: "quote" }>) {
+	const [name, role] = by ? by.split(/,\s*/, 2) : [];
+
+	return (
+		<figure className="pull-quote not-prose">
+			<blockquote>
+				<Inline text={text} />
+			</blockquote>
+			{name ? (
+				<figcaption>
+					{name}
+					{role ? <span className="text-mute/60"> · {role}</span> : null}
+				</figcaption>
+			) : null}
+		</figure>
+	);
+}
+
+function Compare({ left, right }: Extract<Block, { type: "compare" }>) {
+	return (
+		<div className="not-prose my-10 grid gap-4 sm:grid-cols-2">
+			{[left, right].map((side, column) => {
+				const strong = column === 1;
+
+				return (
+					<div
+						key={side.title}
+						className={`compare-card ${strong ? "is-strong" : ""}`}
+					>
+						<p
+							className={`${LABEL_CLASS} ${strong ? "text-tree-accent" : ""}`}
+						>
+							{side.title}
+						</p>
+						<ol className="mt-5 flex flex-col gap-3.5">
+							{side.items.map((item, index) => (
+								<li
+									key={item}
+									className="flex gap-3 text-[15px] leading-[1.6]"
+								>
+									<span className="pt-1 font-mono text-[11px] text-mute/70">
+										{pad(index + 1)}
+									</span>
+									<span className={strong ? "text-ink" : "text-mute"}>
+										<Inline text={item} />
+									</span>
+								</li>
+							))}
+						</ol>
+					</div>
+				);
+			})}
+		</div>
+	);
+}
+
+function Steps({ items }: Extract<Block, { type: "steps" }>) {
+	return (
+		<ol className="not-prose my-10 flex flex-col">
+			{items.map((item, index) => (
+				<li key={item.title} className="step relative flex gap-5 pb-7 last:pb-0">
+					<span className="relative z-10 flex size-7 shrink-0 items-center justify-center rounded-full border border-line bg-page font-mono text-[11px] text-ink">
+						{pad(index + 1)}
+					</span>
+					<div className="flex flex-col gap-1 pt-0.5">
+						<p className="text-[15px] font-medium text-ink">{item.title}</p>
+						<p className="text-[15px] leading-relaxed text-mute">
+							<Inline text={item.text} />
+						</p>
+					</div>
+				</li>
+			))}
+		</ol>
+	);
+}
+
+function Timeline({ items }: Extract<Block, { type: "timeline" }>) {
+	return (
+		<ol className="not-prose my-12 border-t border-line">
+			{items.map((item) => (
+				<li
+					key={item.when}
+					className="grid gap-2 border-b border-line py-6 sm:grid-cols-[8.5rem_minmax(0,1fr)] sm:gap-8"
+				>
+					<p className="font-mono text-[12px] leading-[1.6] tracking-label text-mute uppercase sm:pt-[3px]">
+						{item.when}
+					</p>
+					<div className="flex flex-col gap-1.5">
+						<p className="text-[17px] leading-[1.4] font-medium text-ink">
+							{item.title}
+						</p>
+						<p className="text-[15px] leading-[1.65] text-mute">
+							<Inline text={item.text} />
+						</p>
+					</div>
+				</li>
+			))}
+		</ol>
+	);
+}
+
+export function Chapter({ block }: { block: Extract<Block, { type: "chapter" }> }) {
+	return (
+		<h2 id={block.id} className="chapter">
+			<span className="chapter-n">{pad(block.n)}</span>
+			<span>{block.title}</span>
+		</h2>
 	);
 }
 
@@ -98,12 +210,8 @@ export function Blocks({ items }: { items: Block[] }) {
 							</p>
 						);
 
-					case "h2":
-						return (
-							<h2 key={key} id={block.id}>
-								{block.text}
-							</h2>
-						);
+					case "chapter":
+						return <Chapter key={key} block={block} />;
 
 					case "h3":
 						return <h3 key={key}>{block.text}</h3>;
@@ -139,37 +247,32 @@ export function Blocks({ items }: { items: Block[] }) {
 
 					case "diagram":
 						return (
-							<Figure
-								key={key}
-								caption={block.caption}
-								wide={block.wide}
-							>
-								<div
-									role="region"
-									aria-label={`${block.caption} (scrolls sideways on small screens)`}
-									tabIndex={0}
-									className="diagram-scroll"
-								>
-									<Diagram name={block.name} />
+							<figure key={key} className="not-prose figure">
+								<div className="figure-card">
+									<div
+										role="region"
+										aria-label={`${block.caption} (scrolls sideways on small screens)`}
+										tabIndex={0}
+										className="diagram-scroll"
+									>
+										<Diagram name={block.name} />
+									</div>
 								</div>
-							</Figure>
+								<figcaption>{block.caption}</figcaption>
+							</figure>
 						);
 
-					case "image":
-						return (
-							<Figure key={key} caption={block.caption}>
-								<span className="mx-auto block max-w-sm rounded-lg bg-white p-1 shadow-card ring-1 ring-black/5 dark:ring-0">
-									<Image
-										src={block.src}
-										alt={block.alt}
-										width={block.width}
-										height={block.height}
-										sizes="(min-width: 640px) 384px, 90vw"
-										className="h-auto w-full rounded-md"
-									/>
-								</span>
-							</Figure>
-						);
+					case "shot":
+						return <Shot key={key} {...block} />;
+
+					case "compare":
+						return <Compare key={key} {...block} />;
+
+					case "steps":
+						return <Steps key={key} {...block} />;
+
+					case "timeline":
+						return <Timeline key={key} {...block} />;
 
 					case "callout":
 						return (
@@ -182,31 +285,7 @@ export function Blocks({ items }: { items: Block[] }) {
 						);
 
 					case "quote":
-						return (
-							<Band key={key} className="my-12">
-								<blockquote className="mx-auto max-w-160 px-4 text-center text-[1.1875rem] leading-[1.5] text-ink">
-									<Inline text={block.text} />
-								</blockquote>
-							</Band>
-						);
-
-					case "stat":
-						return (
-							<div
-								key={key}
-								className="my-8 flex flex-col items-center gap-1 rounded-md border border-line bg-surface py-6"
-							>
-								<p className="font-mono text-2xl text-ink">
-									{block.value}
-								</p>
-								<p className={LABEL_CLASS}>{block.label}</p>
-								{block.note ? (
-									<p className="mt-1 font-mono text-xs text-mute">
-										{block.note}
-									</p>
-								) : null}
-							</div>
-						);
+						return <Quote key={key} {...block} />;
 
 					case "takeaways":
 						return <Takeaways key={key} items={block.items} />;

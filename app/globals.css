@@ -540,36 +540,10 @@ body {
 	}
 }
 
-/* Push pin before each writing title (components/push-pin.tsx). Hovering a
- * row presses the pin into the page: it drops 1px, shrinks toward its tip,
- * and its shadow tightens. */
+/* Push pin before each case study title (components/push-pin.tsx). It stays
+ * still on hover; the row highlight does the work. */
 .push-pin {
 	transform-origin: 50% 100%;
-	transition: transform 200ms cubic-bezier(0.22, 1, 0.36, 1);
-}
-
-.push-pin.is-pressed {
-	transform: translateY(1px) scale(0.94);
-}
-
-.push-pin-shadow {
-	transform-box: fill-box;
-	transform-origin: center;
-	transition:
-		transform 200ms cubic-bezier(0.22, 1, 0.36, 1),
-		opacity 200ms ease-out;
-}
-
-.push-pin.is-pressed .push-pin-shadow {
-	transform: scale(0.8);
-	opacity: 0.18;
-}
-
-@media (prefers-reduced-motion: reduce) {
-	.push-pin,
-	.push-pin-shadow {
-		transition: none;
-	}
 }
 
 @keyframes dock-label-in {
@@ -602,16 +576,34 @@ body {
 /* The social cards (components/social-card.tsx, social-faces.tsx). The
  * shell only casts the shadow; each face is a material of its own and sets
  * the variables the shared parts read. Layers, back to front: material,
- * texture, grain, mark, print, bevel. Cards look the same in both themes,
+ * texture, grain, mark, print, light. Cards look the same in both themes,
  * as real cards would. */
 .social-card {
 	--card-lift: 0;
 	box-shadow:
+		0 1px 2px rgb(0 0 0 / 0.12),
 		1px 1px 1px rgb(0 0 0 / 0.06),
 		calc(3px + 3px * var(--card-lift)) calc(10px + 6px * var(--card-lift))
 			calc(20px + 8px * var(--card-lift)) -8px rgb(0 0 0 / 0.22),
 		calc(10px + 6px * var(--card-lift)) calc(32px + 14px * var(--card-lift))
 			calc(56px + 16px * var(--card-lift)) -24px rgb(0 0 0 / 0.3);
+}
+
+/* how brightly each material's edge catches the light */
+.social-card {
+	--card-rim: 0.9;
+}
+
+.social-card[data-face="github"] {
+	--card-rim: 0.5;
+}
+
+.social-card[data-face="linkedin"] {
+	--card-rim: 0.75;
+}
+
+.social-card[data-face="email"] {
+	--card-rim: 0.7;
 }
 
 /* while the pointer tilts the card (components/social-card.tsx) */
@@ -621,8 +613,9 @@ body {
 
 /* Light on the card. One key light sits above and to the left. It shows
  * in three places, none of them a glow painted over the face:
- *  - the rim catches it: a hairline that is bright near the light and
- *    fades along the edges, with the far edges falling into shade;
+ *  - the rim catches it: a hairline along the top and left edges, bright
+ *    near the light and gone before the far corners; the other edges have
+ *    no line at all;
  *  - the surface turns towards it: a broad, faint brightening blended
  *    with soft-light, so the grain and material stay visible;
  *  - as the card comes out it turns into the light: the catch on the
@@ -653,8 +646,7 @@ body {
 }
 
 /* rim catch: a 1px ring lit from the top-left corner */
-.card-light::before,
-.card-light::after {
+.card-light::before {
 	content: "";
 	position: absolute;
 	inset: 0;
@@ -669,25 +661,15 @@ body {
 
 .card-light::before {
 	background-image: radial-gradient(
-		130% 130% at var(--card-lx) 0%,
-		rgb(255 255 255 / 0.95) 0%,
-		rgb(255 255 255 / 0.55) 14%,
-		rgb(255 255 255 / 0.2) 34%,
-		rgb(255 255 255 / 0.05) 52%,
-		transparent 68%
+		115% 115% at var(--card-lx) 0%,
+		rgb(255 255 255 / var(--card-rim)) 0%,
+		rgb(255 255 255 / calc(var(--card-rim) * 0.55)) 16%,
+		rgb(255 255 255 / calc(var(--card-rim) * 0.22)) 32%,
+		rgb(255 255 255 / calc(var(--card-rim) * 0.05)) 46%,
+		transparent 56%
 	);
 	mix-blend-mode: normal;
 	animation: card-catch 1000ms cubic-bezier(0.22, 1, 0.36, 1) 60ms backwards;
-}
-
-/* the far edges fall into shade */
-.card-light::after {
-	background-image: radial-gradient(
-		120% 120% at 100% 100%,
-		rgb(0 0 0 / 0.38) 0%,
-		rgb(0 0 0 / 0.14) 30%,
-		transparent 58%
-	);
 }
 
 @keyframes card-turn {
@@ -742,7 +724,9 @@ body {
 	background-image: var(--material);
 }
 
-/* bevel: a dark line on the very edge, then a light line inside it */
+/* the card's thickness: a thin dark line all round, and a touch of shade
+ * on the bottom and right edges, which face away from the light. The
+ * bright catch on the top and left is drawn over this by .card-light. */
 .card-face::after {
 	content: "";
 	position: absolute;
@@ -750,8 +734,8 @@ body {
 	z-index: 4;
 	border-radius: inherit;
 	box-shadow:
-		inset 0 0 0 1px var(--edge),
-		inset 0 0 0 2px var(--bevel);
+		inset 0 0 0 1px var(--card-edge),
+		inset -1px -1px 0 0 var(--card-shade);
 	pointer-events: none;
 }
 
@@ -896,6 +880,8 @@ body {
 
 /* X: frosted silver, the mark raised in glossy white */
 .face-silver {
+	--card-edge: rgb(0 0 0 / 0.16);
+	--card-shade: rgb(0 0 0 / 0.1);
 	--face: #d9dade;
 	--material: linear-gradient(
 		160deg,
@@ -905,8 +891,6 @@ body {
 		#c3c4c9 100%
 	);
 	--grain: 0.5;
-	--edge: rgb(0 0 0 / 0.16);
-	--bevel: rgb(255 255 255 / 0.5);
 	--mark: #f8f8fa;
 	--mark-relief: drop-shadow(0 1px 0 rgb(255 255 255 / 0.9))
 		drop-shadow(2px 3px 4px rgb(0 0 0 / 0.2))
@@ -922,6 +906,8 @@ body {
 
 /* GitHub: matte black, the mark pressed into the surface */
 .face-obsidian {
+	--card-edge: rgb(255 255 255 / 0.08);
+	--card-shade: rgb(0 0 0 / 0.55);
 	--face: #151517;
 	--material: radial-gradient(
 		130% 100% at 8% 0%,
@@ -930,8 +916,6 @@ body {
 		#0d0d0f 100%
 	);
 	--grain: 0.32;
-	--edge: rgb(0 0 0 / 0.8);
-	--bevel: rgb(255 255 255 / 0.1);
 	--mark: #26262b;
 	--mark-relief: drop-shadow(0 -1px 0 rgb(255 255 255 / 0.1))
 		drop-shadow(0 2px 3px rgb(0 0 0 / 0.6));
@@ -946,6 +930,8 @@ body {
 
 /* LinkedIn: glossy blue plastic, the mark embossed a shade lighter */
 .face-azure {
+	--card-edge: rgb(0 0 0 / 0.32);
+	--card-shade: rgb(0 0 0 / 0.24);
 	--face: #0a66c2;
 	--material: linear-gradient(
 		155deg,
@@ -955,8 +941,6 @@ body {
 		#083f7c 100%
 	);
 	--grain: 0.28;
-	--edge: rgb(0 0 0 / 0.4);
-	--bevel: rgb(255 255 255 / 0.35);
 	--mark: #2a7fd6;
 	--mark-relief: drop-shadow(0 1px 0 rgb(255 255 255 / 0.3))
 		drop-shadow(0 -1px 0 rgb(0 0 0 / 0.22))
@@ -972,12 +956,12 @@ body {
 
 /* Email: off-white handmade paper with a typewriter frame in blue ink */
 .face-paper {
+	--card-edge: rgb(0 0 0 / 0.12);
+	--card-shade: rgb(0 0 0 / 0.07);
 	--face: #f5f4f0;
 	--material: linear-gradient(170deg, #f8f7f3 0%, #f2f1ec 100%);
 	--grain: 0.34;
 	--grain-blend: multiply;
-	--edge: rgb(0 0 0 / 0.12);
-	--bevel: rgb(255 255 255 / 0.6);
 	--ink: #2a35b5;
 }
 
@@ -1015,15 +999,95 @@ body {
 	transition: opacity 200ms ease-out;
 }
 
+/* ---------- Case study article ----------
+   One scale: 12 mono for labels, 15 for secondary text, 17 body, 21 h3,
+   30 chapter. Everything sits on the left edge. */
+
+.article-head {
+	max-width: 40rem;
+}
+
+.article-title {
+	font-size: clamp(2.25rem, 5.5vw, 3rem);
+	font-weight: 600;
+	line-height: 1.05;
+	letter-spacing: -0.03em;
+	color: var(--ink);
+	text-wrap: balance;
+}
+
+.article-lead {
+	font-size: 1rem;
+	line-height: 1.55;
+	color: var(--mute);
+	text-wrap: pretty;
+}
+
+.facts {
+	display: grid;
+	grid-template-columns: repeat(2, minmax(0, 1fr));
+	gap: 0.75rem;
+	margin-top: 0.75rem;
+}
+
+@media (min-width: 640px) {
+	.facts {
+		grid-template-columns: repeat(4, minmax(0, 1fr));
+	}
+}
+
+.fact {
+	display: flex;
+	flex-direction: column;
+	gap: 0.25rem;
+	padding: 1rem 1.125rem 1.0625rem;
+	border: 1px solid var(--line);
+	border-radius: 10px;
+	background: linear-gradient(to bottom, var(--card-top), var(--card-bottom));
+	box-shadow: var(--shadow-note);
+}
+
+.dark .fact {
+	box-shadow:
+		inset 0 1px 0 rgb(255 255 255 / 0.05),
+		var(--shadow-note);
+}
+
+.fact-name {
+	margin-bottom: 0.375rem;
+	font-family: var(--font-geist-mono), ui-monospace, monospace;
+	font-size: 11px;
+	line-height: 1;
+	letter-spacing: 0.06em;
+	text-transform: uppercase;
+	color: var(--mute);
+}
+
+.fact-value {
+	font-size: 1.5rem;
+	font-weight: 600;
+	line-height: 1.1;
+	letter-spacing: -0.025em;
+	color: var(--ink);
+	font-variant-numeric: tabular-nums;
+}
+
+.fact-label {
+	font-size: 13px;
+	line-height: 1.45;
+	color: var(--mute);
+}
+
 .article {
 	color: var(--prose);
-	font-size: 16px;
+	font-size: 14px;
 	line-height: 1.7;
 	letter-spacing: 0;
+	text-wrap: pretty;
 }
 
 .article p {
-	margin: 0 0 1.35em;
+	margin: 0 0 1.4em;
 	color: var(--prose);
 }
 
@@ -1037,23 +1101,38 @@ body {
 	color: var(--ink);
 }
 
-.article h2 {
-	margin: 2.75em 0 0.75em;
-	font-size: 1.3125rem;
-	font-weight: 550;
-	line-height: 1.25;
+/* Chapter: a mono number, then the title. Space does the separating. */
+.article h2.chapter {
+	display: flex;
+	flex-direction: column;
+	gap: 0.875rem;
+	margin: 5rem 0 1.5rem;
+	font-size: 1.75rem;
+	font-weight: 600;
+	line-height: 1.15;
+	letter-spacing: -0.025em;
 	color: var(--ink);
-	letter-spacing: -0.01em;
-	scroll-margin-top: 5rem;
+	text-wrap: balance;
+	scroll-margin-top: 6rem;
+}
+
+.article .chapter-n {
+	font-family: var(--font-geist-mono), ui-monospace, monospace;
+	font-size: 12px;
+	font-weight: 400;
+	line-height: 1;
+	letter-spacing: 0.06em;
+	color: var(--color-tree-accent);
 }
 
 .article h3 {
-	margin: 2em 0 0.6em;
-	font-size: 1.0625rem;
-	font-weight: 550;
-	line-height: 1.4;
+	margin: 2.75rem 0 0.75rem;
+	font-size: 1.25rem;
+	font-weight: 600;
+	line-height: 1.3;
+	letter-spacing: -0.015em;
 	color: var(--ink);
-	scroll-margin-top: 5rem;
+	scroll-margin-top: 6rem;
 }
 
 .article a {
@@ -1088,8 +1167,8 @@ body {
 
 .article ul,
 .article ol {
-	margin: 0 0 1.35em;
-	padding-left: 1.3em;
+	margin: 0 0 1.4em;
+	padding-left: 1.4em;
 	color: var(--prose);
 }
 
@@ -1102,8 +1181,8 @@ body {
 }
 
 .article li {
-	margin-bottom: 0.55em;
-	padding-left: 0.2em;
+	margin-bottom: 0.6em;
+	padding-left: 0.25em;
 }
 
 .article li::marker {
@@ -1116,23 +1195,28 @@ body {
 	border-top: 1px solid var(--line);
 }
 
-.article figure {
-	margin-block: 2.25rem;
+/* Figures: screenshots, diagrams and their captions share one rhythm. */
+.article .figure {
+	margin: 2.75rem 0;
 }
 
 .article figcaption {
-	margin-top: 0.75rem;
+	margin-top: 1rem;
 	font-family: var(--font-geist-mono), ui-monospace, monospace;
 	font-size: 12px;
-	line-height: 1.5;
+	line-height: 1.6;
 	letter-spacing: 0.01em;
-	text-align: center;
 	color: var(--mute);
 }
 
+.article .figure-card {
+	padding: 1.5rem;
+	border: 1px solid var(--line);
+	border-radius: var(--radius-shot, 10px);
+	background: var(--surface);
+}
+
 .article .diagram-scroll {
-	margin-inline: -1rem;
-	padding-inline: 1rem;
 	overflow-x: auto;
 	overscroll-behavior-x: contain;
 }
@@ -1148,8 +1232,74 @@ body {
 	vector-effect: non-scaling-stroke;
 }
 
+/* Pull quote: a pause between two hairlines, on the same left edge as the text. */
+.article .pull-quote {
+	margin: 3rem 0;
+	padding: 1.75rem 0;
+	border-top: 1px solid var(--line);
+	border-bottom: 1px solid var(--line);
+}
+
+.article .pull-quote blockquote {
+	margin: 0;
+	max-width: 30ch;
+	font-size: 1.375rem;
+	font-weight: 500;
+	line-height: 1.4;
+	letter-spacing: -0.02em;
+	color: var(--ink);
+	text-wrap: balance;
+	hanging-punctuation: first;
+}
+
+.article .pull-quote figcaption {
+	margin-top: 1.125rem;
+	font-size: 12px;
+	letter-spacing: 0.06em;
+	text-transform: uppercase;
+}
+
+/* Side panels (TL;DR, notes): a small label, then the body. */
+.article .panel {
+	margin: 2.5rem 0;
+	padding: 1.125rem 1.25rem 1.25rem;
+	border: 1px solid var(--line);
+	border-radius: 12px;
+	background: var(--surface);
+}
+
+.article .panel-label {
+	display: flex;
+	align-items: center;
+	gap: 0.5rem;
+	margin-bottom: 0.875rem;
+	color: var(--mute);
+}
+
+.article .panel-icon {
+	color: var(--color-tree-accent);
+}
+
+.article .panel.is-warn .panel-icon {
+	color: #e5893b;
+}
+
+/* Compare cards: the product side carries the accent. */
+.article .compare-card {
+	padding: 1.5rem;
+	border: 1px solid var(--line);
+	border-radius: var(--radius-shot, 10px);
+	background: var(--surface);
+}
+
+.article .compare-card.is-strong {
+	border-top: 2px solid var(--color-tree-accent);
+	padding-top: calc(1.5rem - 1px);
+}
+
+/* Code: the frame is shared with figures, the fade shows there is more. */
 .article .code-figure {
-	margin: 2rem 0;
+	margin: 2.5rem 0;
 	overflow: hidden;
 	border: 1px solid var(--line);
 	border-radius: var(--radius-shot, 10px);
@@ -1161,7 +1311,7 @@ body {
 	align-items: center;
 	gap: 0.75rem;
 	margin: 0;
-	padding: 0.5rem 0.75rem;
+	padding: 0.625rem 1rem;
 	border-bottom: 1px solid var(--line);
 	font-family: var(--font-geist-mono), ui-monospace, monospace;
 	font-size: 11px;
@@ -1176,10 +1326,28 @@ body {
 	color: color-mix(in oklab, var(--ink) 28%, transparent);
 }
 
+.article .code-body {
+	position: relative;
+}
+
+.article .code-body::after {
+	content: "";
+	position: absolute;
+	inset: 0 0 0 auto;
+	width: 3rem;
+	background: linear-gradient(to right, transparent, var(--page));
+	opacity: 0;
+	pointer-events: none;
+	transition: opacity 0.2s ease-out;
+}
+
+.article .code-body.has-more::after {
+	opacity: 0.9;
+}
+
 .article .code-body pre {
 	margin: 0;
-
-	padding: 0.875rem 1rem;
+	padding: 1.125rem 1.25rem;
 	overflow-x: auto;
 	overscroll-behavior-x: contain;
 	background: transparent !important;
@@ -1198,13 +1366,13 @@ body {
 
 .article .code-body code {
 	display: block;
-	font-size: 13px;
-	line-height: 1.7;
+	font-size: 13.5px;
+	line-height: 1.75;
 }
 
 @media (max-width: 640px) {
 	.article .code-body code {
-		font-size: 12px;
+		font-size: 12.5px;
 	}
 }
 
@@ -1224,6 +1392,100 @@ body {
 
 .article .not-prose a {
 	text-decoration: none;
+}
+
+/* Numbered stages run down the page, joined by one thin line. */
+.article .step::before {
+	content: "";
+	position: absolute;
+	top: 32px;
+	bottom: -8px;
+	left: 14px;
+	width: 1px;
+	background: var(--line);
+}
+
+.article .step:last-child::before {
+	display: none;
+}
+
+/* Legend under an annotated screenshot: one row per pin, hairlines between. */
+.article .shot-legend {
+	margin-top: 2.25rem;
+	border-top: 1px solid var(--line);
+}
+
+.article .shot-legend-row {
+	display: grid;
+	grid-template-columns: 22px minmax(0, 1fr);
+	column-gap: 1rem;
+	row-gap: 0.25rem;
+	padding: 1rem 0;
+	border-bottom: 1px solid var(--line);
+	cursor: default;
+}
+
+.article .shot-legend-row > :last-child {
+	grid-column: 2;
+}
+
+@media (min-width: 640px) {
+	.article .shot-legend-row {
+		grid-template-columns: 22px 11rem minmax(0, 1fr);
+		column-gap: 1.25rem;
+		align-items: start;
+	}
+
+	.article .shot-legend-row > :last-child {
+		grid-column: 3;
+	}
+}
+
+/* Numbered pins on a screenshot, and the matching numbers in its legend. */
+.shot-pin {
+	position: absolute;
+	display: flex;
+	align-items: center;
+	justify-content: center;
+	width: 22px;
+	height: 22px;
+	border-radius: 50%;
+	background: var(--color-tree-accent);
+	box-shadow:
+		0 0 0 2px var(--page),
+		0 0 0 5px rgb(59 130 246 / 0.3);
+	font-family: var(--font-geist-mono), ui-monospace, monospace;
+	font-size: 11px;
+	color: #fff;
+	transform: translate(-50%, -50%);
+	transition:
+		transform 0.2s ease-out,
+		box-shadow 0.2s ease-out;
+}
+
+.shot-pin.is-active {
+	box-shadow:
+		0 0 0 2px var(--page),
+		0 0 0 7px rgb(59 130 246 / 0.38);
+	transform: translate(-50%, -50%) scale(1.15);
+}
+
+.shot-pin.is-static {
+	position: relative;
+	flex-shrink: 0;
+	margin-top: 1px;
+	transform: none;
+}
+
+.shot-pin.is-static.is-active {
+	transform: scale(1.15);
+}
+
+@media (prefers-reduced-motion: reduce) {
+	.shot-pin,
+	.article .code-body::after {
+		transition: none;
+	}
 }
 
 .stage-soft {

@@ -1,7 +1,8 @@
 /** Shared looks for the dock at the bottom and the social rail on the left. */
 
+/** Add the corner radius where it is used: it must match the pill around it. */
 export const ICON_CLASS =
-	"group/item relative cursor-pointer rounded-md p-1.5 text-neutral-500 transition-colors hover:bg-black/5 hover:text-neutral-900 focus-visible:outline-none dark:text-neutral-400 dark:hover:bg-white/6 dark:hover:text-neutral-100";
+	"group/item relative cursor-pointer p-1.5 text-neutral-500 transition-colors hover:bg-black/5 hover:text-neutral-900 focus-visible:outline-none dark:text-neutral-400 dark:hover:bg-white/6 dark:hover:text-neutral-100";
 
 const TIP_BASE =
 	"pointer-events-none invisible absolute rounded-lg bg-dock-tip px-2.5 py-1.5 font-mono text-[10px] leading-none tracking-label whitespace-nowrap text-dock-tip-ink uppercase opacity-0 shadow-dock-tip ring-1 ring-dock-tip-edge transition duration-200 ease-out group-hover/item:visible group-hover/item:scale-100 group-hover/item:opacity-100 group-focus-visible/item:visible group-focus-visible/item:scale-100 group-focus-visible/item:opacity-100";

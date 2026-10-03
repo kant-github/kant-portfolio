@@ -148,6 +148,7 @@ export function SocialCardShell({
 	return (
 		<motion.div
 			{...lean.handlers}
+			data-face={account.id}
 			className={`social-card relative select-none ${
 				lean.tilting ? "is-tilting" : ""
 			} ${className}`}

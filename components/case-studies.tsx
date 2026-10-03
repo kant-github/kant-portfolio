@@ -4,9 +4,9 @@ import Link from "next/link";
 import { useState, type CSSProperties } from "react";
 import { PushPin } from "@/components/push-pin";
 import { CONTENT_INDEX, Section } from "@/components/section";
-import { postList } from "@/lib/writing";
+import { postList } from "@/lib/case-studies";
 
-export function Writing() {
+export function CaseStudies() {
 	const [lit, setLit] = useState<number | null>(null);
 
 	return (
@@ -22,7 +22,7 @@ export function Writing() {
 							style={{ "--i": CONTENT_INDEX + index } as CSSProperties}
 						>
 							<Link
-								href={`/writing/${post.slug}`}
+								href={`/case-studies/${post.slug}`}
 								onPointerEnter={() => setLit(index)}
 								onFocus={() => setLit(index)}
 								className={`-mx-2.5 flex h-full items-center gap-2.5 rounded-lg px-2.5 transition-colors duration-200 focus-visible:outline-none ${
