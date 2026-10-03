@@ -89,6 +89,18 @@ export function ObsidianFace({ account }: FaceProps) {
 	);
 }
 
+/** GitHub: glossy green plastic, the mark embossed a shade lighter. */
+export function MossFace({ account }: FaceProps) {
+	return (
+		<div className="card-face face-moss">
+			<span aria-hidden="true" className="card-lines" />
+			<span aria-hidden="true" className="card-gloss" />
+			<Grain />
+			<Standard account={account} />
+		</div>
+	);
+}
+
 export function AzureFace({ account }: FaceProps) {
 	return (
 		<div className="card-face face-azure">
@@ -125,8 +137,8 @@ export function PaperFace({ account }: FaceProps) {
 
 export const FACES: Record<SocialId, (props: FaceProps) => React.JSX.Element> =
 	{
-		x: SilverFace,
-		github: ObsidianFace,
+		x: ObsidianFace,
+		github: MossFace,
 		linkedin: AzureFace,
 		email: PaperFace,
 	};

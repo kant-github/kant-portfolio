@@ -172,6 +172,12 @@ export function SocialCardShell({
 				style={{ borderRadius: RADIUS }}
 			/>
 
+			<span
+				aria-hidden="true"
+				className="card-shine"
+				style={{ borderRadius: RADIUS }}
+			/>
+
 			<a
 				href={account.href}
 				target={external ? "_blank" : undefined}

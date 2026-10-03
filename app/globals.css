@@ -594,8 +594,12 @@ body {
 	--card-rim: 0.9;
 }
 
-.social-card[data-face="github"] {
+.social-card[data-face="x"] {
 	--card-rim: 0.5;
+}
+
+.social-card[data-face="github"] {
+	--card-rim: 0.75;
 }
 
 .social-card[data-face="linkedin"] {
@@ -695,6 +699,50 @@ body {
 
 /* In the phone row, the light on each card waits for the section to
  * scroll into view before it plays. */
+/* A single shine sweeps left to right when the card first appears, like
+ * tilting a card under a lamp. It never repeats. */
+.card-shine {
+	position: absolute;
+	inset: 0;
+	z-index: 4;
+	overflow: hidden;
+	pointer-events: none;
+}
+
+.card-shine::before {
+	content: "";
+	position: absolute;
+	inset: -20% auto -20% 0;
+	width: 42%;
+	background: linear-gradient(
+		105deg,
+		transparent 0%,
+		rgb(255 255 255 / 0.05) 35%,
+		rgb(255 255 255 / 0.42) 50%,
+		rgb(255 255 255 / 0.05) 65%,
+		transparent 100%
+	);
+	mix-blend-mode: overlay;
+	transform: translateX(-160%) skewX(-14deg);
+	animation: card-shine 1150ms cubic-bezier(0.22, 1, 0.36, 1) 220ms forwards;
+}
+
+@keyframes card-shine {
+	to {
+		transform: translateX(340%) skewX(-14deg);
+	}
+}
+
+.social-deck .card-shine::before {
+	animation: none;
+}
+
+@media (prefers-reduced-motion: reduce) {
+	.card-shine {
+		display: none;
+	}
+}
+
 .social-deck .card-light,
 .social-deck .card-light::before {
 	animation-play-state: paused;
@@ -951,6 +999,32 @@ body {
 	--name: #0f3a6e;
 	--handle: #143f75;
 	--role: #1a4780;
+	--press: 0 1px 0 rgb(255 255 255 / 0.3);
+}
+
+/* GitHub: glossy green plastic, the mark embossed a shade lighter */
+.face-moss {
+	--card-edge: rgb(0 0 0 / 0.32);
+	--card-shade: rgb(0 0 0 / 0.26);
+	--face: #238636;
+	--material: linear-gradient(
+		155deg,
+		#3fb950 0%,
+		#2ea043 42%,
+		#238636 74%,
+		#196c2e 100%
+	);
+	--grain: 0.28;
+	--mark: #46c45a;
+	--mark-relief: drop-shadow(0 1px 0 rgb(255 255 255 / 0.3))
+		drop-shadow(0 -1px 0 rgb(0 0 0 / 0.22))
+		drop-shadow(0 8px 12px rgb(0 0 0 / 0.2));
+	--avatar-relief:
+		inset 0 1px 3px rgb(0 0 0 / 0.45),
+		inset 0 0 0 1px rgb(255 255 255 / 0.25), 0 1px 0 rgb(255 255 255 / 0.2);
+	--name: #0b3d18;
+	--handle: #10471e;
+	--role: #155226;
 	--press: 0 1px 0 rgb(255 255 255 / 0.3);
 }
 
